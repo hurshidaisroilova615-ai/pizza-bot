@@ -9,7 +9,12 @@ if (!token) {
   throw new Error("BOT_TOKEN .env faylida topilmadi!");
 }
 
-const USE_WEBHOOK = Boolean(process.env.BOT_WEBHOOK_URL);
+// Render exposes the service's own public URL, so webhook mode configures
+// itself on deploy. Long polling stops whenever a free instance sleeps, and
+// nothing wakes it — a webhook lets Telegram's own request do the waking.
+// Locally neither variable is set, so we keep polling.
+const WEBHOOK_BASE = process.env.BOT_WEBHOOK_URL || process.env.RENDER_EXTERNAL_URL || "";
+const USE_WEBHOOK = Boolean(WEBHOOK_BASE);
 const bot = new TelegramBot(token, { polling: !USE_WEBHOOK });
 
 // A digest of the token rather than the token itself: the raw token contains
@@ -23,9 +28,20 @@ const WEBHOOK_PATH = `/api/bot/webhook/${crypto
   .slice(0, 32)}`;
 
 if (USE_WEBHOOK) {
-  bot.setWebHook(`${process.env.BOT_WEBHOOK_URL}${WEBHOOK_PATH}`).catch((err) => {
-    console.error("Webhook o'rnatishda xatolik:", err.message);
-  });
+  bot
+    .setWebHook(`${WEBHOOK_BASE}${WEBHOOK_PATH}`)
+    .then(() => console.log(`✅ Webhook o'rnatildi: ${WEBHOOK_BASE}${WEBHOOK_PATH}`))
+    .catch(async (err) => {
+      // Never leave the bot with neither transport: fall back to polling,
+      // clearing any webhook Telegram still holds so getUpdates isn't 409'd.
+      console.error("Webhook o'rnatilmadi, polling rejimiga qaytilmoqda:", err.message);
+      try {
+        await bot.deleteWebHook();
+        await bot.startPolling();
+      } catch (fallbackErr) {
+        console.error("Polling'ga qaytishda ham xatolik:", fallbackErr.message);
+      }
+    });
 }
 
 // Falls back to localhost during local development; in production this must
