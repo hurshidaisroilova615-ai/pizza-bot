@@ -53,12 +53,24 @@ app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 const allowedOrigins = [
   process.env.MINIAPP_ORIGIN || "http://localhost:5173",
   process.env.ADMIN_ORIGIN || "http://localhost:5174",
-].flatMap((v) => v.split(","));
+].flatMap((v) => v.split(",").map((s) => s.trim()).filter(Boolean));
+
+// Render assigns each service an *.onrender.com hostname that isn't known
+// until after the first deploy, so allow that family too — the real access
+// control is the admin JWT and the Telegram initData signature, not CORS.
+function isAllowedOrigin(origin) {
+  if (allowedOrigins.includes(origin)) return true;
+  try {
+    return new URL(origin).hostname.endsWith(".onrender.com");
+  } catch {
+    return false;
+  }
+}
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+      if (!origin || isAllowedOrigin(origin)) return callback(null, true);
       callback(new Error("CORS orqali ruxsat berilmagan manzil"));
     },
     credentials: true,
