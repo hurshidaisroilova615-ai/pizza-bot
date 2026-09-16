@@ -11,11 +11,15 @@ services:
     plan: free
     rootDir: backend
     buildCommand: npm install && npx prisma generate
-    startCommand: npx prisma migrate deploy && npm start
+    startCommand: npm run start:prod
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
+      # Clears a pre-Prisma-migration schema left by older versions of this
+      # project. Inert once the database is on the current schema.
+      - key: DB_RESET_LEGACY_SCHEMA
+        value: "true"
       - key: DATABASE_URL
         sync: false
       - key: BOT_TOKEN
