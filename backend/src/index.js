@@ -28,7 +28,7 @@ if (!process.env.JWT_SECRET) {
 }
 
 const prisma = require("./lib/prisma");
-const { bot, USE_WEBHOOK } = require("./bot");
+const { bot, USE_WEBHOOK, WEBHOOK_PATH } = require("./bot");
 const errorHandler = require("./middleware/errorHandler");
 
 const productsRouter = require("./routes/products");
@@ -78,7 +78,7 @@ app.use(
 );
 
 if (USE_WEBHOOK) {
-  app.use(`/api/bot/webhook/${process.env.BOT_TOKEN}`, express.json(), (req, res) => {
+  app.post(WEBHOOK_PATH, express.json(), (req, res) => {
     bot.processUpdate(req.body);
     res.sendStatus(200);
   });

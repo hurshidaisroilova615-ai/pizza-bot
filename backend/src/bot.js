@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const TelegramBot = require("node-telegram-bot-api");
 const prisma = require("./lib/prisma");
 const { getSettings } = require("./lib/settings");
@@ -11,9 +12,18 @@ if (!token) {
 const USE_WEBHOOK = Boolean(process.env.BOT_WEBHOOK_URL);
 const bot = new TelegramBot(token, { polling: !USE_WEBHOOK });
 
+// A digest of the token rather than the token itself: the raw token contains
+// a colon, which Express would parse as a route parameter, and it would also
+// sit in plain sight in request logs. The digest stays unguessable without
+// the token and is stable across restarts.
+const WEBHOOK_PATH = `/api/bot/webhook/${crypto
+  .createHash("sha256")
+  .update(token)
+  .digest("hex")
+  .slice(0, 32)}`;
+
 if (USE_WEBHOOK) {
-  const webhookPath = `/api/bot/webhook/${token}`;
-  bot.setWebHook(`${process.env.BOT_WEBHOOK_URL}${webhookPath}`).catch((err) => {
+  bot.setWebHook(`${process.env.BOT_WEBHOOK_URL}${WEBHOOK_PATH}`).catch((err) => {
     console.error("Webhook o'rnatishda xatolik:", err.message);
   });
 }
@@ -149,6 +159,7 @@ async function notifyAdmins(text) {
 module.exports = {
   bot,
   USE_WEBHOOK,
+  WEBHOOK_PATH,
   notifyOrderCreated,
   notifyOrderStatusChanged,
   notifyOffer,
