@@ -1,0 +1,70 @@
+# Render.com Blueprint — deploys all 3 services (backend API + Telegram bot,
+# Mini App, Admin Dashboard) from one repo. Free tier friendly.
+#
+# Usage: https://dashboard.render.com/blueprints -> New Blueprint Instance
+# -> point at this repo. See DEPLOYMENT.md for the full step-by-step guide
+# and for which env vars you must fill in manually (marked sync: false).
+services:
+  - type: web
+    name: smartorder-backend
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install && npx prisma generate
+    startCommand: npx prisma migrate deploy && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: BOT_TOKEN
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: BUSINESS_NAME
+        sync: false
+      - key: BUSINESS_TYPE
+        value: food
+      - key: BUSINESS_CURRENCY
+        value: UZS
+      - key: MINIAPP_ORIGIN
+        sync: false
+      - key: ADMIN_ORIGIN
+        sync: false
+      - key: MINIAPP_PUBLIC_URL
+        sync: false
+      - key: ADMIN_CHAT_IDS
+        sync: false
+
+  - type: web
+    name: smartorder-miniapp
+    runtime: static
+    rootDir: miniapp
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  - type: web
+    name: smartorder-admin
+    runtime: static
+    rootDir: admin
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

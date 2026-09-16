@@ -1,0 +1,58 @@
+🛍 ENG OSON YO'RIQNOMA — FAQAT "IKKI MARTA BOSISH" KERAK
+
+Terminalga hech narsa yozishning HOJATI YO'Q. Har bir faylni topib,
+ustiga sichqoncha bilan IKKI MARTA bosing (yoki touchpadda ikki marta
+tap qiling). Qora oyna ochiladi, ish tugagach "Press any key to
+continue" deb yozadi — shunda istalgan tugmani bosib, oynani yopsangiz
+bo'ladi (4-ishga-tushirish.bat bundan mustasno — u DOIM OCHIQ TURISHI
+KERAK).
+
+TARTIB - AYNAN SHU KETMA-KETLIKDA BAJARING:
+
+1) backend papkasini oching.
+   -> 1-ornatish.bat ustiga ikki marta bosing. Kuting (1-3 daqiqa).
+   -> Tugagach, 2-migratsiya.bat ustiga ikki marta bosing.
+      (Bu bazadagi eski jadvallarni tozalab, yangi tuzilmani yaratadi.)
+   -> Tugagach, 3-seed.bat ustiga ikki marta bosing.
+      (Bu demo mahsulotlar VA admin panel uchun login/parol yaratadi —
+      login/parol backend/.env faylidagi ADMIN_USERNAME/ADMIN_PASSWORD
+      qiymatlaridan olinadi.)
+   -> Tugagach, 4-ishga-tushirish.bat ustiga ikki marta bosing.
+      BU OYNANI YOPMANG, kamida shu daqiqadan keyin ochiq qoldiring.
+
+2) miniapp papkasini oching (backend oynasini yopmasdan).
+   -> 1-ornatish.bat ustiga ikki marta bosing. Kuting.
+   -> Tugagach, 2-ishga-tushirish.bat ustiga ikki marta bosing.
+      BU OYNANI HAM YOPMANG.
+
+3) admin papkasini oching (boshqa oynalarni yopmasdan).
+   -> 1-ornatish.bat ustiga ikki marta bosing. Kuting.
+   -> Tugagach, 2-ishga-tushirish.bat ustiga ikki marta bosing.
+      BU OYNANI HAM YOPMANG.
+
+Shu uchala qadam tugagach, sizda 3 ta ochiq qora oyna bo'ladi — bu
+TO'G'RI holat, ular ishlab turishi kerak.
+
+Brauzeringizda (Chrome/Edge) quyidagi manzilni oching:
+   http://localhost:5174
+Bu — Admin Panel. backend/.env faylidagi ADMIN_USERNAME/ADMIN_PASSWORD
+bilan kiring. U yerda Statistika, Buyurtmalar, Mahsulotlar,
+Kategoriyalar, Mijozlar (CRM), Promo kodlar, Maxsus takliflar va
+Sozlamalar bo'limlari ko'rinishi kerak.
+
+Mini App'ni brauzerda ko'rish uchun:
+   http://localhost:5173
+
+MUHIM XAVFSIZLIK ESLATMASI:
+backend/.env faylida namunaviy Telegram bot tokeni va baza paroli bor
+edi. Agar ularni real loyihada ishlatmoqchi bo'lsangiz yoki ular
+allaqachon boshqa joyda ko'rilgan bo'lsa, @BotFather orqali tokenni va
+Neon dashboard orqali baza parolini albatta yangilang (rotate qiling).
+
+Agar biror .bat faylni ochganingizda oyna DARHOL yopilib ketsa (bir
+soniyada), demak xatolik bor — o'sha faylni EMAS, balki uning ustiga
+o'ng tugma bilan bosib "Изменить" (Edit / Tahrirlash) orqali oching,
+ichidagi matnni skrinshot qilib yuboring — men xatoni topaman.
+
+Keyingi qadam — ngrok orqali Telegram botga ulash va productionga
+chiqarish — README.md va DEPLOYMENT.md fayllarida batafsil yozilgan.

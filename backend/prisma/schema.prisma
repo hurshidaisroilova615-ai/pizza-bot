@@ -1,0 +1,249 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  PENDING
+  PREPARING
+  ON_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+enum PromoType {
+  PERCENTAGE
+  FIXED
+}
+
+enum LoyaltyTxnType {
+  EARN
+  REDEEM
+  ADJUST
+}
+
+enum OfferSegment {
+  ALL
+  NEW_CUSTOMERS
+  LOYAL_CUSTOMERS
+  INACTIVE_CUSTOMERS
+}
+
+// Singleton row (id = 1) holding all business/branding configuration so the
+// same codebase can be re-skinned for a different business without code
+// changes (pizza, burgers, sushi, clothing, cosmetics, ...).
+model Settings {
+  id                    Int      @id @default(1)
+  businessName          String   @default("SmartOrder")
+  businessType          String   @default("food")
+  currency              String   @default("UZS")
+  logoUrl               String?
+  primaryColor          String   @default("#ff3b30")
+  deliveryFee           Int      @default(0)
+  freeDeliveryThreshold Int?
+  minOrderAmount        Int      @default(0)
+  loyaltyEnabled        Boolean  @default(true)
+  loyaltyEarnRate       Float    @default(0.05)
+  loyaltyPointValue     Int      @default(1)
+  supportPhone          String?
+  supportUsername       String?
+  welcomeMessage        String?
+  aboutText             String?
+  updatedAt             DateTime @updatedAt
+}
+
+model AdminUser {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String
+  name         String?
+  role         String   @default("admin")
+  createdAt    DateTime @default(now())
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  icon      String?
+  sortOrder Int       @default(0)
+  isActive  Boolean   @default(true)
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id            Int       @id @default(autoincrement())
+  name          String
+  description   String    @default("")
+  imageUrl      String
+  price         Int
+  oldPrice      Int?
+  categoryId    Int?
+  category      Category? @relation(fields: [categoryId], references: [id])
+  isAvailable   Boolean   @default(true)
+  isRecommended Boolean   @default(false)
+  sortOrder     Int       @default(0)
+
+  orderItems     OrderItem[]
+  recommendsTo   ProductRecommendation[] @relation("BaseProduct")
+  recommendedBy  ProductRecommendation[] @relation("SuggestedProduct")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([categoryId])
+}
+
+// Cross-sell / upsell: which products to suggest alongside a given product.
+model ProductRecommendation {
+  id                   Int     @id @default(autoincrement())
+  productId            Int
+  product              Product @relation("BaseProduct", fields: [productId], references: [id], onDelete: Cascade)
+  recommendedProductId Int
+  recommendedProduct   Product @relation("SuggestedProduct", fields: [recommendedProductId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, recommendedProductId])
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  telegramId    String   @unique
+  username      String?
+  firstName     String?
+  lastName      String?
+  phone         String?
+  languageCode  String?
+  loyaltyPoints Int      @default(0)
+
+  orders      Order[]
+  loyaltyTxns LoyaltyTransaction[]
+  promoUsages PromoCodeUsage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id                  Int         @id @default(autoincrement())
+  userId              Int
+  user                User        @relation(fields: [userId], references: [id])
+  items               OrderItem[]
+  subtotal            Int
+  discountAmount      Int         @default(0)
+  deliveryFee         Int         @default(0)
+  loyaltyPointsUsed   Int         @default(0)
+  loyaltyPointsEarned Int         @default(0)
+  totalPrice          Int
+  phone               String?
+  deliveryAddress     String?
+  comment             String?
+  status              OrderStatus @default(PENDING)
+
+  promoCodeId Int?
+  promoCode   PromoCode? @relation(fields: [promoCodeId], references: [id])
+
+  statusHistory OrderStatusHistory[]
+  promoUsage    PromoCodeUsage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int?
+  product   Product? @relation(fields: [productId], references: [id])
+  name      String
+  price     Int
+  quantity  Int
+  lineTotal Int
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model OrderStatusHistory {
+  id        Int         @id @default(autoincrement())
+  orderId   Int
+  order     Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  status    OrderStatus
+  note      String?
+  createdAt DateTime    @default(now())
+
+  @@index([orderId])
+}
+
+model PromoCode {
+  id               Int       @id @default(autoincrement())
+  code             String    @unique
+  type             PromoType
+  value            Int
+  minOrderAmount   Int       @default(0)
+  usageLimit       Int?
+  usedCount        Int       @default(0)
+  perUserLimit     Int       @default(1)
+  newCustomersOnly Boolean   @default(false)
+  isActive         Boolean   @default(true)
+  startsAt         DateTime?
+  expiresAt        DateTime?
+
+  orders  Order[]
+  usages  PromoCodeUsage[]
+  offers  SpecialOffer[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PromoCodeUsage {
+  id          Int       @id @default(autoincrement())
+  promoCodeId Int
+  promoCode   PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id])
+  orderId     Int?
+  order       Order?    @relation(fields: [orderId], references: [id])
+  usedAt      DateTime  @default(now())
+
+  @@index([promoCodeId, userId])
+}
+
+model LoyaltyTransaction {
+  id           Int            @id @default(autoincrement())
+  userId       Int
+  user         User           @relation(fields: [userId], references: [id])
+  orderId      Int?
+  type         LoyaltyTxnType
+  points       Int
+  balanceAfter Int
+  note         String?
+  createdAt    DateTime       @default(now())
+
+  @@index([userId])
+}
+
+// Targeted marketing offers for loyal / inactive / new customer segments.
+model SpecialOffer {
+  id          Int          @id @default(autoincrement())
+  title       String
+  message     String
+  imageUrl    String?
+  segment     OfferSegment @default(ALL)
+  promoCodeId Int?
+  promoCode   PromoCode?   @relation(fields: [promoCodeId], references: [id])
+  isActive    Boolean      @default(true)
+  sentAt      DateTime?
+  sentCount   Int          @default(0)
+  createdAt   DateTime     @default(now())
+}

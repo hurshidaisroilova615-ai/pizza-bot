@@ -1,0 +1,139 @@
+require("dotenv").config();
+
+// node-telegram-bot-api's long-polling transport can surface raw socket
+// errors (e.g. ECONNRESET) as unhandled 'error' events on transient network
+// issues. Without this, a single dropped connection would crash the whole
+// API server along with the bot. We log and keep running instead.
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught exception:", err);
+});
+process.on("unhandledRejection", (err) => {
+  console.error("Unhandled rejection:", err);
+});
+
+const express = require("express");
+const cors = require("cors");
+const helmet = require("helmet");
+const compression = require("compression");
+const morgan = require("morgan");
+const rateLimit = require("express-rate-limit");
+const bcrypt = require("bcryptjs");
+
+if (!process.env.JWT_SECRET) {
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("JWT_SECRET .env faylida majburiy (production uchun)");
+  }
+  process.env.JWT_SECRET = "dev-only-secret-change-me";
+  console.warn("⚠️  JWT_SECRET topilmadi, faqat development uchun vaqtinchalik qiymat ishlatilmoqda.");
+}
+
+const prisma = require("./lib/prisma");
+const { bot, USE_WEBHOOK } = require("./bot");
+const errorHandler = require("./middleware/errorHandler");
+
+const productsRouter = require("./routes/products");
+const categoriesRouter = require("./routes/categories");
+const ordersRouter = require("./routes/orders");
+const usersRouter = require("./routes/users");
+const customersRouter = require("./routes/customers");
+const promoCodesRouter = require("./routes/promoCodes");
+const loyaltyRouter = require("./routes/loyalty");
+const offersRouter = require("./routes/offers");
+const analyticsRouter = require("./routes/analytics");
+const settingsRouter = require("./routes/settings");
+const authRouter = require("./routes/auth");
+
+const app = express();
+
+app.set("trust proxy", 1);
+app.use(helmet());
+app.use(compression());
+app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+
+const allowedOrigins = [
+  process.env.MINIAPP_ORIGIN || "http://localhost:5173",
+  process.env.ADMIN_ORIGIN || "http://localhost:5174",
+].flatMap((v) => v.split(","));
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+      callback(new Error("CORS orqali ruxsat berilmagan manzil"));
+    },
+    credentials: true,
+  })
+);
+
+if (USE_WEBHOOK) {
+  app.use(`/api/bot/webhook/${process.env.BOT_TOKEN}`, express.json(), (req, res) => {
+    bot.processUpdate(req.body);
+    res.sendStatus(200);
+  });
+}
+
+app.use(express.json({ limit: "1mb" }));
+
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use("/api", apiLimiter);
+
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", time: new Date().toISOString() });
+});
+
+app.use("/api/auth", authRouter);
+app.use("/api/products", productsRouter);
+app.use("/api/categories", categoriesRouter);
+app.use("/api/orders", ordersRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/customers", customersRouter);
+app.use("/api/promo-codes", promoCodesRouter);
+app.use("/api/loyalty", loyaltyRouter);
+app.use("/api/offers", offersRouter);
+app.use("/api/analytics", analyticsRouter);
+app.use("/api/settings", settingsRouter);
+
+app.use((req, res) => {
+  res.status(404).json({ error: "Manzil topilmadi" });
+});
+
+app.use(errorHandler);
+
+async function ensureDefaultAdmin() {
+  const existing = await prisma.adminUser.count();
+  if (existing > 0) return;
+
+  const username = process.env.ADMIN_USERNAME;
+  const password = process.env.ADMIN_PASSWORD;
+  if (!username || !password) {
+    console.warn(
+      "⚠️  Hech qanday admin foydalanuvchi topilmadi va ADMIN_USERNAME/ADMIN_PASSWORD berilmagan. Admin panelga kirish uchun ularni .env fayliga qo'shing va serverni qayta ishga tushiring."
+    );
+    return;
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10);
+  await prisma.adminUser.create({ data: { username, passwordHash, name: "Administrator" } });
+  console.log(`✅ Boshlang'ich admin foydalanuvchi yaratildi: ${username}`);
+}
+
+const PORT = process.env.PORT || 4000;
+
+ensureDefaultAdmin()
+  .catch((err) => console.error("Admin foydalanuvchini yaratishda xatolik:", err.message))
+  .finally(() => {
+    app.listen(PORT, () => {
+      console.log(`✅ Backend server http://localhost:${PORT} manzilida ishga tushdi`);
+      console.log(`🤖 Telegram bot ${USE_WEBHOOK ? "webhook" : "polling"} rejimida ishlamoqda`);
+    });
+  });
+
+process.on("SIGTERM", async () => {
+  await prisma.$disconnect();
+  process.exit(0);
+});
