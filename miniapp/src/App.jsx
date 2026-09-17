@@ -22,7 +22,14 @@ function AppContent({ telegramUser }) {
 
   return (
     <div className="app-shell">
-      {tab === "home" && <Home firstName={telegramUser.firstName} onOrderClick={() => setTab("catalog")} />}
+      {tab === "home" && (
+        <Home
+          firstName={telegramUser.firstName}
+          products={products}
+          onAdd={addItem}
+          onOrderClick={() => setTab("catalog")}
+        />
+      )}
       {tab === "catalog" && <Catalog products={products} onAdd={addItem} />}
       {tab === "cart" && <Cart onOrderPlaced={() => setOrdersRefreshKey((k) => k + 1)} />}
       {tab === "profile" && (

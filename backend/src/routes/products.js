@@ -45,6 +45,32 @@ router.get(
   })
 );
 
+// Public: what customers actually order most. Declared before "/:id" so
+// Express doesn't read "top" as a product id.
+router.get(
+  "/top",
+  asyncHandler(async (req, res) => {
+    const ranked = await prisma.orderItem.groupBy({
+      by: ["productId"],
+      where: { productId: { not: null }, order: { status: { not: "CANCELLED" } } },
+      _sum: { quantity: true },
+      orderBy: { _sum: { quantity: "desc" } },
+      take: 8,
+    });
+
+    const products = await prisma.product.findMany({
+      where: { id: { in: ranked.map((r) => r.productId) }, isAvailable: true },
+      include: { category: true, recommendsTo: { include: { recommendedProduct: true } } },
+    });
+
+    // groupBy returns the ranking, findMany returns them in id order.
+    const byId = new Map(products.map((p) => [p.id, p]));
+    const ordered = ranked.map((r) => byId.get(r.productId)).filter(Boolean);
+
+    res.json(ordered.map(serialize));
+  })
+);
+
 router.get(
   "/:id",
   asyncHandler(async (req, res) => {

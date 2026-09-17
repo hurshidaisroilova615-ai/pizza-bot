@@ -47,6 +47,7 @@ export const api = {
   getCategories: () => request("/categories"),
   getProducts: () => request("/products"),
   getProduct: (id) => request(`/products/${id}`),
+  getTopProducts: () => request("/products/top"),
 
   upsertUser: (data) => request("/users/upsert", { method: "POST", body: JSON.stringify(data || {}) }),
   getMe: () => request(withQuery("/users/me")),
