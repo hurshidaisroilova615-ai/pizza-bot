@@ -319,6 +319,20 @@ async function seedCatalog() {
     return;
   }
 
+  // A shop still on the very first catalog with no orders placed has never
+  // been used, so whatever is in it is leftover demo content rather than a
+  // real menu. Clear it, otherwise the earlier demo's categories linger
+  // alongside the new ones. Once a revision is recorded this cannot run
+  // again, and a shop with even one order is left untouched.
+  const untouched = (settings?.catalogVersion ?? 0) === 0 && (await prisma.order.count()) === 0;
+  if (untouched && (await prisma.product.count()) > 0) {
+    await prisma.productRecommendation.deleteMany();
+    await prisma.orderItem.deleteMany();
+    await prisma.product.deleteMany();
+    await prisma.category.deleteMany();
+    console.log("ℹ️  Ishlatilmagan eski demo katalog tozalandi.");
+  }
+
   const categories = {};
   for (const def of CATEGORIES) {
     categories[def.name] = await prisma.category.upsert({
