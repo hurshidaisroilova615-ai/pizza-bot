@@ -251,11 +251,33 @@ th {
 .status-delivered { background: #eafaf0; color: #1a9d5b; }
 .status-cancelled { background: #f1f1f2; color: #6b6b73; }
 
+/* The filter pills used to sit unlabelled above the list, where they read
+   as actions on the orders rather than a view of them. */
+.filter-bar {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
 .tag-row-admin {
   display: flex;
   gap: 8px;
-  margin-bottom: 18px;
   flex-wrap: wrap;
+}
+
+.advance-btn {
+  white-space: nowrap;
 }
 
 .tag-admin {
