@@ -1,0 +1,533 @@
+<title>Birinchi mijoz</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --paper: #faf7f2;
+    --surface: #ffffff;
+    --ink: #1f1b16;
+    --muted: #7a7168;
+    --line: #e7e0d6;
+    --saffron: #bd6f14;
+    --saffron-soft: #fdf3e3;
+    --sage: #3f6349;
+    --sage-soft: #eaf1ea;
+    --clay: #9c4232;
+    --clay-soft: #fbecea;
+
+    --display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
+    --body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #171411;
+      --surface: #201c18;
+      --ink: #f2ede6;
+      --muted: #a39a90;
+      --line: #322c26;
+      --saffron: #e39a45;
+      --saffron-soft: #2c2114;
+      --sage: #8fb99b;
+      --sage-soft: #18241c;
+      --clay: #e08a7a;
+      --clay-soft: #2b1815;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #171411;
+    --surface: #201c18;
+    --ink: #f2ede6;
+    --muted: #a39a90;
+    --line: #322c26;
+    --saffron: #e39a45;
+    --saffron-soft: #2c2114;
+    --sage: #8fb99b;
+    --sage-soft: #18241c;
+    --clay: #e08a7a;
+    --clay-soft: #2b1815;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 15.5px;
+    line-height: 1.6;
+    padding-inline: 18px;
+    padding-block: 0 56px;
+  }
+
+  .wrap { max-width: 660px; margin: 0 auto; }
+
+  header.masthead {
+    padding-block: 40px 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 28px;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--saffron);
+    margin: 0 0 10px;
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(30px, 8vw, 42px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin: 0 0 12px;
+    text-wrap: balance;
+  }
+
+  .standfirst {
+    margin: 0;
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 46ch;
+  }
+
+  section { margin-block: 38px; }
+
+  h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 21px;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+
+  .section-note {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0 0 18px;
+  }
+
+  h3 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 16px;
+    margin: 0 0 8px;
+  }
+
+  p { margin: 0 0 12px; }
+  p:last-child { margin-bottom: 0; }
+
+  /* Quick reference — the thing she opens most, so it sits first and reads
+     like a card in a wallet rather than a section of prose. */
+  .refcard {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+
+  .ref-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding-block: 9px;
+    border-bottom: 1px solid var(--line);
+  }
+  .ref-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .ref-row:first-child { padding-top: 0; }
+
+  .ref-label {
+    font-size: 12.5px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .ref-value {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    text-align: right;
+    word-break: break-all;
+  }
+
+  /* Video plan: a real timeline, so the seconds column carries meaning. */
+  .timeline { display: flex; flex-direction: column; gap: 2px; }
+
+  .beat {
+    display: grid;
+    grid-template-columns: 62px 1fr;
+    gap: 14px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    align-items: start;
+  }
+  .beat:first-child { border-radius: 12px 12px 0 0; }
+  .beat:last-child { border-radius: 0 0 12px 12px; }
+
+  .beat-time {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--saffron);
+    font-variant-numeric: tabular-nums;
+    padding-top: 2px;
+  }
+
+  .beat-what { font-size: 14.5px; }
+  .beat-what strong { font-weight: 600; }
+
+  .beat.peak { background: var(--saffron-soft); }
+
+  /* Copy blocks: monospace signals "this is text to send". */
+  .script {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--saffron);
+    border-radius: 0 12px 12px 0;
+    padding: 16px 18px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+  }
+
+  .script + .script { margin-top: 14px; }
+
+  .script-label {
+    font-family: var(--body);
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 12px;
+  }
+
+  /* Objections: a pairing, not a sequence — no numbers. */
+  .objection {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+
+  .said {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--clay);
+    margin: 0 0 10px;
+  }
+
+  .reply { margin: 0; font-size: 14.5px; }
+
+  .reply em {
+    display: block;
+    margin-top: 10px;
+    font-style: normal;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* Launch checklist: genuinely ordered, so it is numbered. */
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
+
+  .steps li {
+    counter-increment: step;
+    position: relative;
+    padding: 0 0 20px 42px;
+    border-left: 2px solid var(--line);
+    margin-left: 13px;
+  }
+  .steps li:last-child { border-left-color: transparent; padding-bottom: 0; }
+
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: -14px;
+    top: -2px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--mono);
+    font-size: 12.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .steps strong { font-weight: 600; display: block; margin-bottom: 3px; }
+  .steps span { color: var(--muted); font-size: 14px; }
+
+  .price {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .price-tile {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+
+  .price-tile .amount {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: -0.02em;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .price-tile .what { font-size: 13px; color: var(--muted); }
+
+  .note {
+    background: var(--sage-soft);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+
+  .note.warn { background: var(--clay-soft); }
+
+  .note strong { font-weight: 600; }
+
+  .collect { list-style: none; padding: 0; margin: 0; }
+
+  .collect li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14.5px;
+    display: flex;
+    gap: 10px;
+  }
+  .collect li:last-child { border-bottom: none; }
+  .collect li::before { content: "—"; color: var(--saffron); }
+
+  footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  @media (max-width: 420px) {
+    .price { grid-template-columns: 1fr; }
+    .beat { grid-template-columns: 52px 1fr; gap: 10px; }
+    .ref-row { flex-direction: column; gap: 2px; }
+    .ref-value { text-align: left; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">Sotuv · SmartOrder</p>
+    <h1>Birinchi mijoz</h1>
+    <p class="standfirst">Nima yozish, nimani ko'rsatish va e'tirozga qanday javob berish — hammasi shu yerda. Mijoz bilan gaplashayotganda ochib turing.</p>
+  </header>
+
+  <section>
+    <h2>Qo'l ostidagi ma'lumot</h2>
+    <p class="section-note">Demoni ko'rsatishdan oldin serverni uyg'oting — birinchi ochilish 40 soniya olishi mumkin.</p>
+    <div class="refcard">
+      <div class="ref-row">
+        <span class="ref-label">Mini App</span>
+        <span class="ref-value">smartorder-miniapp.onrender.com</span>
+      </div>
+      <div class="ref-row">
+        <span class="ref-label">Admin panel</span>
+        <span class="ref-value">smartorder-admin.onrender.com</span>
+      </div>
+      <div class="ref-row">
+        <span class="ref-label">Kirish</span>
+        <span class="ref-value">admin · PizzaMania2026!</span>
+      </div>
+      <div class="ref-row">
+        <span class="ref-label">Uyg'otish</span>
+        <span class="ref-value">smartorder-backend-auaa.onrender.com/api/health</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Video: 45 soniya</h2>
+    <p class="section-note">Telefonda ekranni yozib oling. Yozishdan oldin admin paneldan biznes nomini mijoznikiga almashtiring — u o'z nomini ko'rsin.</p>
+    <div class="timeline">
+      <div class="beat">
+        <span class="beat-time">0:00</span>
+        <span class="beat-what">Botni ochasiz, <strong>/start</strong> yozasiz. Salom xabari va tugma chiqadi.</span>
+      </div>
+      <div class="beat">
+        <span class="beat-time">0:05</span>
+        <span class="beat-what">Tugmani bosasiz — menyu <strong>Telegram ichida</strong> ochiladi.</span>
+      </div>
+      <div class="beat">
+        <span class="beat-time">0:10</span>
+        <span class="beat-what">Katalogni sekin aylantirasiz. Kategoriyalar va <strong>chegirmali narxlar</strong> ko'rinsin.</span>
+      </div>
+      <div class="beat">
+        <span class="beat-time">0:20</span>
+        <span class="beat-what">Mahsulot bosasiz — pastda <strong>«Bunga mos qo'shimchalar»</strong> chiqadi. Bittasini qo'shasiz.</span>
+      </div>
+      <div class="beat">
+        <span class="beat-time">0:28</span>
+        <span class="beat-what">Savatga o'tib, telefon va manzil yozasiz, tasdiqlaysiz.</span>
+      </div>
+      <div class="beat">
+        <span class="beat-time">0:34</span>
+        <span class="beat-what">Telegram'ga xabar keladi: <strong>«Buyurtmangiz qabul qilindi»</strong>.</span>
+      </div>
+      <div class="beat peak">
+        <span class="beat-time">0:38</span>
+        <span class="beat-what">Admin panelni ochib holatni <strong>«Kuryerda»</strong> ga o'zgartirasiz — telefonga darhol xabar keladi. <strong>Videoning eng kuchli joyi shu.</strong></span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Birinchi xabar</h2>
+    <p class="section-note">Videoni ilova qilib yuboring. Uzun yozmang — videoni ko'rishadi.</p>
+
+    <p class="script-label">Yuboriladigan matn</p>
+    <div class="script">Assalomu alaykum! Men [BIZNES NOMI] uchun Telegram bot tayyorladim.
+
+Mijoz menyudan tanlaydi, telefon va manzilini yozadi — buyurtma sizga darhol tushadi. Izohlarda chalkashish, "qancha bo'ldi" degan yozishmalar kerak emas.
+
+Mana qanday ishlaydi 👇
+[VIDEO]
+
+Ko'rib chiqsangiz, bir og'iz fikringizni ayting — yoqdimi yoki yo'qmi.</div>
+
+    <p class="script-label" style="margin-top:22px">3 kundan keyin — javob bo'lmasa</p>
+    <div class="script">Assalomu alaykum! Yuborgan botimni ko'rib ulgurdingizmi?
+
+Agar hozir kerak bo'lmasa, xafa bo'lmayman — shunchaki bir og'iz yozib qo'ysangiz bas.</div>
+
+    <div class="note" style="margin-top:18px">
+      <strong>15 ta bizneslarga yuboring, 5 ta emas.</strong> Aksariyati javob bermaydi — bu normal va sizga aloqasi yo'q. 15 tadan 2-3 tasi qiziqsa, bu yaxshi natija.
+    </div>
+  </section>
+
+  <section>
+    <h2>E'tirozlarga javob</h2>
+    <p class="section-note">Yodlab olishingiz shart emas — shu yerdan o'qib bersangiz ham bo'ladi.</p>
+
+    <div class="objection">
+      <p class="said">«Qimmat ekan»</p>
+      <p class="reply">Tushunaman. Bir o'ylab ko'ring: bitta yo'qolgan buyurtma o'rtacha 60-70 ming so'm. Oyiga atigi to'rttasi izohlarda yo'qolsa — bot o'zini qoplaydi. Qolgani sof foyda.
+      <em>Narxni tushirmang. Buning o'rniga nima berayotganingizni takrorlang.</em></p>
+    </div>
+
+    <div class="objection">
+      <p class="said">«O'ylab ko'raman»</p>
+      <p class="reply">Albatta. Faqat bir savol — qaysi tomoni shubha tug'dirdi? Narxmi, yoki ishlashiga ishonchingiz komil emasmi? Aytsangiz, aniq javob beraman.
+      <em>«O'ylab ko'raman» — ko'pincha «savolim bor» degani. Savolini toping.</em></p>
+    </div>
+
+    <div class="objection">
+      <p class="said">«Menda Instagram bor, yetarli»</p>
+      <p class="reply">Instagram odam topish uchun zo'r. Lekin u sizga mijozlar ro'yxatini bermaydi — kim necha marta buyurtma qilgan, qancha pul sarflagan, nimani yoqtiradi. Bot buni o'zi yig'adi. Keyin shu bazaga aksiya yuborasiz.</p>
+    </div>
+
+    <div class="objection">
+      <p class="said">«Kim sozlab beradi? Men buni uddalay olmayman»</p>
+      <p class="reply">Hech narsa qilmaysiz. Men mahsulotlaringizni, narxlaringizni kiritaman, botni ishga tushiraman va sizga tayyor havolani beraman. Sizga faqat buyurtmalarni ko'rish qoladi — telefoningizdan.</p>
+    </div>
+
+    <div class="objection">
+      <p class="said">«Keyinroq, hozir vaqtim yo'q»</p>
+      <p class="reply">Sizdan vaqt ketmaydi — hammasini men qilaman, 1 kunda tayyor bo'ladi. Faqat menyu va narxlaringizni yuborsangiz bas.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Narx va to'lov</h2>
+    <div class="price">
+      <div class="price-tile">
+        <span class="amount">$200</span>
+        <span class="what">Birinchi mijoz — ishga tushirish, sozlash, birinchi oy xizmati</span>
+      </div>
+      <div class="price-tile">
+        <span class="amount">$25</span>
+        <span class="what">Keyingi oylar — server, yordam, o'zgartirishlar</span>
+      </div>
+    </div>
+
+    <div class="note" style="margin-top:14px">
+      <strong>Nega birinchisi arzon.</strong> Sizga pul emas, <strong>natija</strong> kerak: ishlayotgan mijoz, uning gapi, ekran rasmlari. Ikkinchisiga $300 deysiz.
+    </div>
+
+    <div class="note warn" style="margin-top:12px">
+      <strong>Server to'lovini o'zingiz to'lang.</strong> Oyiga $7 — mijozdan olgan $25 dan chiqadi. Mijozga xalqaro karta bilan to'lash qiyin, har oy so'rab yurish esa munosabatni buzadi.
+    </div>
+
+    <p style="margin-top:14px">To'lovni <strong>yarmini oldindan</strong> oling, qolganini bot ishga tushgach. Naqd, karta o'tkazmasi yoki Click/Payme — mijozga qulayi.</p>
+  </section>
+
+  <section>
+    <h2>«Ha» degandan keyin</h2>
+    <p class="section-note">Shu tartibda yuring — bir kunda tugaydi.</p>
+    <ol class="steps">
+      <li>
+        <strong>Ma'lumotini oling</strong>
+        <span>Menyu, narxlar, rasmlar, telefon, yetkazish narxi va hududi, ish vaqti.</span>
+      </li>
+      <li>
+        <strong>Bot yarating</strong>
+        <span>@BotFather → yangi bot → nom va username → tokenni saqlang.</span>
+      </li>
+      <li>
+        <strong>Baza oching</strong>
+        <span>Neon'da yangi baza — har bir mijozning ma'lumoti alohida turishi shart.</span>
+      </li>
+      <li>
+        <strong>Menga yozing</strong>
+        <span>Token, baza manzili va mijoz nomini bering — deployni birga qilamiz, ~40 daqiqa.</span>
+      </li>
+      <li>
+        <strong>Katalogni to'ldiring</strong>
+        <span>Admin paneldan mahsulot va rasmlarini kiritasiz.</span>
+      </li>
+      <li>
+        <strong>O'zingiz sinab ko'ring</strong>
+        <span>Test buyurtma bering, holatini o'zgartiring, xabar kelishini tekshiring. Mijozga faqat shundan keyin bering.</span>
+      </li>
+      <li>
+        <strong>Topshiring</strong>
+        <span>Bot havolasi, admin panel linki va parol. 10 daqiqada ko'rsatib bering — pul shu yerda olinadi.</span>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Mijozdan so'raladigan ro'yxat</h2>
+    <p class="section-note">Shuni nusxalab yuboring — o'zi to'ldirib beradi.</p>
+    <ul class="collect">
+      <li>Biznes nomi (botda ko'rinadigan)</li>
+      <li>Menyu: mahsulot nomi va narxi</li>
+      <li>Mahsulot rasmlari</li>
+      <li>Telefon raqami</li>
+      <li>Yetkazib berish narxi va qaysi hududlarga</li>
+      <li>Bepul yetkazish chegarasi (bo'lsa)</li>
+      <li>Minimal buyurtma summasi</li>
+      <li>Ish vaqti</li>
+    </ul>
+  </section>
+
+  <footer>
+    Server bepul tarifda 15 daqiqa tinch tursa uxlaydi va birinchi xabar ~40 soniya kechikadi. Mijoz to'lagandan keyin to'lovli tarifga o'tkazasiz — oyiga $7.
+  </footer>
+
+</div>
