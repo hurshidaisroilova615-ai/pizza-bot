@@ -61,13 +61,13 @@ export default function Categories() {
             <tbody>
               {categories.map((c) => (
                 <tr key={c.id}>
-                  <td style={{ fontSize: 20 }}>{c.icon}</td>
-                  <td>{c.name}</td>
-                  <td>{c._count?.products ?? 0}</td>
-                  <td>
+                  <td data-label="Ikon" style={{ fontSize: 20 }}>{c.icon}</td>
+                  <td data-label="Nomi">{c.name}</td>
+                  <td data-label="Mahsulotlar">{c._count?.products ?? 0}</td>
+                  <td data-label="Holati">
                     <span className={`status-pill ${c.isActive ? "done" : ""}`}>{c.isActive ? "Faol" : "Nofaol"}</span>
                   </td>
-                  <td style={{ display: "flex", gap: 8 }}>
+                  <td className="row-actions" style={{ display: "flex", gap: 8 }}>
                     <button
                       className="btn btn-outline"
                       onClick={() => {

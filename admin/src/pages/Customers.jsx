@@ -59,12 +59,14 @@ export default function Customers() {
             <tbody>
               {customers.map((c) => (
                 <tr key={c.id} className="clickable-row" onClick={() => setSelectedId(c.id)}>
-                  <td>{c.firstName || "—"} {c.lastName || ""}</td>
-                  <td>{c.phone || "—"}</td>
-                  <td>{c.ordersCount}</td>
-                  <td>{c.totalSpent.toLocaleString()}</td>
-                  <td>{c.lastOrderAt ? new Date(c.lastOrderAt).toLocaleDateString("uz-UZ") : "—"}</td>
-                  <td>{c.loyaltyPoints}</td>
+                  <td data-label="Ism">{c.firstName || "—"} {c.lastName || ""}</td>
+                  <td data-label="Telefon">{c.phone || "—"}</td>
+                  <td data-label="Buyurtmalar">{c.ordersCount}</td>
+                  <td data-label="Jami xarid">{c.totalSpent.toLocaleString()}</td>
+                  <td data-label="Oxirgi buyurtma">
+                    {c.lastOrderAt ? new Date(c.lastOrderAt).toLocaleDateString("uz-UZ") : "—"}
+                  </td>
+                  <td data-label="Bonus ball">{c.loyaltyPoints}</td>
                 </tr>
               ))}
             </tbody>

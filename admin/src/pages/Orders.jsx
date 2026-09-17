@@ -80,13 +80,15 @@ export default function Orders() {
             <tbody>
               {orders.map((order) => (
                 <tr key={order.id} className="clickable-row" onClick={() => setSelected(order)}>
-                  <td>#{order.id}</td>
-                  <td>{order.user?.firstName || "—"}</td>
-                  <td>{order.phone || order.user?.phone || "—"}</td>
-                  <td className="truncate-cell">{order.items.map((i) => `${i.name} x${i.quantity}`).join(", ")}</td>
-                  <td>{order.totalPrice.toLocaleString()}</td>
-                  <td>{new Date(order.createdAt).toLocaleString("uz-UZ")}</td>
-                  <td>
+                  <td data-label="#">#{order.id}</td>
+                  <td data-label="Mijoz">{order.user?.firstName || "—"}</td>
+                  <td data-label="Telefon">{order.phone || order.user?.phone || "—"}</td>
+                  <td data-label="Mahsulotlar" className="truncate-cell">
+                    {order.items.map((i) => `${i.name} x${i.quantity}`).join(", ")}
+                  </td>
+                  <td data-label="Jami">{order.totalPrice.toLocaleString()}</td>
+                  <td data-label="Sana">{new Date(order.createdAt).toLocaleString("uz-UZ")}</td>
+                  <td data-label="Holati">
                     <span className={`status-pill status-${order.status.toLowerCase()}`}>
                       {STATUS_LABELS[order.status]}
                     </span>

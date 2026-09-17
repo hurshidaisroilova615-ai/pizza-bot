@@ -64,16 +64,16 @@ export default function PromoCodes() {
             <tbody>
               {promoCodes.map((p) => (
                 <tr key={p.id}>
-                  <td className="mono">{p.code}</td>
-                  <td>{p.type === "PERCENTAGE" ? `${p.value}%` : p.value.toLocaleString()}</td>
-                  <td>{p.minOrderAmount.toLocaleString()}</td>
-                  <td>{p.usedCount}</td>
-                  <td>{p.usageLimit ?? "∞"}</td>
-                  <td>{p.expiresAt ? new Date(p.expiresAt).toLocaleDateString("uz-UZ") : "—"}</td>
-                  <td>
+                  <td data-label="Kod" className="mono">{p.code}</td>
+                  <td data-label="Chegirma">{p.type === "PERCENTAGE" ? `${p.value}%` : p.value.toLocaleString()}</td>
+                  <td data-label="Min. buyurtma">{p.minOrderAmount.toLocaleString()}</td>
+                  <td data-label="Ishlatilgan">{p.usedCount}</td>
+                  <td data-label="Limit">{p.usageLimit ?? "∞"}</td>
+                  <td data-label="Muddati">{p.expiresAt ? new Date(p.expiresAt).toLocaleDateString("uz-UZ") : "—"}</td>
+                  <td data-label="Holati">
                     <span className={`status-pill ${p.isActive ? "done" : ""}`}>{p.isActive ? "Faol" : "Nofaol"}</span>
                   </td>
-                  <td style={{ display: "flex", gap: 8 }}>
+                  <td className="row-actions" style={{ display: "flex", gap: 8 }}>
                     <button
                       className="btn btn-outline"
                       onClick={() => {

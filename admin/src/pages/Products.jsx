@@ -77,19 +77,19 @@ export default function Products() {
             <tbody>
               {products.map((product) => (
                 <tr key={product.id}>
-                  <td>
+                  <td data-label="Rasm">
                     <img className="thumb" src={product.imageUrl} alt={product.name} />
                   </td>
-                  <td>{product.name}</td>
-                  <td>{product.category?.name || "—"}</td>
-                  <td>{product.oldPrice ? product.oldPrice.toLocaleString() : "—"}</td>
-                  <td>{product.price.toLocaleString()}</td>
-                  <td>
+                  <td data-label="Nomi">{product.name}</td>
+                  <td data-label="Kategoriya">{product.category?.name || "—"}</td>
+                  <td data-label="Eski narx">{product.oldPrice ? product.oldPrice.toLocaleString() : "—"}</td>
+                  <td data-label="Narx">{product.price.toLocaleString()}</td>
+                  <td data-label="Holati">
                     <span className={`status-pill ${product.isAvailable ? "done" : ""}`}>
                       {product.isAvailable ? "Mavjud" : "Mavjud emas"}
                     </span>
                   </td>
-                  <td style={{ display: "flex", gap: 8 }}>
+                  <td className="row-actions" style={{ display: "flex", gap: 8 }}>
                     <button className="btn btn-outline" onClick={() => openEdit(product)}>
                       Tahrirlash
                     </button>

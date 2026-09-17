@@ -737,27 +737,156 @@ th {
   .layout {
     flex-direction: column;
   }
+
+  /* The navigation wraps onto as many rows as it needs: a single scrolling
+     row hid most sections off-screen with nothing to suggest they existed. */
   .sidebar {
     width: 100%;
     height: auto;
     position: static;
-    flex-direction: row;
-    overflow-x: auto;
-    padding: 12px;
+    flex-direction: column;
+    padding: 12px 12px 14px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
   }
+
+  .sidebar-logo {
+    padding: 0 2px 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
   .sidebar-nav {
     flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
   }
-  .sidebar-logout {
+
+  /* Compact pills: the navigation is a header here, not the page itself,
+     so it has to leave the content room to breathe. */
+  .sidebar-link {
+    padding: 6px 11px;
+    border: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 11.5px;
+    background: white;
+    gap: 0;
+  }
+
+  .sidebar-link .sidebar-icon {
     display: none;
   }
-  .main {
-    padding: 20px;
+
+  .sidebar-link.active {
+    background: var(--text);
+    color: white;
+    border-color: var(--text);
   }
+
+  .sidebar-logout {
+    margin: 8px 0 0;
+    align-self: flex-start;
+    padding: 6px 14px;
+    font-size: 11.5px;
+  }
+
+  .main {
+    padding: 18px 16px 48px;
+  }
+
+  .page-header h1 {
+    font-size: 20px;
+  }
+
+  .search-input {
+    min-width: 0;
+    width: 100%;
+  }
+
   .dashboard-grid-2 {
     grid-template-columns: 1fr;
   }
+
+  /* Each row becomes its own card. A seven-column table on a phone pushes
+     the total and the status off-screen — the two things an owner opens
+     the page to see. Column headings move onto each cell instead. */
+  .table-wrap {
+    border: none;
+    background: none;
+    border-radius: 0;
+  }
+
+  .table-wrap table,
+  .table-wrap tbody,
+  .table-wrap tr,
+  .table-wrap td {
+    display: block;
+    width: auto;
+  }
+
+  .table-wrap thead {
+    display: none;
+  }
+
+  .table-wrap tr {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+
+  .table-wrap td {
+    border: none;
+    padding: 5px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    text-align: right;
+  }
+
+  .table-wrap td::before {
+    content: attr(data-label);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    text-align: left;
+    flex-shrink: 0;
+  }
+
+  .table-wrap td.row-actions {
+    justify-content: flex-end;
+    padding-top: 10px;
+    margin-top: 6px;
+    border-top: 1px solid var(--border);
+  }
+
+  .table-wrap td.row-actions::before {
+    content: none;
+  }
+
+  /* Room is vertical here, so the item list wraps instead of being cut. */
+  .truncate-cell {
+    max-width: 62%;
+    text-align: right;
+    white-space: normal;
+    overflow: visible;
+  }
+
   .drawer {
     width: 100%;
+  }
+
+  .modal {
+    padding: 20px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
   }
 }
