@@ -62,6 +62,10 @@ router.get(
 
     res.set("Content-Type", asset.mimeType);
     res.set("Cache-Control", "public, max-age=31536000, immutable");
+    // The Mini App and admin panel are served from their own domains, and
+    // helmet defaults this to same-origin, which makes the browser refuse
+    // every <img> pointing here. These are deliberately public images.
+    res.set("Cross-Origin-Resource-Policy", "cross-origin");
     res.send(asset.data);
   })
 );
