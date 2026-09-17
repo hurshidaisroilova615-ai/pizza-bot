@@ -40,6 +40,30 @@ async function request(path, options = {}) {
   return res.json();
 }
 
+// Multipart, so it can't go through `request` — that one forces a JSON
+// content type, and the browser must set its own multipart boundary.
+export async function uploadImage(blob) {
+  const form = new FormData();
+  form.append("file", blob, "photo.jpg");
+
+  const token = getToken();
+  const res = await fetch(`${BASE_URL}/uploads`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    body: form,
+  });
+
+  if (res.status === 401) {
+    setToken(null);
+    onUnauthorized();
+  }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Rasm yuklashda xatolik");
+  }
+  return res.json();
+}
+
 export const api = {
   login: (username, password) =>
     request("/auth/login", { method: "POST", body: JSON.stringify({ username, password }) }),

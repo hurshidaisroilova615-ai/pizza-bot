@@ -42,6 +42,7 @@ const offersRouter = require("./routes/offers");
 const analyticsRouter = require("./routes/analytics");
 const settingsRouter = require("./routes/settings");
 const authRouter = require("./routes/auth");
+const uploadsRouter = require("./routes/uploads");
 
 const app = express();
 
@@ -109,6 +110,7 @@ app.use("/api/loyalty", loyaltyRouter);
 app.use("/api/offers", offersRouter);
 app.use("/api/analytics", analyticsRouter);
 app.use("/api/settings", settingsRouter);
+app.use("/api/uploads", uploadsRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: "Manzil topilmadi" });

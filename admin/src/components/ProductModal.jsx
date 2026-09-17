@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Modal from "./Modal";
+import ImageField from "./ImageField";
 
 export default function ProductModal({ product, categories, allProducts, onClose, onSave }) {
   const [form, setForm] = useState({
@@ -30,6 +31,10 @@ export default function ProductModal({ product, categories, allProducts, onClose
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (!form.imageUrl.trim()) {
+      alert("Mahsulot uchun rasm yuklang yoki havola kiriting");
+      return;
+    }
     setSaving(true);
     try {
       await onSave({
@@ -56,10 +61,7 @@ export default function ProductModal({ product, categories, allProducts, onClose
           <label>Tarkibi / tavsif (vergul bilan ajrating)</label>
           <textarea rows={2} value={form.description} onChange={(e) => update("description", e.target.value)} />
         </div>
-        <div className="form-group">
-          <label>Rasm URL</label>
-          <input value={form.imageUrl} onChange={(e) => update("imageUrl", e.target.value)} required />
-        </div>
+        <ImageField value={form.imageUrl} onChange={(url) => update("imageUrl", url)} />
         <div className="form-row">
           <div className="form-group">
             <label>Kategoriya</label>

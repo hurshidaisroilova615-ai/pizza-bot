@@ -351,6 +351,36 @@ th {
   margin-bottom: 14px;
 }
 
+.image-field {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.image-preview {
+  width: 84px;
+  height: 84px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.image-preview-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  color: var(--text-muted);
+}
+
+.image-field-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .chip-select {
   display: flex;
   flex-wrap: wrap;

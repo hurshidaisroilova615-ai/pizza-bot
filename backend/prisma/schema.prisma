@@ -53,7 +53,22 @@ model Settings {
   supportUsername       String?
   welcomeMessage        String?
   aboutText             String?
+  // Which revision of the bundled demo catalog has been applied. Lets a
+  // newer catalog ship on deploy without re-adding items the owner deleted.
+  catalogVersion        Int      @default(0)
   updatedAt             DateTime @updatedAt
+}
+
+// Product photos live in the database because free hosting tiers give the
+// service an ephemeral filesystem — anything written to disk disappears on
+// the next restart, while an external bucket would mean another account to
+// set up for every business we deploy for.
+model MediaAsset {
+  id        String   @id @default(cuid())
+  mimeType  String
+  size      Int
+  data      Bytes
+  createdAt DateTime @default(now())
 }
 
 model AdminUser {
