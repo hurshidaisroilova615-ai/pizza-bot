@@ -138,12 +138,16 @@ bot.onText(/\/orders/, async (msg) => {
   }
 });
 
+// Logs both outcomes: when a customer reports a missing notification, the
+// logs have to show whether the send was attempted at all, and to whom.
 async function notifySafe(chatId, text, opts) {
+  const preview = text.split("\n")[0].slice(0, 60);
   try {
     await bot.sendMessage(chatId, text, opts);
+    console.log(`📤 Telegram xabar yuborildi → ${chatId}: ${preview}`);
     return true;
   } catch (err) {
-    console.error("Bot xabar yuborishda xatolik:", err.message);
+    console.error(`❌ Telegram xabar yuborilmadi → ${chatId}: ${preview} — ${err.message}`);
     return false;
   }
 }

@@ -34,9 +34,16 @@ export default function Orders() {
   }, [statusFilter]);
 
   async function handleStatusChange(order, status) {
-    const updated = await api.updateOrderStatus(order.id, status);
-    setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
-    setSelected(updated);
+    try {
+      const updated = await api.updateOrderStatus(order.id, status);
+      setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
+      setSelected(updated);
+    } catch (err) {
+      // Without this the dropdown silently snapped back and the customer
+      // never got their notification, with nothing on screen to explain it.
+      alert(`Holatni o'zgartirib bo'lmadi: ${err.message}`);
+      load();
+    }
   }
 
   return (
