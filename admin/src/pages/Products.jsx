@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import ProductModal from "../components/ProductModal";
+import BulkImportModal from "../components/BulkImportModal";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [bulkOpen, setBulkOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
 
   function load() {
@@ -52,9 +54,14 @@ export default function Products() {
     <div>
       <div className="page-header">
         <h1>Mahsulotlar</h1>
-        <button className="btn btn-accent" onClick={openCreate}>
-          + Yangi mahsulot qo'shish
-        </button>
+        <div className="header-actions">
+          <button className="btn btn-outline" onClick={() => setBulkOpen(true)}>
+            📋 Menyuni ro'yxat bilan qo'shish
+          </button>
+          <button className="btn btn-accent" onClick={openCreate}>
+            + Yangi mahsulot
+          </button>
+        </div>
       </div>
 
       {loading && <p className="empty-note">Yuklanmoqda...</p>}
@@ -103,6 +110,8 @@ export default function Products() {
           </table>
         </div>
       )}
+
+      {bulkOpen && <BulkImportModal onClose={() => setBulkOpen(false)} onImported={load} />}
 
       {modalOpen && (
         <ProductModal

@@ -3,6 +3,7 @@ const { z } = require("zod");
 const prisma = require("../lib/prisma");
 const asyncHandler = require("../middleware/asyncHandler");
 const { requireAdmin } = require("../middleware/adminAuth");
+const { placeholderFor } = require("../lib/placeholderImage");
 
 const router = express.Router();
 
@@ -132,6 +133,74 @@ router.put(
       include: { category: true, recommendsTo: { include: { recommendedProduct: true } } },
     });
     res.json(serialize(product));
+  })
+);
+
+const bulkSchema = z.object({
+  items: z
+    .array(
+      z.object({
+        name: z.string().trim().min(1).max(120),
+        price: z.number().int().nonnegative(),
+        category: z.string().trim().max(60).optional(),
+        description: z.string().trim().max(2000).optional(),
+        oldPrice: z.number().int().nonnegative().nullable().optional(),
+      })
+    )
+    .min(1)
+    .max(300),
+});
+
+// Admin: create a whole menu in one go. Typing a shop's sixty dishes into
+// the form one at a time is the slowest part of setting a business up, so
+// this takes the list as it arrives from the owner. Missing categories are
+// created, and names already in the catalog are reported rather than
+// duplicated.
+router.post(
+  "/bulk",
+  requireAdmin,
+  asyncHandler(async (req, res) => {
+    const { items } = bulkSchema.parse(req.body);
+
+    const categoryNames = [...new Set(items.map((i) => i.category).filter(Boolean))];
+    const categories = new Map();
+    for (const name of categoryNames) {
+      const category = await prisma.category.upsert({
+        where: { name },
+        update: {},
+        create: { name },
+      });
+      categories.set(name, category.id);
+    }
+
+    const created = [];
+    const skipped = [];
+
+    for (const item of items) {
+      const exists = await prisma.product.findFirst({ where: { name: item.name } });
+      if (exists) {
+        skipped.push(item.name);
+        continue;
+      }
+      const product = await prisma.product.create({
+        data: {
+          name: item.name,
+          description: item.description || "",
+          imageUrl: placeholderFor(item.name, item.category),
+          price: item.price,
+          oldPrice: item.oldPrice ?? null,
+          categoryId: item.category ? categories.get(item.category) : null,
+        },
+      });
+      created.push(product.name);
+    }
+
+    res.status(201).json({
+      createdCount: created.length,
+      skippedCount: skipped.length,
+      skipped,
+      categoriesCreated: categoryNames.length,
+    });
   })
 );
 

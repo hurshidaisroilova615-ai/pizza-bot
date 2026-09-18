@@ -1,23 +1,12 @@
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
+const { placeholderImage } = require("../src/lib/placeholderImage");
 const prisma = new PrismaClient();
 
 // Bump when the bundled catalog below changes. A deploy applies a newer
 // revision once and records it, so shipping new demo items never re-adds
 // products the owner has deliberately deleted.
 const CATALOG_VERSION = 2;
-
-// Self-contained SVG so a product always renders something deliberate
-// instead of a broken image: the demo catalog ships without photographs,
-// and the owner replaces these by uploading their own from the admin panel.
-function placeholder(emoji, background) {
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600">` +
-    `<rect width="600" height="600" fill="${background}"/>` +
-    `<text x="300" y="300" font-size="240" text-anchor="middle" dominant-baseline="central">${emoji}</text>` +
-    `</svg>`;
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-}
 
 const CATEGORIES = [
   { name: "Kombo setlar", icon: "🍱", sortOrder: 0 },
@@ -354,7 +343,7 @@ async function seedCatalog() {
       data: {
         name: def.name,
         description: def.description,
-        imageUrl: placeholder(def.emoji, def.bg),
+        imageUrl: placeholderImage(def.emoji, def.bg),
         price: def.price,
         oldPrice: def.oldPrice ?? null,
         categoryId: categories[def.category]?.id,
