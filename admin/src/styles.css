@@ -5,6 +5,8 @@
   --text-muted: #8b8b93;
   --accent: #ff3b30;
   --accent-soft: #fff1f0;
+  --danger: #b3261e;
+  --danger-border: #f0c4c0;
   --border: #e7e7ea;
   --radius-lg: 18px;
   --radius-md: 12px;
@@ -154,6 +156,26 @@ a {
   background: white;
   border: 1px solid var(--border);
   color: var(--text);
+}
+
+/* The accent is already red, so a destructive action needs a deeper red of
+   its own to read as different rather than as the primary action. */
+.btn-danger {
+  background: var(--danger);
+  color: white;
+}
+
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* In the toolbar the same action should read as available, not alarming —
+   it only goes loud inside the confirmation. */
+.btn-outline.btn-danger {
+  background: var(--surface);
+  border: 1px solid var(--danger-border);
+  color: var(--danger);
 }
 
 /* ---------- Table ---------- */

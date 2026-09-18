@@ -1,0 +1,53 @@
+import { useState } from "react";
+import Modal from "./Modal";
+import { api } from "./../api";
+
+// Emptying the menu is how the bot is handed to a different business, so it
+// is a normal step rather than an accident — but it is still irreversible,
+// which is why the count is spelled out before the button is pressed.
+export default function ClearCatalogModal({ productCount, categoryCount, onClose, onCleared }) {
+  const [working, setWorking] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleClear() {
+    setError("");
+    setWorking(true);
+    try {
+      await api.clearCatalog();
+      onCleared();
+      onClose();
+    } catch (err) {
+      setError(err.message);
+      setWorking(false);
+    }
+  }
+
+  return (
+    <Modal title="Katalogni tozalash" onClose={onClose}>
+      <p style={{ marginTop: 0 }}>
+        <strong>{productCount} ta mahsulot</strong> va bo'sh qolgan kategoriyalar o'chiriladi
+        {categoryCount > 0 ? ` (hozir ${categoryCount} ta kategoriya bor)` : ""}. Buni qaytarib
+        bo'lmaydi.
+      </p>
+      <p className="muted">
+        Eski buyurtmalar joyida qoladi — har bir buyurtmada mahsulot nomi va narxi alohida
+        saqlangan.
+      </p>
+      <p className="muted">
+        Shundan keyin yangi menyuni <strong>«Menyuni ro'yxat bilan qo'shish»</strong> orqali
+        qo'yasiz.
+      </p>
+
+      {error && <p className="form-error">{error}</p>}
+
+      <div className="modal-actions">
+        <button type="button" className="btn btn-outline" onClick={onClose} disabled={working}>
+          Bekor qilish
+        </button>
+        <button type="button" className="btn btn-danger" onClick={handleClear} disabled={working}>
+          {working ? "O'chirilmoqda..." : `${productCount} ta mahsulotni o'chirish`}
+        </button>
+      </div>
+    </Modal>
+  );
+}

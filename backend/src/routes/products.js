@@ -2,6 +2,8 @@ const express = require("express");
 const { z } = require("zod");
 const prisma = require("../lib/prisma");
 const asyncHandler = require("../middleware/asyncHandler");
+const { OWNER_MANAGED_CATALOG } = require("../lib/catalog");
+const { invalidateSettingsCache } = require("../lib/settings");
 const { requireAdmin } = require("../middleware/adminAuth");
 const { placeholderFor } = require("../lib/placeholderImage");
 
@@ -210,6 +212,39 @@ router.delete(
   asyncHandler(async (req, res) => {
     await prisma.product.delete({ where: { id: Number(req.params.id) } });
     res.json({ success: true });
+  })
+);
+
+// Handing the bot to a different business starts with emptying the old
+// menu, and doing that one product at a time is the slowest part of the
+// job. Past orders survive intact: every order item keeps its own copy of
+// the name and price it was bought at, so only the link to the product is
+// cleared.
+router.delete(
+  "/",
+  requireAdmin,
+  asyncHandler(async (req, res) => {
+    const result = await prisma.$transaction(async (tx) => {
+      await tx.orderItem.updateMany({
+        where: { productId: { not: null } },
+        data: { productId: null },
+      });
+
+      const products = await tx.product.deleteMany({});
+      // Categories left without products would otherwise show up as empty
+      // tabs in the new business's Mini App.
+      const categories = await tx.category.deleteMany({ where: { products: { none: {} } } });
+
+      await tx.settings.update({
+        where: { id: 1 },
+        data: { catalogVersion: OWNER_MANAGED_CATALOG },
+      });
+
+      return { deletedProducts: products.count, deletedCategories: categories.count };
+    });
+
+    invalidateSettingsCache();
+    res.json(result);
   })
 );
 

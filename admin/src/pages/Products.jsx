@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api";
 import ProductModal from "../components/ProductModal";
 import BulkImportModal from "../components/BulkImportModal";
+import ClearCatalogModal from "../components/ClearCatalogModal";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -9,6 +10,7 @@ export default function Products() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [bulkOpen, setBulkOpen] = useState(false);
+  const [clearOpen, setClearOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
 
   function load() {
@@ -55,6 +57,11 @@ export default function Products() {
       <div className="page-header">
         <h1>Mahsulotlar</h1>
         <div className="header-actions">
+          {products.length > 0 && (
+            <button className="btn btn-outline btn-danger" onClick={() => setClearOpen(true)}>
+              Katalogni tozalash
+            </button>
+          )}
           <button className="btn btn-outline" onClick={() => setBulkOpen(true)}>
             📋 Menyuni ro'yxat bilan qo'shish
           </button>
@@ -112,6 +119,15 @@ export default function Products() {
       )}
 
       {bulkOpen && <BulkImportModal onClose={() => setBulkOpen(false)} onImported={load} />}
+
+      {clearOpen && (
+        <ClearCatalogModal
+          productCount={products.length}
+          categoryCount={categories.length}
+          onClose={() => setClearOpen(false)}
+          onCleared={load}
+        />
+      )}
 
       {modalOpen && (
         <ProductModal
