@@ -291,6 +291,15 @@
 
   .price-tile .what { font-size: 13px; color: var(--muted); }
 
+  .price-tile .tile-head {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    display: block;
+    margin-bottom: 4px;
+  }
+
   .note {
     background: var(--sage-soft);
     border-radius: 12px;
@@ -355,9 +364,37 @@
         <span class="ref-value">admin · PizzaMania2026!</span>
       </div>
       <div class="ref-row">
+        <span class="ref-label">Kirishni qaytarib olish</span>
+        <span class="ref-value">Sozlamalar → Admin paroli</span>
+      </div>
+      <div class="ref-row">
         <span class="ref-label">Uyg'otish</span>
         <span class="ref-value">smartorder-backend-auaa.onrender.com/api/health</span>
       </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Kimdan boshlash</h2>
+    <p class="section-note">Birinchi mijoz eng ko'p pul to'laydigani emas — sizga <strong>isbot</strong> beradigani.</p>
+
+    <div class="price">
+      <div class="price-tile">
+        <span class="tile-head">Oshdagi kafe</span>
+        <span class="what">Kirib borasiz, telefoningizda ko'rsatasiz. Taxminan 5 ta kafedan 1 tasi rozi bo'ladi. Beradigani: video, egasining tavsiyasi, haqiqiy raqamlar.</span>
+      </div>
+      <div class="price-tile">
+        <span class="tile-head">O'zbekistonga sovuq xabar</span>
+        <span class="what">Tanimagan qirg'iz raqamidan kelgan xabar. Taxminan 50 ta kontaktdan 1 tasi. Isbotsiz — juda og'ir.</span>
+      </div>
+    </div>
+
+    <div class="note" style="margin-top:14px">
+      <strong>Tartib shunday:</strong> avval Oshdan bitta ishlayotgan mijoz → undan video, uning gapi va raqamlar → shundan keyin O'zbekistonga yozish. O'shanda xabaringiz butunlay boshqacha o'qiladi va $500 so'rash mumkin bo'ladi.
+    </div>
+
+    <div class="note warn" style="margin-top:12px">
+      <strong>8 ta javobsiz xabar — muvaffaqiyatsizlik emas.</strong> Sovuq yozishmada 10 tadan 1-2 tasi javob beradi. Xulosa chiqarish uchun kamida 30 ta kerak. Bu sizga emas, raqamlarga bog'liq.
     </div>
   </section>
 
@@ -398,25 +435,44 @@
 
   <section>
     <h2>Birinchi xabar</h2>
-    <p class="section-note">Videoni ilova qilib yuboring. Uzun yozmang — videoni ko'rishadi.</p>
+    <p class="section-note">Birinchi xabarda hech narsa sotmaysiz va video ham yubormaysiz. Faqat savol berasiz — odam javob berishi uchun.</p>
 
-    <p class="script-label">Yuboriladigan matn</p>
-    <div class="script">Assalomu alaykum! Men [BIZNES NOMI] uchun Telegram bot tayyorladim.
+    <p class="script-label">1 — Savol</p>
+    <div class="script">Assalomu alaykum! Kechirasiz bezovta qilsam.
 
-Mijoz menyudan tanlaydi, telefon va manzilini yozadi — buyurtma sizga darhol tushadi. Izohlarda chalkashish, "qancha bo'ldi" degan yozishmalar kerak emas.
+Buyurtmalaringizni hozir qanday qabul qilasiz — telefon orqalimi, Instagram izohlaridanmi?</div>
 
-Mana qanday ishlaydi 👇
-[VIDEO]
+    <div class="note" style="margin-top:12px">
+      <strong>Buni ovozli xabar qilib yuboring.</strong> Matn reklamaga o'xshaydi, ovoz — tirik odamga. 10 soniya yetarli: ismingiz va savolingiz.
+    </div>
 
-Ko'rib chiqsangiz, bir og'iz fikringizni ayting — yoqdimi yoki yo'qmi.</div>
+    <p class="script-label" style="margin-top:22px">2 — Javob berdi: muammosini so'rang</p>
+    <div class="script">Rahmat! Bitta savol — buyurtma chalkashib yoki unutilib qolgan payti bo'lganmi?</div>
 
-    <p class="script-label" style="margin-top:22px">3 kundan keyin — javob bo'lmasa</p>
-    <div class="script">Assalomu alaykum! Yuborgan botimni ko'rib ulgurdingizmi?
+    <div class="note" style="margin-top:12px">
+      Javobidagi so'zlarni eslab qoling — «chalkashib ketadi», «bandmiz», «unutib qo'yamiz». Keyingi xabarda <strong>aynan o'sha so'zlarni</strong> takrorlaysiz.
+    </div>
 
-Agar hozir kerak bo'lmasa, xafa bo'lmayman — shunchaki bir og'iz yozib qo'ysangiz bas.</div>
+    <p class="script-label" style="margin-top:22px">3 — Endi video</p>
+    <div class="script">Aynan shuni hal qiladigan narsa tayyorladim. Mijoz menyudan o'zi tanlaydi, telefon va manzilini o'zi yozadi — buyurtma sizga tayyor holda tushadi.
 
-    <div class="note" style="margin-top:18px">
-      <strong>15 ta bizneslarga yuboring, 5 ta emas.</strong> Aksariyati javob bermaydi — bu normal va sizga aloqasi yo'q. 15 tadan 2-3 tasi qiziqsa, bu yaxshi natija.
+Mana, 45 soniya 👇
+[VIDEO]</div>
+
+    <p class="script-label" style="margin-top:22px">4 — Sinov taklifi</p>
+    <div class="script">Shunday qilaylik: 3 kun bepul sinab ko'ring.
+
+Menyungizni yuborsangiz o'zim sozlab, tayyor holda beraman. Yoqmasa — hech qanday majburiyat yo'q, pul ham so'ramayman.
+
+Rozimisiz?</div>
+
+    <p class="script-label" style="margin-top:22px">Javob bo'lmasa — 3 kundan keyin</p>
+    <div class="script">Assalomu alaykum! Yozganimni ko'rib ulgurdingizmi?
+
+Agar hozir kerak bo'lmasa, xafa bo'lmayman — bir og'iz yozib qo'ysangiz bas.</div>
+
+    <div class="note warn" style="margin-top:18px">
+      <strong>3 kunlik sinovni oldindan taklif qilmang.</strong> Javob bermagan odamga bot sozlash — 40 daqiqa bekorga ketgan vaqt. Sinov faqat 2- va 3-qadamdan o'tgan odamga beriladi.
     </div>
   </section>
 
@@ -474,6 +530,12 @@ Rozimisiz?</div>
     <p class="section-note">Yodlab olishingiz shart emas — shu yerdan o'qib bersangiz ham bo'ladi.</p>
 
     <div class="objection">
+      <p class="said">«Sizni tanimayman, ishonolmayman»</p>
+      <p class="reply">To'g'ri aytasiz, tanimaysiz. Shuning uchun pul so'ramayapman — 3 kun bepul ishlatib ko'ring. Yoqmasa to'xtatamiz, sizdan hech narsa ketmaydi.
+      <em>Bahslashmang. Uning haqligini tan olganingiz ishonchni oshiradi.</em></p>
+    </div>
+
+    <div class="objection">
       <p class="said">«Qimmat ekan»</p>
       <p class="reply">Tushunaman. Bir o'ylab ko'ring: bitta yo'qolgan buyurtma o'rtacha 60-70 ming so'm. Oyiga atigi to'rttasi izohlarda yo'qolsa — bot o'zini qoplaydi. Qolgani sof foyda.
       <em>Narxni tushirmang. Buning o'rniga nima berayotganingizni takrorlang.</em></p>
@@ -505,17 +567,21 @@ Rozimisiz?</div>
     <h2>Narx va to'lov</h2>
     <div class="price">
       <div class="price-tile">
-        <span class="amount">$200</span>
-        <span class="what">Birinchi mijoz — ishga tushirish, sozlash, birinchi oy xizmati</span>
+        <span class="amount">$100</span>
+        <span class="what">Oshdagi birinchi mijoz — ishga tushirish va birinchi oy</span>
       </div>
       <div class="price-tile">
-        <span class="amount">$25</span>
-        <span class="what">Keyingi oylar — server, yordam, o'zgartirishlar</span>
+        <span class="amount">$300</span>
+        <span class="what">Isbot qo'lingizda bo'lgach — O'zbekistonlik mijozga</span>
       </div>
     </div>
 
     <div class="note" style="margin-top:14px">
-      <strong>Nega birinchisi arzon.</strong> Sizga pul emas, <strong>natija</strong> kerak: ishlayotgan mijoz, uning gapi, ekran rasmlari. Ikkinchisiga $300 deysiz.
+      <strong>Nega birinchisi arzon.</strong> Undan pul emas, <strong>natija</strong> olasiz: ishlayotgan bot videosi, egasining «zo'r ishlayapti» degan gapi va raqamlar («3 kunda 40 ta buyurtma»). Shu uchtasi keyingi mijozga $300 so'rash huquqini beradi.
+    </div>
+
+    <div class="note" style="margin-top:12px">
+      <strong>Oylik xizmat — $25.</strong> Server, yordam va o'zgartirishlar shunga kiradi. Birinchi oy narxga qo'shilgan.
     </div>
 
     <div class="note warn" style="margin-top:12px">
