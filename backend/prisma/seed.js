@@ -80,7 +80,7 @@ const PRODUCTS = [
     bg: "#ffe9e6",
   },
   {
-    name: "To'rt pishloq",
+    name: "To'rt pishloqli pizza",
     description: "Mozzarella, cheddar, parmezan, gorgonzola, qaymoq sousi",
     category: "Pizza",
     price: 69000,
@@ -262,7 +262,7 @@ const PRODUCTS = [
 const CROSS_SELL = {
   Margarita: ["Kola 0.5L", "Sarimsoqli sous", "Fri kartoshka"],
   Peperoni: ["Kola 0.5L", "Sarimsoqli sous", "Fri kartoshka"],
-  "To'rt pishloq": ["Kola 0.5L", "Sarimsoqli sous"],
+  "To'rt pishloqli pizza": ["Kola 0.5L", "Sarimsoqli sous"],
   "BBQ tovuqli pizza": ["Kola 0.5L", "Fri kartoshka"],
   "Qazili pizza": ["Kola 0.5L", "Sarimsoqli sous"],
   Chizburger: ["Fri kartoshka", "Kola 0.5L"],
