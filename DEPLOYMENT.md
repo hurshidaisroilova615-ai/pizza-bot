@@ -103,3 +103,29 @@ Kodni o'zgartirmasdan boshqa biznesga (burger, sushi, kiyim, kosmetika...) mosla
 4. Kerak bo'lsa bot username/rasmini @BotFather orqali, Mini App logotipini esa Sozlamalar'dagi "Logo URL" orqali o'zgartiring.
 
 Database schema, API va frontend componentlarning barchasi shu konfiguratsiyaga qarab ishlaydi — "pizza" degan so'z kodning hech bir joyida qattiq yozilmagan (faqat demo seed ma'lumotlarida, ular ixtiyoriy).
+
+## Mijozga 2–3 kunlik sinov berish
+
+Sinov davrida mijoz botni o'z biznesida ishlatib ko'radi. Ikki xil yo'l bor va
+ular bir-biridan jiddiy farq qiladi.
+
+**A) Mijozga alohida bot (tavsiya etiladi).** @BotFather'da yangi bot ochiladi,
+Render'da yangi backend + yangi baza yaratiladi, katalog mijozning menyusi bilan
+to'ldiriladi. Mijozning buyurtmalari va mijozlar bazasi butunlay o'zinikida
+qoladi; sinovdan keyin xizmat davom etsa hech narsani ko'chirish shart emas,
+to'xtatilsa xizmat o'chiriladi. Bitta bot sozlash ~40 daqiqa.
+
+**B) Demo botni vaqtincha berish.** Tez, lekin bir vaqtning o'zida faqat
+**bitta** mijozga: biznes nomi, katalog va buyurtmalar butun bot uchun umumiy,
+ya'ni ikki mijoz bir vaqtda sinasa ikkalasi bir xil menyuni ko'radi. Sinov
+tugagach demo katalogini qaytadan tiklashga to'g'ri keladi.
+
+Har ikki holatda ham admin panelga kirish mijozga beriladi. Sinov tugagandan
+so'ng kirishni qaytarib olish uchun: **Admin panel → Sozlamalar → Admin paroli**
+bo'limidan parolni almashtiring. Parol o'zgargan zahoti eski parol bilan
+olingan barcha sessiyalar bekor bo'ladi — mijozning ochiq turgan brauzeri ham
+darhol chiqib ketadi.
+
+Sinov davrida `KEEP_AWAKE=true` bo'lgani ma'qul: bepul Render xizmati 15 daqiqa
+harakatsizlikdan keyin uxlab qoladi va birinchi buyurtma ~50 soniya kutadi,
+mijoz esa buni "ishlamayapti" deb tushunadi.

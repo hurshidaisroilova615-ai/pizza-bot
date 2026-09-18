@@ -68,6 +68,12 @@ export const api = {
   login: (username, password) =>
     request("/auth/login", { method: "POST", body: JSON.stringify({ username, password }) }),
 
+  changePassword: (currentPassword, newPassword) =>
+    request("/auth/password", {
+      method: "PUT",
+      body: JSON.stringify({ currentPassword, newPassword }),
+    }),
+
   getSummary: () => request("/analytics/summary"),
 
   getOrders: (status) => request(`/orders${status ? `?status=${status}` : ""}`),

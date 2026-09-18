@@ -957,4 +957,10 @@ th {
     flex-direction: column;
     gap: 0;
   }
+
+  /* Stacked fields still share the row's width otherwise, which leaves the
+     inputs a third of the screen wide on a phone. */
+  .form-row > .form-group {
+    width: 100%;
+  }
 }

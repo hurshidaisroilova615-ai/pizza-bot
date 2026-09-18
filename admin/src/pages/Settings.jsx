@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
+import ChangePasswordForm from "../components/ChangePasswordForm";
 
 export default function Settings({ onBusinessNameChange }) {
   const [form, setForm] = useState(null);
@@ -185,6 +186,8 @@ export default function Settings({ onBusinessNameChange }) {
           </button>
         </div>
       </form>
+
+      <ChangePasswordForm />
     </div>
   );
 }
