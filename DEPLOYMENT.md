@@ -129,3 +129,38 @@ darhol chiqib ketadi.
 Sinov davrida `KEEP_AWAKE=true` bo'lgani ma'qul: bepul Render xizmati 15 daqiqa
 harakatsizlikdan keyin uxlab qoladi va birinchi buyurtma ~50 soniya kutadi,
 mijoz esa buni "ishlamayapti" deb tushunadi.
+
+## Bir nechta mijozga bir vaqtda demo qilish
+
+Har bir mijozga alohida **bot + backend + baza** kerak, lekin Mini App va
+admin panelni qaytadan deploy qilish shart emas — bitta deploy hammasiga
+xizmat qiladi. Backend manzili havolada beriladi:
+
+```
+Mini App URL (@BotFather'da):
+https://smartorder-miniapp.onrender.com/?api=https://MIJOZ-backend.onrender.com/api
+
+Admin panel (mijozga beriladigan havola):
+https://smartorder-admin.onrender.com/?api=https://MIJOZ-backend.onrender.com/api
+```
+
+Havola bir marta ochilsa manzil eslab qolinadi, keyin parametrsiz ham
+ishlayveradi. Xavfsizlik uchun faqat `onrender.com` manzillari qabul
+qilinadi. Admin sessiyasi har bir backend uchun alohida saqlanadi, shuning
+uchun bir telefondan bir nechta mijoz panelini ochib turish mumkin.
+
+**Yangi mijoz uchun qadamlar (~30 daqiqa):**
+
+1. @BotFather → yangi bot → token
+2. Neon'da o'sha loyihada yangi **database** (yangi loyiha ochish shart emas)
+3. Render → New Web Service → shu repozitoriy → `BOT_TOKEN`, `DATABASE_URL`,
+   `JWT_SECRET`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`
+4. Admin panelga yuqoridagi `?api=` havolasi bilan kiring → Sozlamalar →
+   biznes nomi → Mahsulotlar → menyuni ro'yxat bilan qo'shish
+5. @BotFather → Mini App URL'ni yuqoridagidek qilib qo'ying
+
+**Bepul tarif chegarasi:** Render'da barcha xizmatlar uchun oyiga 750 soat
+beriladi va xizmat 15 daqiqa harakatsizlikdan keyin uxlaydi. Shuning uchun
+bir vaqtda 4–5 ta demo backend bemalol sig'adi, lekin `KEEP_AWAKE=true`ni
+faqat hozir ko'rsatayotgan bittasida yoqing — u xizmatni uxlatmaydi va
+soatlarni tez yeydi.

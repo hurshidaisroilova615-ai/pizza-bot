@@ -1,6 +1,9 @@
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+import { resolveApiBase } from "./apiBase";
+const BASE_URL = resolveApiBase();
 
-const TOKEN_KEY = "admin_token";
+// Scoped to the backend it came from, so switching between two clients'
+// panels on the same device does not carry one's session into the other.
+const TOKEN_KEY = `admin_token:${BASE_URL}`;
 
 export function getToken() {
   return localStorage.getItem(TOKEN_KEY);
