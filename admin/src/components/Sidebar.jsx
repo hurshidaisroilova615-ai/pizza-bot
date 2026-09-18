@@ -34,6 +34,9 @@ export default function Sidebar({ businessName }) {
       <button className="sidebar-logout" onClick={logout}>
         Chiqish
       </button>
+      <p className="sidebar-build" title="Shu nusxa qachon yig'ilgan">
+        Versiya: {__BUILD_TIME__}
+      </p>
     </aside>
   );
 }
