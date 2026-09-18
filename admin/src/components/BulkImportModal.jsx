@@ -1,49 +1,15 @@
 import { useMemo, useState } from "react";
 import Modal from "./Modal";
 import { api } from "../api";
+import { parseMenu } from "../lib/parseMenu";
 
-const EXAMPLE = `Margarita | 49000 | Pizza
-Peperoni | 59000 | Pizza
-Chizburger | 32000 | Burgerlar
-Tovuqli lavash | 30000 | Lavash
-Kola 0.5L | 12000 | Ichimliklar`;
+const EXAMPLE = `Pitsalar
+Margarita 45 000
+Pepperoni 55 000
 
-// Owners send their menu as a plain list, so accept it in that shape: one
-// dish per line, fields split by | or by tab when it comes out of a
-// spreadsheet. Anything unparseable is shown back rather than dropped.
-function parseMenu(text) {
-  const rows = [];
-  const problems = [];
-
-  text
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .forEach((line, index) => {
-      const parts = line.split(/\s*[|\t]\s*/);
-      const [name, rawPrice, category, description] = parts;
-
-      if (!name || !rawPrice) {
-        problems.push({ line: index + 1, text: line, why: "narx ko'rsatilmagan" });
-        return;
-      }
-
-      const price = Number(String(rawPrice).replace(/[^\d]/g, ""));
-      if (!price) {
-        problems.push({ line: index + 1, text: line, why: "narxni o'qib bo'lmadi" });
-        return;
-      }
-
-      rows.push({
-        name,
-        price,
-        category: category || undefined,
-        description: description || undefined,
-      });
-    });
-
-  return { rows, problems };
-}
+Ichimliklar
+Kola 0.5L 12000
+Choy 5000`;
 
 export default function BulkImportModal({ onClose, onImported }) {
   const [text, setText] = useState("");
@@ -93,8 +59,9 @@ export default function BulkImportModal({ onClose, onImported }) {
   return (
     <Modal title="Menyuni ro'yxat bilan qo'shish" onClose={onClose} wide>
       <p className="muted" style={{ marginTop: 0 }}>
-        Har bir taom alohida qatorda. Tartib: <strong>Nomi | narx | kategoriya</strong>. Kategoriya
-        ixtiyoriy — yo'q kategoriyalar o'zi yaratiladi.
+        Menyuni bor holicha qo'ying — har bir taom alohida qatorda, narxi qator oxirida. Narxsiz
+        qator kategoriya deb olinadi va undan keyingi taomlar shu kategoriyaga tushadi. Yo'q
+        kategoriyalar o'zi yaratiladi.
       </p>
 
       <div className="form-group">
