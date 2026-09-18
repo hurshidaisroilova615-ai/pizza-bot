@@ -136,6 +136,26 @@ async function ensureDefaultAdmin() {
   console.log(`✅ Boshlang'ich admin foydalanuvchi yaratildi: ${username}`);
 }
 
+// A free instance sleeps after fifteen idle minutes, and the first visitor
+// then waits the better part of a minute for it to wake — long enough that
+// someone being shown the bot for the first time assumes it is broken.
+// Requesting our own health endpoint counts as traffic and holds it open.
+// Opt-in: it consumes the free tier's monthly instance hours, which is
+// worth it while a demo is being shown around and not otherwise.
+function startKeepAwake() {
+  const base = process.env.BOT_WEBHOOK_URL || process.env.RENDER_EXTERNAL_URL;
+  if (process.env.KEEP_AWAKE !== "true" || !base) return;
+
+  const TEN_MINUTES = 10 * 60 * 1000;
+  setInterval(() => {
+    fetch(`${base}/api/health`).catch((err) =>
+      console.error("Keep-awake so'rovi muvaffaqiyatsiz:", err.message)
+    );
+  }, TEN_MINUTES).unref();
+
+  console.log(`⏰ Server uyg'oq tutiladi (har 10 daqiqada ${base}/api/health)`);
+}
+
 const PORT = process.env.PORT || 4000;
 
 ensureDefaultAdmin()
@@ -144,6 +164,7 @@ ensureDefaultAdmin()
     app.listen(PORT, () => {
       console.log(`✅ Backend server http://localhost:${PORT} manzilida ishga tushdi`);
       console.log(`🤖 Telegram bot ${USE_WEBHOOK ? "webhook" : "polling"} rejimida ishlamoqda`);
+      startKeepAwake();
     });
   });
 

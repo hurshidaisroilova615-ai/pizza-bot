@@ -44,6 +44,10 @@ services:
         sync: false
       - key: ADMIN_CHAT_IDS
         sync: false
+      # Set to "true" while showing the bot to prospects, so a free
+      # instance doesn't sleep between demos. Costs monthly instance hours.
+      - key: KEEP_AWAKE
+        sync: false
 
   - type: web
     name: smartorder-miniapp
