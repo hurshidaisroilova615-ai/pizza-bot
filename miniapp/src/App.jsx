@@ -6,7 +6,8 @@ import Catalog from "./pages/Catalog";
 import Cart from "./pages/Cart";
 import Profile from "./pages/Profile";
 import { CartProvider, useCart } from "./context/CartContext";
-import { SettingsProvider, useSettings } from "./context/SettingsContext";
+import { SettingsProvider, useSettings, useSettingsStatus } from "./context/SettingsContext";
+import WakeScreen from "./components/WakeScreen";
 import { api } from "./api";
 import { initTelegram, getTelegramUser } from "./telegram";
 
@@ -43,10 +44,15 @@ function AppContent({ telegramUser }) {
 
 function ThemedApp({ children }) {
   const settings = useSettings();
+  const { loaded, failed } = useSettingsStatus();
+
   useEffect(() => {
+    if (!loaded) return;
     document.documentElement.style.setProperty("--accent", settings.primaryColor);
     document.title = settings.businessName;
-  }, [settings.primaryColor, settings.businessName]);
+  }, [loaded, settings.primaryColor, settings.businessName]);
+
+  if (!loaded) return <WakeScreen failed={failed} />;
   return children;
 }
 

@@ -1038,3 +1038,51 @@ button {
 .tracker-line.done {
   background: var(--accent);
 }
+
+/* ---------- Wake screen ---------- */
+/* Shown while the first request is in flight. Deliberately unbranded: the
+   business name has not arrived yet, and guessing it wrongly is worse than
+   showing none. */
+.wake-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 32px 28px;
+  text-align: center;
+  background: var(--bg);
+}
+
+.wake-spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  animation: wakeSpin 0.9s linear infinite;
+}
+
+@keyframes wakeSpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wake-spinner { animation-duration: 3s; }
+}
+
+.wake-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.wake-note {
+  margin: 0;
+  max-width: 34ch;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}

@@ -3,26 +3,67 @@ import { getInitData, getTelegramUser } from "./telegram";
 
 const BASE_URL = resolveApiBase();
 
+// A sleeping free instance does not answer the first request that wakes it:
+// it may hang, or the platform may answer 502 while the container starts.
+// Retrying a read a few times is the difference between a customer seeing
+// the menu a moment later and deciding the shop's bot is broken. Only reads
+// are retried — an order must never be placed twice.
+// A cold start on a free instance runs to about half a minute, so the
+// window is generous: better a customer waits than sees an empty shop.
+const RETRY_WINDOW_MS = 60000;
+const RETRY_DELAYS = [1000, 2000, 4000];
+
+function retryDelay(attempt) {
+  return RETRY_DELAYS[attempt] ?? 8000;
+}
+
+function isRetriable(status) {
+  return status === 502 || status === 503 || status === 504;
+}
+
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function request(path, options = {}) {
   const telegramUser = getTelegramUser();
-  const res = await fetch(`${BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      "X-Telegram-Init-Data": getInitData(),
-      ...options.headers,
-    },
-    body:
-      options.body && typeof options.body === "string"
-        ? withFallbackUser(options.body, telegramUser)
-        : options.body,
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || "So'rovda xatolik yuz berdi");
+  const isRead = !options.method || options.method === "GET";
+  const startedAt = Date.now();
+  const mayRetry = () => isRead && Date.now() - startedAt < RETRY_WINDOW_MS;
+
+  for (let attempt = 0; ; attempt++) {
+    let res;
+    try {
+      res = await fetch(`${BASE_URL}${path}`, {
+        ...options,
+        headers: {
+          "Content-Type": "application/json",
+          "X-Telegram-Init-Data": getInitData(),
+          ...options.headers,
+        },
+        body:
+          options.body && typeof options.body === "string"
+            ? withFallbackUser(options.body, telegramUser)
+            : options.body,
+      });
+    } catch (networkError) {
+      if (mayRetry()) {
+        await wait(retryDelay(attempt));
+        continue;
+      }
+      throw networkError;
+    }
+
+    if (!res.ok) {
+      if (isRetriable(res.status) && mayRetry()) {
+        await wait(retryDelay(attempt));
+        continue;
+      }
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "So'rovda xatolik yuz berdi");
+    }
+
+    if (res.status === 204) return null;
+    return res.json();
   }
-  if (res.status === 204) return null;
-  return res.json();
 }
 
 // Outside real Telegram (local browser dev) there's no signed initData, so

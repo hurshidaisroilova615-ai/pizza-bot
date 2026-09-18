@@ -96,7 +96,10 @@ const apiLimiter = rateLimit({
 app.use("/api", apiLimiter);
 
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", time: new Date().toISOString() });
+  // Whether the instance is holding itself awake cannot be seen from
+  // outside, and it is the first thing worth checking when a demo takes
+  // half a minute to open — so the health check reports it in words.
+  res.json({ status: "ok", time: new Date().toISOString(), keepAwake: keepAwakeStatus });
 });
 
 app.use("/api/auth", authRouter);
@@ -142,18 +145,36 @@ async function ensureDefaultAdmin() {
 // Requesting our own health endpoint counts as traffic and holds it open.
 // Opt-in: it consumes the free tier's monthly instance hours, which is
 // worth it while a demo is being shown around and not otherwise.
+let keepAwakeStatus = "o'chirilgan";
+
 function startKeepAwake() {
   const base = process.env.BOT_WEBHOOK_URL || process.env.RENDER_EXTERNAL_URL;
-  if (process.env.KEEP_AWAKE !== "true" || !base) return;
 
-  const TEN_MINUTES = 10 * 60 * 1000;
+  if (process.env.KEEP_AWAKE !== "true") {
+    keepAwakeStatus = "o'chirilgan — Render'da KEEP_AWAKE=true qo'shing";
+    console.log(`⏰ ${keepAwakeStatus}`);
+    return;
+  }
+
+  if (!base) {
+    keepAwakeStatus = "yoqilgan, lekin server o'z manzilini bilmaydi (RENDER_EXTERNAL_URL yo'q)";
+    console.warn(`⏰ ${keepAwakeStatus}`);
+    return;
+  }
+
+  // Five minutes rather than ten: one ping that fails — a blip, a deploy in
+  // progress — then still leaves two more before the fifteen-minute idle
+  // window closes. The requests themselves cost nothing; the free tier
+  // bills running time, not traffic.
+  const FIVE_MINUTES = 5 * 60 * 1000;
   setInterval(() => {
     fetch(`${base}/api/health`).catch((err) =>
       console.error("Keep-awake so'rovi muvaffaqiyatsiz:", err.message)
     );
-  }, TEN_MINUTES).unref();
+  }, FIVE_MINUTES).unref();
 
-  console.log(`⏰ Server uyg'oq tutiladi (har 10 daqiqada ${base}/api/health)`);
+  keepAwakeStatus = `yoqilgan — har 5 daqiqada ${base}/api/health`;
+  console.log(`⏰ ${keepAwakeStatus}`);
 }
 
 const PORT = process.env.PORT || 4000;
