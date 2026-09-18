@@ -13,6 +13,19 @@ const router = express.Router();
 router.get(
   "/",
   asyncHandler(async (req, res) => {
+    // Everything here is branding the Mini App needs, except the owner's
+    // alert recipients — those are nobody else's business.
+    const { orderNotifyChatIds, ...publicSettings } = await getSettings();
+    res.json(publicSettings);
+  })
+);
+
+// Admin: the same settings including the alert recipients, which the
+// public endpoint withholds.
+router.get(
+  "/admin",
+  requireAdmin,
+  asyncHandler(async (req, res) => {
     res.json(await getSettings());
   })
 );
@@ -31,6 +44,7 @@ const settingsSchema = z.object({
   loyaltyPointValue: z.number().int().positive().optional(),
   supportPhone: z.string().trim().max(30).nullable().optional(),
   supportUsername: z.string().trim().max(60).nullable().optional(),
+  orderNotifyChatIds: z.string().trim().max(300).nullable().optional(),
   welcomeMessage: z.string().trim().max(500).nullable().optional(),
   aboutText: z.string().trim().max(2000).nullable().optional(),
 });

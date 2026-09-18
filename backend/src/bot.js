@@ -99,10 +99,19 @@ bot.onText(/\/start/, async (msg) => {
   bot.sendMessage(chatId, welcome, orderButton());
 });
 
+// Setting up order alerts needs a chat id, and hunting one down otherwise
+// means sending people to a third-party bot to find it.
+bot.onText(/\/id/, (msg) => {
+  bot.sendMessage(
+    msg.chat.id,
+    `Sizning Telegram ID raqamingiz:\n\n${msg.chat.id}\n\nYangi buyurtma xabarlarini olish uchun shu raqamni admin panel → Sozlamalar bo'limiga qo'ying.`
+  );
+});
+
 bot.onText(/\/help/, (msg) => {
   bot.sendMessage(
     msg.chat.id,
-    "/start — Mini App'ni ochish\n/orders — Oxirgi buyurtmalaringiz\n/help — Yordam"
+    "/start — Mini App'ni ochish\n/orders — Oxirgi buyurtmalaringiz\n/id — Telegram ID raqamingiz\n/help — Yordam"
   );
 });
 
@@ -168,11 +177,23 @@ async function notifyOffer(telegramId, offer) {
   return notifySafe(telegramId, `🎁 ${offer.title}\n\n${offer.message}`);
 }
 
+// Recipients come from the business settings so an owner can change who
+// gets order alerts from the admin panel; the environment variable stays
+// as a fallback for deployments configured before that existed.
 async function notifyAdmins(text) {
-  const chatIds = (process.env.ADMIN_CHAT_IDS || "")
+  let configured = process.env.ADMIN_CHAT_IDS || "";
+  try {
+    const settings = await getSettings();
+    if (settings.orderNotifyChatIds) configured = settings.orderNotifyChatIds;
+  } catch (err) {
+    console.error("Sozlamalarni o'qishda xatolik:", err.message);
+  }
+
+  const chatIds = configured
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
+
   await Promise.all(chatIds.map((id) => notifySafe(id, text)));
 }
 

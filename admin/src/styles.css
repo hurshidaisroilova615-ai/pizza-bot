@@ -373,6 +373,12 @@ th {
   margin-bottom: 14px;
 }
 
+.field-hint {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
 .header-actions {
   display: flex;
   gap: 10px;

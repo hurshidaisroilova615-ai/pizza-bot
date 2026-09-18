@@ -38,6 +38,7 @@ export default function Settings({ onBusinessNameChange }) {
         loyaltyPointValue: Number(form.loyaltyPointValue),
         supportPhone: form.supportPhone || null,
         supportUsername: form.supportUsername || null,
+        orderNotifyChatIds: form.orderNotifyChatIds || null,
         welcomeMessage: form.welcomeMessage || null,
         aboutText: form.aboutText || null,
       });
@@ -154,6 +155,19 @@ export default function Settings({ onBusinessNameChange }) {
               <input value={form.supportUsername || ""} onChange={(e) => update("supportUsername", e.target.value)} />
             </div>
           </div>
+          <div className="form-group">
+            <label>Yangi buyurtma xabari kimga kelsin</label>
+            <input
+              value={form.orderNotifyChatIds || ""}
+              onChange={(e) => update("orderNotifyChatIds", e.target.value)}
+              placeholder="masalan: 123456789"
+            />
+            <span className="field-hint">
+              Telegram ID raqamini bilish uchun botga <strong>/id</strong> deb yozing — u raqamingizni
+              qaytaradi. Bir nechta bo'lsa vergul bilan ajrating.
+            </span>
+          </div>
+
           <div className="form-group">
             <label>Botning /start xabari</label>
             <textarea rows={2} value={form.welcomeMessage || ""} onChange={(e) => update("welcomeMessage", e.target.value)} />

@@ -51,6 +51,10 @@ model Settings {
   loyaltyPointValue     Int      @default(1)
   supportPhone          String?
   supportUsername       String?
+  // Comma-separated Telegram chat ids that get a message on every new
+  // order. Kept here rather than in the environment so an owner can set
+  // their own from the admin panel without touching the deployment.
+  orderNotifyChatIds    String?
   welcomeMessage        String?
   aboutText             String?
   // Which revision of the bundled demo catalog has been applied. Lets a

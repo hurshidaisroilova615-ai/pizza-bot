@@ -103,6 +103,6 @@ export const api = {
   deleteOffer: (id) => request(`/offers/${id}`, { method: "DELETE" }),
   sendOffer: (id) => request(`/offers/${id}/send`, { method: "POST" }),
 
-  getSettings: () => request("/settings"),
+  getSettings: () => request("/settings/admin"),
   updateSettings: (data) => request("/settings", { method: "PUT", body: JSON.stringify(data) }),
 };
