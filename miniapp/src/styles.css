@@ -1,36 +1,48 @@
 :root {
-  /* Light is the default; the dark palette below is switched on by the
-     customer's own Telegram theme, not by a toggle nobody would find. */
-  --bg: #ffffff;
+  /* Warm, not clinical. A pure-white page drains the colour out of a
+     photograph taken on a phone in a kitchen; a warm paper tone lets the
+     food be the brightest thing on the screen, which is the whole point. */
+  --bg: #faf7f3;
   --bg-elevated: #ffffff;
-  --surface: #f6f6f8;
-  --surface-2: #eeeef1;
-  --text: #14141a;
-  --text-muted: #8a8a93;
+  --surface: #f1ece5;
+  --surface-2: #e5ded4;
+  --text: #1a1613;
+  --text-muted: #8a7f74;
   --accent: #ff3b30;
-  --accent-soft: #fff1f0;
+  --accent-soft: #fdeeec;
   --accent-contrast: #ffffff;
-  --border: #ebebef;
-  --warn-bg: #fff4e5;
-  --warn-border: #f5d9ab;
-  --warn-text: #8a4b08;
-  --warn-text-soft: #9a6320;
+  --border: #e7dfd5;
+  --on-photo: #ffffff;
+  --on-photo-muted: rgba(255, 255, 255, 0.78);
+  --warn-bg: #fdf1dd;
+  --warn-border: #edd4a6;
+  --warn-text: #7d4a06;
+  --warn-text-soft: #96631f;
   --warn-dot: #d97706;
   --danger: #c02a1d;
-  --danger-bg: #fdeceb;
-  --danger-border: #f3c2bf;
+  --danger-bg: #fbe9e7;
+  --danger-border: #f0c3be;
   --ok: #1c7a42;
-  --ok-bg: #e7f5ec;
+  --ok-bg: #e4f3ea;
 
+  --radius-xl: 26px;
   --radius-lg: 22px;
-  --radius-md: 15px;
-  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-sm: 11px;
 
-  /* One shadow scale, so nothing invents its own and the whole app looks
-     like it was lit from the same direction. */
-  --shadow-sm: 0 1px 2px rgba(15, 15, 25, 0.05), 0 1px 1px rgba(15, 15, 25, 0.03);
-  --shadow-md: 0 4px 14px rgba(15, 15, 25, 0.07), 0 1px 3px rgba(15, 15, 25, 0.04);
-  --shadow-lg: 0 14px 40px rgba(15, 15, 25, 0.14), 0 3px 10px rgba(15, 15, 25, 0.06);
+  --shadow-sm: 0 1px 2px rgba(40, 25, 15, 0.06), 0 1px 1px rgba(40, 25, 15, 0.04);
+  --shadow-md: 0 6px 18px rgba(40, 25, 15, 0.1), 0 1px 3px rgba(40, 25, 15, 0.05);
+  --shadow-lg: 0 18px 46px rgba(30, 18, 10, 0.2), 0 4px 12px rgba(30, 18, 10, 0.08);
+
+  /* The scrim under text on a photograph. Strong at the bottom, gone by
+     halfway up, so the dish is never hidden by its own label. */
+  --scrim: linear-gradient(
+    to top,
+    rgba(12, 8, 5, 0.92) 0%,
+    rgba(12, 8, 5, 0.72) 26%,
+    rgba(12, 8, 5, 0.28) 52%,
+    rgba(12, 8, 5, 0) 78%
+  );
 
   --ease-out: cubic-bezier(0.22, 0.75, 0.3, 1);
   --ease-spring: cubic-bezier(0.32, 1.5, 0.5, 1);
@@ -42,31 +54,32 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Telegram tells the Mini App which theme the customer is in. Ignoring it
-   is why most bots flash a white page at someone reading in bed. */
+/* Telegram publishes the customer's own theme and changes it under the app
+   if they switch while it is open. The dark palette is warm too — a cold
+   grey makes cooked food look grey with it. */
 :root[data-theme="dark"] {
-  --bg: #17171b;
-  --bg-elevated: #1e1e23;
-  --surface: #232329;
-  --surface-2: #2c2c33;
-  --text: #f2f2f5;
-  --text-muted: #9a9aa4;
-  --accent-soft: rgba(255, 255, 255, 0.07);
-  --border: #2e2e36;
-  --warn-bg: #2e2415;
-  --warn-border: #4a3a1c;
+  --bg: #100d0b;
+  --bg-elevated: #191512;
+  --surface: #221c18;
+  --surface-2: #2e2620;
+  --text: #f7f3ef;
+  --text-muted: #998d82;
+  --accent-soft: rgba(255, 255, 255, 0.08);
+  --border: #2b2420;
+  --warn-bg: #2b2114;
+  --warn-border: #46361d;
   --warn-text: #f0c98a;
   --warn-text-soft: #cfa970;
   --warn-dot: #e0a33c;
   --danger: #ff8a80;
-  --danger-bg: #331d1b;
-  --danger-border: #4d2a26;
+  --danger-bg: #2f1a17;
+  --danger-border: #4a2b26;
   --ok: #6ddb9c;
-  --ok-bg: #16301f;
+  --ok-bg: #14291c;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 16px 44px rgba(0, 0, 0, 0.55);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 18px 50px rgba(0, 0, 0, 0.65);
 }
 
 * {
@@ -240,19 +253,22 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 20px 4px;
+  padding: 22px 20px 2px;
 }
 
 .header-greeting {
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--text-muted);
-  margin: 0 0 2px;
+  margin: 0 0 3px;
 }
 
 .header-name {
-  font-size: 23px;
+  font-size: 27px;
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.035em;
   margin: 0;
 }
 
@@ -268,13 +284,19 @@ button {
   border: 1px solid var(--border);
 }
 
-/* ---------- Stories ---------- */
+/* ---------- Shortcut row ---------- */
+/* These were Instagram-style gradient rings, which is the single most
+   copied widget in this market and reads as a template on sight. A filled
+   squircle carrying the accent is quieter, and does not pretend the shop
+   has stories to swipe through. */
 .story-row {
   display: flex;
-  gap: 14px;
-  padding: 18px 20px;
+  gap: 10px;
+  padding: 16px 20px 20px;
   overflow-x: auto;
   scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  scroll-padding-left: 20px;
 }
 
 .story-row::-webkit-scrollbar {
@@ -285,48 +307,45 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   flex-shrink: 0;
   background: none;
   border: none;
   padding: 0;
   font-family: inherit;
-  max-width: 76px;
+  width: 62px;
+  scroll-snap-align: start;
+}
+
+.story-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 19px;
+  /* Warm neutral rather than a tint of the accent: five candy-pink squares
+     in a row were pulling more attention than the dish underneath them,
+     and these are shortcuts, not the menu. */
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.18s var(--ease-spring), background 0.18s var(--ease-out);
 }
 
 .story-item:active .story-circle {
   transform: scale(0.92);
 }
 
-.story-circle {
-  width: 62px;
-  height: 62px;
-  border-radius: 50%;
-  padding: 2px;
-  background: var(--accent);
-  background: linear-gradient(140deg, var(--accent), color-mix(in srgb, var(--accent) 45%, #ffb199));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.16s var(--ease-spring);
-  box-shadow: var(--shadow-sm);
-}
-
 .story-circle-inner {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: var(--bg-elevated);
-  color: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2.5px solid var(--bg);
+  color: var(--accent);
 }
 
 .story-label {
-  font-size: 11.5px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
   color: var(--text-muted);
   text-align: center;
   line-height: 1.2;
@@ -387,82 +406,148 @@ button {
   font-weight: 700;
 }
 
-/* ---------- Hero ---------- */
-.hero {
-  margin: 8px 20px 24px;
-  padding: 26px 24px 24px;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(145deg, #16161a, #26262d);
-  color: #fff;
+/* ---------- Featured hero ---------- */
+.featured {
   position: relative;
+  margin: 6px 20px 26px;
+  aspect-ratio: 5 / 6;
+  border-radius: var(--radius-xl);
   overflow: hidden;
-  box-shadow: var(--shadow-md);
+  background: #100d0b;
+  box-shadow: var(--shadow-lg);
+  animation: card-in 0.5s var(--ease-out) both;
 }
 
-/* A soft light source in the top corner, tinted with the business's own
-   colour — what stops the panel reading as a flat grey rectangle. */
-.hero::after {
-  content: "";
+.featured-img {
   position: absolute;
-  top: -90px;
-  right: -60px;
-  width: 230px;
-  height: 230px;
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--accent), transparent 70%);
-  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 65%, transparent), transparent 70%);
-  opacity: 0.65;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.06);
+  transition: opacity 0.9s var(--ease-out), transform 6s linear;
+  filter: saturate(1.1) contrast(1.05);
+}
+
+/* A slow drift across the photograph while it is on screen: enough for the
+   panel to feel alive, not enough to be a distraction over a menu. */
+.featured-img.on {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.featured-scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
   pointer-events: none;
 }
 
-.hero > * {
-  position: relative;
-  z-index: 1;
+.featured-body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0 22px 26px;
 }
 
-.hero-emoji {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 13px;
-  margin-bottom: 14px;
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
-  backdrop-filter: blur(4px);
+.eyebrow {
+  margin: 0 0 7px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--on-photo-muted);
 }
 
-.hero-title {
-  font-size: 21px;
-  font-weight: 750;
+.eyebrow-page {
+  color: var(--accent);
+  margin: 0 20px 3px;
+}
+
+.featured-title {
+  margin: 0;
+  color: var(--on-photo);
+  font-size: 31px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.06;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
+}
+
+.featured-price {
+  margin: 9px 0 17px;
+  color: var(--on-photo);
+  font-size: 19px;
+  font-weight: 700;
   letter-spacing: -0.02em;
-  margin: 0 0 6px;
-  line-height: 1.28;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5);
 }
 
-.hero-subtitle {
-  font-size: 13.5px;
-  line-height: 1.45;
-  color: rgba(255, 255, 255, 0.72);
-  margin: 0 0 20px;
+.featured-price i {
+  font-style: normal;
+  font-size: 12.5px;
+  font-weight: 600;
+  opacity: 0.72;
 }
 
-.hero-btn {
+.featured-actions {
+  display: flex;
+  gap: 9px;
+}
+
+.featured-btn {
+  flex: 1;
+  padding: 14px 10px;
+  border: none;
+  border-radius: 13px;
   background: var(--accent);
   color: var(--accent-contrast);
-  border: none;
-  padding: 13px 22px;
-  border-radius: 12px;
-  font-weight: 650;
+  font-family: inherit;
   font-size: 14.5px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 45%, transparent);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   transition: transform 0.18s var(--ease-spring);
 }
 
-.hero-btn:active {
+/* The secondary action is glass, so it sits on the photograph rather than
+   competing with the button that matters. */
+.featured-btn.ghost {
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(10px) saturate(160%);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+
+.featured-btn:active {
   transform: scale(0.96);
+}
+
+.featured-dots {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 5px;
+  z-index: 2;
+}
+
+.featured-dot {
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.4);
+  transition: width 0.3s var(--ease-out), background 0.3s var(--ease-out);
+}
+
+.featured-dot.on {
+  width: 18px;
+  background: #fff;
 }
 
 /* ---------- Section ---------- */
@@ -522,29 +607,27 @@ button {
 }
 
 .product-card {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  overflow: hidden;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.18s var(--ease-spring), box-shadow 0.18s var(--ease-out);
-  /* Cards arrive a beat after the page, one after another, so a catalog
-     that has just loaded reads as arriving rather than as flashing in. */
-  animation: card-in 0.4s var(--ease-out) both;
+  /* Every card is the same shape whatever the dish is called, so the grid
+     stays a grid instead of going ragged on a two-line name. */
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s var(--ease-out);
+  animation: card-in 0.45s var(--ease-out) both;
 }
 
 .product-card:active {
-  transform: scale(0.975);
-  box-shadow: var(--shadow-md);
+  transform: scale(0.97);
 }
 
 @keyframes card-in {
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.985);
+    transform: translateY(14px) scale(0.97);
   }
   to {
     opacity: 1;
@@ -553,62 +636,125 @@ button {
 }
 
 .product-card-img {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  aspect-ratio: 1 / 1;
+  height: 100%;
   object-fit: cover;
-  background: var(--surface);
   display: block;
+  /* The photographs come off a phone in a kitchen; a touch of contrast and
+     saturation is the difference between a snapshot and a menu picture. */
+  filter: saturate(1.08) contrast(1.04);
+  transition: transform 0.5s var(--ease-out);
+}
+
+.product-card:active .product-card-img {
+  transform: scale(1.04);
+}
+
+.product-card-scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  pointer-events: none;
 }
 
 .product-card-body {
-  padding: 11px 13px 13px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 14px 14px 15px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .product-card-name {
-  font-size: 14px;
-  font-weight: 650;
-  letter-spacing: -0.01em;
-  line-height: 1.3;
   margin: 0;
+  color: var(--on-photo);
+  font-size: 14.5px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+  /* Two lines and then an ellipsis: a long name can't push the price out
+     of the card. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .product-price-row {
   display: flex;
   align-items: baseline;
-  gap: 6px;
-  margin-top: 2px;
-}
-
-.price-old {
-  font-size: 12px;
-  color: var(--text-muted);
-  text-decoration: line-through;
+  gap: 8px;
 }
 
 .price-new {
-  font-size: 15.5px;
-  font-weight: 750;
-  letter-spacing: -0.01em;
-  color: var(--accent);
+  color: var(--on-photo);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* The currency sits quieter than the number — the figure is what is being
+   compared, "so'm" is the same on every card. */
+.price-new i {
+  font-style: normal;
+  font-size: 11.5px;
+  font-weight: 600;
+  opacity: 0.72;
+  margin-left: 3px;
+}
+
+.price-old {
+  color: var(--on-photo-muted);
+  font-size: 12.5px;
+  font-weight: 500;
+  text-decoration: line-through;
+}
+
+/* A stamped corner flag, the one place the brand colour appears at full
+   strength on the grid. */
+.product-flag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 5px 9px;
+  border-radius: 7px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
 }
 
 .add-btn {
   position: absolute;
-  top: 9px;
-  right: 9px;
-  width: 33px;
-  height: 33px;
+  top: 11px;
+  right: 11px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: none;
-  background: var(--bg-elevated);
-  box-shadow: var(--shadow-md);
+  /* Smoked glass, not clear: a white-tinted button disappears into a
+     photograph of a bun, and half this catalogue is bread. Dark glass with
+     a white rim and a white icon reads on every picture either way. */
+  background: rgba(20, 14, 10, 0.44);
+  backdrop-filter: blur(10px) saturate(160%);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3), 0 4px 14px rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--accent);
+  color: #fff;
   transition: transform 0.2s var(--ease-spring), background 0.18s var(--ease-out),
     color 0.18s var(--ease-out);
 }
@@ -617,12 +763,11 @@ button {
   transform: scale(0.86);
 }
 
-/* Held for a moment after a tap: the button itself confirms the dish
-   landed in the cart, so the eye never has to go hunting for the badge. */
 .add-btn.added {
   background: var(--accent);
   color: var(--accent-contrast);
-  transform: scale(1.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3), 0 4px 16px rgba(0, 0, 0, 0.3);
+  transform: scale(1.08);
 }
 
 /* ---------- Bottom sheet ---------- */
@@ -1100,7 +1245,6 @@ button {
 /* Sold out: the dish stays on the menu so the customer knows the kitchen
    still makes it, but the photo is drained of colour and a ribbon sits
    across it, so the state reads at a glance without any tap. */
-.product-card-media,
 .sheet-media {
   position: relative;
   line-height: 0;
@@ -1108,34 +1252,36 @@ button {
 
 .product-card.sold-out .product-card-img,
 .sheet-media.sold-out .sheet-img {
-  filter: grayscale(1) brightness(1.06);
+  filter: grayscale(1) brightness(0.85);
 }
 
 .product-card.sold-out .product-card-body {
-  opacity: 0.6;
+  opacity: 0.72;
 }
 
 .sold-out-ribbon {
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: 44%;
   transform: translate(-50%, -50%);
-  background: rgba(23, 23, 26, 0.82);
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(8px) saturate(140%);
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
   color: #fff;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.02em;
   line-height: 1;
-  padding: 7px 12px;
+  padding: 8px 13px;
   border-radius: 999px;
   white-space: nowrap;
   z-index: 2;
-  backdrop-filter: blur(2px);
 }
 
 .sheet-media .sold-out-ribbon {
   font-size: 13px;
-  padding: 9px 16px;
+  padding: 10px 17px;
 }
 
 .add-btn:disabled {
@@ -1561,22 +1707,44 @@ button {
 }
 
 /* ---------- Live order card ---------- */
-/* The one screen customers keep open. It has to read from across a room:
-   which step, how long ago, and a bar that has visibly moved since the
-   last time they looked. */
+/* The one card that must never be missed. Everything else on this screen
+   is a photograph, so this goes the other way: solid, dark, carrying the
+   brand colour, and sitting above the featured dish. */
 .active-order {
   display: block;
   width: calc(100% - 40px);
-  margin: 4px 20px 20px;
-  padding: 16px 18px 14px;
-  border: 1px solid var(--border);
+  margin: 2px 20px 22px;
+  padding: 17px 19px 16px;
+  border: none;
   border-radius: var(--radius-lg);
-  background: var(--bg-elevated);
-  box-shadow: var(--shadow-md);
+  background: linear-gradient(140deg, #201814, #0f0b09);
+  box-shadow: var(--shadow-lg);
   text-align: left;
   font-family: inherit;
+  position: relative;
+  overflow: hidden;
   transition: transform 0.18s var(--ease-spring);
   animation: card-in 0.45s var(--ease-out) both;
+}
+
+/* A wash of the business's colour bleeding in from the corner the progress
+   bar fills towards. */
+.active-order::after {
+  content: "";
+  position: absolute;
+  top: -70px;
+  right: -50px;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent), transparent 70%);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.active-order > * {
+  position: relative;
+  z-index: 1;
 }
 
 .active-order:active {
@@ -1605,29 +1773,32 @@ button {
 }
 
 .active-order-title {
-  font-size: 12.5px;
-  font-weight: 650;
-  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.58);
 }
 
 .active-order-time {
   margin-left: auto;
   font-size: 12px;
-  color: var(--text-muted);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.52);
 }
 
 .active-order-status {
-  margin: 8px 0 14px;
-  font-size: 19px;
-  font-weight: 750;
-  letter-spacing: -0.02em;
-  color: var(--text);
+  margin: 9px 0 15px;
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #fff;
 }
 
 .active-order-track {
-  height: 6px;
+  height: 5px;
   border-radius: 999px;
-  background: var(--surface-2);
+  background: rgba(255, 255, 255, 0.14);
   overflow: hidden;
 }
 
@@ -1635,36 +1806,37 @@ button {
   height: 100%;
   border-radius: 999px;
   background: var(--accent);
-  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 55%, #ffb199));
+  box-shadow: 0 0 14px var(--accent);
   transition: width 0.7s var(--ease-out);
 }
 
 .active-order-steps {
   display: flex;
   justify-content: space-between;
-  margin-top: 12px;
+  margin-top: 13px;
 }
 
 .active-order-step {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 31px;
+  height: 31px;
   border-radius: 50%;
-  background: var(--surface);
-  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.4);
   transition: background 0.3s var(--ease-out), color 0.3s var(--ease-out);
 }
 
 .active-order-step.done {
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
 }
 
 .active-order-step.now {
   background: var(--accent);
   color: var(--accent-contrast);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 60%, transparent);
   animation: step-breathe 2s ease-in-out infinite;
 }
 
@@ -1695,13 +1867,13 @@ button {
 .rail {
   display: flex;
   gap: 12px;
-  padding: 0 20px 22px;
+  padding: 0 20px 24px;
   overflow-x: auto;
   scrollbar-width: none;
   scroll-snap-type: x proximity;
   /* Without this the snap aligns the first card to the scrollport edge,
-     which sits inside the padding — the shelf silently scrolls itself 20px
-     on load and the first dish arrives already clipped. */
+     which sits inside the padding — the shelf scrolls itself 20px on load
+     and opens with the first dish already clipped. */
   scroll-padding-left: 20px;
 }
 
@@ -1710,69 +1882,83 @@ button {
 }
 
 .rail-card {
+  position: relative;
   flex: none;
-  width: 132px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  width: 158px;
+  aspect-ratio: 4 / 5;
   padding: 0;
   border: none;
-  background: none;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
   font-family: inherit;
   text-align: left;
   scroll-snap-align: start;
-  transition: transform 0.18s var(--ease-spring);
+  transition: transform 0.2s var(--ease-spring);
 }
 
 .rail-card:active {
   transform: scale(0.96);
 }
 
-.rail-media {
-  position: relative;
-  display: block;
-  margin-bottom: 8px;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-}
-
-.rail-media img {
-  width: 132px;
-  height: 132px;
-  object-fit: cover;
-  display: block;
-  background: var(--surface);
-}
-
-.rail-soldout {
+.rail-card img {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(23, 23, 26, 0.82);
-  color: #fff;
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 5px 10px;
-  border-radius: 999px;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(1.08) contrast(1.04);
 }
 
-.rail-card:has(.rail-soldout) .rail-media img {
-  filter: grayscale(1) brightness(1.06);
+.rail-card.sold-out img {
+  filter: grayscale(1) brightness(0.85);
+}
+
+.rail-scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+}
+
+.rail-body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 13px 13px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .rail-name {
-  font-size: 13px;
+  color: var(--on-photo);
+  font-size: 13.5px;
   font-weight: 600;
-  line-height: 1.3;
-  color: var(--text);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .rail-price {
-  font-size: 13.5px;
-  font-weight: 750;
-  color: var(--accent);
+  color: var(--on-photo);
+  font-size: 15.5px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+}
+
+.rail-price i {
+  font-style: normal;
+  font-size: 10.5px;
+  font-weight: 600;
+  opacity: 0.72;
+  margin-left: 3px;
 }
 
 /* ---------- Category tiles ---------- */
@@ -1780,39 +1966,75 @@ button {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  padding: 0 20px 24px;
+  padding: 0 20px 26px;
 }
 
 .category-tile {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  align-items: flex-start;
-  padding: 15px 16px;
-  border: 1px solid var(--border);
+  position: relative;
+  aspect-ratio: 16 / 10;
+  padding: 0;
+  border: none;
   border-radius: var(--radius-md);
+  overflow: hidden;
   background: var(--surface);
+  box-shadow: var(--shadow-sm);
   font-family: inherit;
   text-align: left;
-  transition: transform 0.18s var(--ease-spring), background 0.18s var(--ease-out);
+  transition: transform 0.2s var(--ease-spring);
 }
 
 .category-tile:active {
   transform: scale(0.97);
-  background: var(--accent-soft);
+}
+
+.category-tile img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Pushed back a little: the tile is a signpost, not a dish on offer, and
+     the words have to win. */
+  filter: saturate(0.95) brightness(0.88);
+}
+
+.category-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(12, 8, 5, 0.9) 0%,
+    rgba(12, 8, 5, 0.55) 45%,
+    rgba(12, 8, 5, 0.25) 100%
+  );
+}
+
+.category-body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 14px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
 
 .category-tile-name {
-  font-size: 14.5px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--text);
+  color: var(--on-photo);
+  font-size: 15px;
+  font-weight: 750;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
 }
 
 .category-tile-count {
-  font-size: 12px;
-  color: var(--text-muted);
+  color: var(--on-photo-muted);
+  font-size: 11.5px;
+  font-weight: 500;
 }
+
 
 /* ---------- Skeletons ---------- */
 /* A grid of grey blocks in the shape of the thing that is coming beats the

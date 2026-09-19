@@ -1,26 +1,34 @@
 import { useSettings } from "../context/SettingsContext";
 
-// A horizontal shelf. The grid is for browsing the whole menu; this is for
-// the few dishes worth putting in front of someone the moment they open the
-// app, without pushing everything else off the screen.
+// A horizontal shelf, built from the same photo-first card as the grid so
+// the two read as one catalogue rather than two widgets.
 export default function ProductRail({ products, onOpen }) {
   const settings = useSettings();
   if (!products || products.length === 0) return null;
 
   return (
     <div className="rail">
-      {products.map((p) => (
-        <button key={p.id} className="rail-card" onClick={() => onOpen(p)}>
-          <span className="rail-media">
-            <img src={p.imageUrl} alt={p.name} loading="lazy" />
-            {p.isAvailable === false && <span className="rail-soldout">Tugadi</span>}
-          </span>
-          <span className="rail-name">{p.name}</span>
-          <span className="rail-price">
-            {p.price.toLocaleString()} {settings.currency}
-          </span>
-        </button>
-      ))}
+      {products.map((p) => {
+        const soldOut = p.isAvailable === false;
+        return (
+          <button
+            key={p.id}
+            className={`rail-card ${soldOut ? "sold-out" : ""}`}
+            onClick={() => onOpen(p)}
+          >
+            <img src={p.imageUrl} alt="" aria-hidden="true" />
+            <span className="rail-scrim" />
+            {soldOut && <span className="sold-out-ribbon">Tugadi</span>}
+            <span className="rail-body">
+              <span className="rail-name">{p.name}</span>
+              <span className="rail-price">
+                {p.price.toLocaleString()}
+                <i>{settings.currency}</i>
+              </span>
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }

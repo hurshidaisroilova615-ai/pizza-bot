@@ -34,23 +34,31 @@ function matchStyle(text) {
 // gradient with the dish's icon lifted onto a soft disc reads as a chosen
 // illustration — which is what a menu without photographs needs, and it
 // costs nothing to serve since it is still a few hundred bytes of SVG.
+//
+// The ground is dark on purpose. The Mini App lays the dish's name and
+// price over the foot of every picture in white, and the photographs a shop
+// sends already fall away dark at their edges; a pale drawn card among them
+// is the one tile in the grid that looks like something went missing, and
+// its own caption would sit on nothing. The icon keeps its colour and the
+// business's own tint glows behind it, so the card still reads as chosen.
 function placeholderImage(emoji, background, accent) {
-  const tint = accent || "#d8d8dc";
+  const tint = accent || "#e05a4f";
   const svg =
     `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600">` +
     `<defs>` +
-    `<linearGradient id="g" x1="0" y1="0" x2="0" y2="1">` +
-    `<stop offset="0" stop-color="${background}"/>` +
-    `<stop offset="1" stop-color="${tint}" stop-opacity="0.35"/>` +
+    `<linearGradient id="g" x1="0" y1="0" x2="0.35" y2="1">` +
+    `<stop offset="0" stop-color="#2a201a"/>` +
+    `<stop offset="1" stop-color="#0d0908"/>` +
     `</linearGradient>` +
-    `<radialGradient id="d" cx="0.5" cy="0.45" r="0.5">` +
-    `<stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>` +
-    `<stop offset="1" stop-color="#ffffff" stop-opacity="0"/>` +
+    `<radialGradient id="d" cx="0.5" cy="0.44" r="0.52">` +
+    `<stop offset="0" stop-color="${tint}" stop-opacity="0.5"/>` +
+    `<stop offset="0.55" stop-color="${tint}" stop-opacity="0.13"/>` +
+    `<stop offset="1" stop-color="${tint}" stop-opacity="0"/>` +
     `</radialGradient>` +
     `</defs>` +
     `<rect width="600" height="600" fill="url(#g)"/>` +
-    `<circle cx="300" cy="278" r="190" fill="url(#d)"/>` +
-    `<text x="300" y="285" font-size="250" text-anchor="middle" dominant-baseline="central">${emoji}</text>` +
+    `<circle cx="300" cy="266" r="240" fill="url(#d)"/>` +
+    `<text x="300" y="272" font-size="250" text-anchor="middle" dominant-baseline="central">${emoji}</text>` +
     `</svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }

@@ -8,6 +8,8 @@ import { api } from "../api";
 import Icon from "../components/Icon";
 import ActiveOrderCard from "../components/ActiveOrderCard";
 import ProductRail from "../components/ProductRail";
+import FeaturedHero from "../components/FeaturedHero";
+import CategoryTiles from "../components/CategoryTiles";
 
 export default function Home({
   firstName,
@@ -77,7 +79,7 @@ export default function Home({
     <div>
       <div className="header">
         <div>
-          <p className="header-greeting">Xush kelibsiz 👋</p>
+          <p className="header-greeting">Xush kelibsiz</p>
           <h1 className="header-name">{firstName}</h1>
         </div>
         <div className="header-avatar">
@@ -89,23 +91,11 @@ export default function Home({
 
       <ActiveOrderCard refreshKey={ordersRefreshKey} onOpenProfile={onOpenProfile} />
 
-      <div className="hero">
-        <span className="hero-emoji">
-          <Icon name="bag" size={22} />
-        </span>
-        <h2 className="hero-title">
-          {settings.businessName}
-          <br />
-          bugun nima buyurtma qilamiz?
-        </h2>
-        <p className="hero-subtitle">{settings.aboutText || "Eng mazali takliflar tez orada eshigingiz oldida"}</p>
-        <button className="hero-btn" onClick={onOrderClick}>
-          Yangi buyurtma berish
-        </button>
-      </div>
+      <FeaturedHero products={popular} onOpen={setSelectedProduct} onBrowse={onOrderClick} />
 
       {discounted.length > 0 && (
         <>
+          <p className="eyebrow eyebrow-page">Arzonlashdi</p>
           <h2 className="section-title">Bugungi aksiyalar</h2>
           <div className="product-grid">
             {discounted.slice(0, 4).map((p) => (
@@ -117,6 +107,7 @@ export default function Home({
 
       {popular.length > 0 && (
         <>
+          <p className="eyebrow eyebrow-page">Mijozlar tanlovi</p>
           <div className="section-head">
             <h2 className="section-title">Ko'p buyurtma qilinadi</h2>
             <button className="section-link" onClick={onOrderClick}>
@@ -129,17 +120,9 @@ export default function Home({
 
       {categories.length > 0 && (
         <>
+          <p className="eyebrow eyebrow-page">Menyu</p>
           <h2 className="section-title">Kategoriyalar</h2>
-          <div className="category-grid">
-            {categories.map((c) => (
-              <button key={c.id} className="category-tile" onClick={() => onOpenCategory(c.name)}>
-                <span className="category-tile-name">{c.name}</span>
-                <span className="category-tile-count">
-                  {products.filter((p) => p.category?.name === c.name).length} ta taom
-                </span>
-              </button>
-            ))}
-          </div>
+          <CategoryTiles categories={categories} products={products} onOpen={onOpenCategory} />
         </>
       )}
 
