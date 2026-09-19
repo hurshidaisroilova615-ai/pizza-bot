@@ -1,0 +1,269 @@
+{
+  "revision": 1,
+  "settings": {
+    "businessName": "Fedya Shaurma",
+    "businessType": "food",
+    "currency": "so'm",
+    "primaryColor": "#E03127",
+    "supportPhone": "+998 97 930 19 91",
+    "deliveryFee": 0,
+    "aboutText": "Samarqanddagi eng uzun shaurma. Dagbitskaya ko'chasi 99. Yetkazib berish mavjud.",
+    "welcomeMessage": "Assalomu alaykum! 👋\n\nFedya Shaurma'ga xush kelibsiz. Shaurma, pita va xot-dog — menyudan tanlang, biz yetkazib beramiz.\n\nBuyurtma berish uchun pastdagi tugmani bosing."
+  },
+  "categories": [
+    {
+      "name": "Shaurma (lavash)",
+      "products": [
+        {
+          "name": "Lavash 160 gr",
+          "price": 45000,
+          "image": "fedya-shaurma/shaurma.jpg"
+        },
+        {
+          "name": "Lavash 120 gr",
+          "price": 35000,
+          "image": "fedya-shaurma/shaurma.jpg"
+        },
+        {
+          "name": "Lavash 100 gr",
+          "price": 28000,
+          "image": "fedya-shaurma/shaurma.jpg"
+        },
+        {
+          "name": "Lavash 80 gr",
+          "price": 23000,
+          "image": "fedya-shaurma/shaurma.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Shaurma pitada",
+      "products": [
+        {
+          "name": "Pitada shaurma 160 gr",
+          "price": 45000,
+          "image": "fedya-shaurma/shaurma.jpg"
+        },
+        {
+          "name": "Pitada shaurma 120 gr",
+          "price": 35000,
+          "image": "fedya-shaurma/shaurma.jpg"
+        },
+        {
+          "name": "Pitada shaurma 100 gr",
+          "price": 28000,
+          "image": "fedya-shaurma/shaurma.jpg"
+        },
+        {
+          "name": "Pitada shaurma 80 gr",
+          "price": 23000,
+          "image": "fedya-shaurma/shaurma.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Maxsus",
+      "products": [
+        {
+          "name": "«MIX» Lavash",
+          "price": 40000,
+          "image": "fedya-shaurma/shaurma.jpg"
+        },
+        {
+          "name": "Mikki Maus (katta)",
+          "price": 35000,
+          "image": "fedya-shaurma/hot-dog.jpg"
+        },
+        {
+          "name": "Mikki Maus (kichik)",
+          "price": 30000,
+          "image": "fedya-shaurma/hot-dog.jpg"
+        },
+        {
+          "name": "Baton (2 sosiska)",
+          "price": 22000,
+          "image": "fedya-shaurma/hot-dog.jpg"
+        },
+        {
+          "name": "Baton (1 sosiska)",
+          "price": 18000,
+          "image": "fedya-shaurma/hot-dog.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Kanada xot-dog",
+      "products": [
+        {
+          "name": "Xot-dog kanada (4 sosiska)",
+          "price": 28000,
+          "image": "fedya-shaurma/hot-dog.jpg"
+        },
+        {
+          "name": "Xot-dog kanada (3 sosiska)",
+          "price": 25000,
+          "image": "fedya-shaurma/hot-dog.jpg"
+        },
+        {
+          "name": "Xot-dog kanada (2 sosiska)",
+          "price": 22000,
+          "image": "fedya-shaurma/hot-dog.jpg"
+        },
+        {
+          "name": "Xot-dog kanada (1 sosiska)",
+          "price": 18000,
+          "image": "fedya-shaurma/hot-dog.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Xot-dog",
+      "products": [
+        {
+          "name": "Xot-dog oddiy (4 sosiska)",
+          "price": 24000,
+          "image": "fedya-shaurma/hot-dog.jpg"
+        },
+        {
+          "name": "Xot-dog oddiy (3 sosiska)",
+          "price": 21000,
+          "image": "fedya-shaurma/hot-dog.jpg"
+        },
+        {
+          "name": "Xot-dog oddiy (2 sosiska)",
+          "price": 18000,
+          "image": "fedya-shaurma/hot-dog.jpg"
+        },
+        {
+          "name": "Xot-dog oddiy (1 sosiska)",
+          "price": 15000,
+          "image": "fedya-shaurma/hot-dog.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Souslar",
+      "products": [
+        {
+          "name": "Xalapenyo",
+          "price": 5000
+        },
+        {
+          "name": "Sarimsoqli sous",
+          "price": 3000
+        },
+        {
+          "name": "Chili sous",
+          "price": 3000
+        }
+      ]
+    }
+  ],
+  "crossSell": {
+    "Lavash 160 gr": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Lavash 120 gr": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Lavash 100 gr": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Lavash 80 gr": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Pitada shaurma 160 gr": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Pitada shaurma 120 gr": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Pitada shaurma 100 gr": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Pitada shaurma 80 gr": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "«MIX» Lavash": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Mikki Maus (katta)": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Mikki Maus (kichik)": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Baton (2 sosiska)": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Baton (1 sosiska)": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Xot-dog kanada (4 sosiska)": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Xot-dog kanada (3 sosiska)": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Xot-dog kanada (2 sosiska)": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Xot-dog kanada (1 sosiska)": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Xot-dog oddiy (4 sosiska)": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Xot-dog oddiy (3 sosiska)": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Xot-dog oddiy (2 sosiska)": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ],
+    "Xot-dog oddiy (1 sosiska)": [
+      "Sarimsoqli sous",
+      "Chili sous",
+      "Xalapenyo"
+    ]
+  }
+}
