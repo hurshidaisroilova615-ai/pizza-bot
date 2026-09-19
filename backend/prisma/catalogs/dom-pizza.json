@@ -1,12 +1,13 @@
 {
-  "revision": 2,
+  "revision": 3,
   "settings": {
     "businessName": "Dom Pizza",
     "businessType": "food",
     "currency": "so'm",
     "supportPhone": "+998 93 744 46 44",
     "deliveryFee": 0,
-    "aboutText": "Pizza • Burger • Hot-Dog • Shawerma • Snacks. Yetkazib berish xizmati mavjud."
+    "aboutText": "Pizza • Burger • Hot-Dog • Shawerma • Snacks. Yetkazib berish xizmati mavjud.",
+    "welcomeMessage": "Assalomu alaykum! 👋\n\nDom Pizza'ga xush kelibsiz. Pitsa, burger, hot-dog va shaverma — menyudan tanlang, biz yetkazib beramiz.\n\nBuyurtma berish uchun pastdagi tugmani bosing."
   },
   "categories": [
     {
