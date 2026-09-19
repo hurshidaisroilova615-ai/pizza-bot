@@ -5,7 +5,16 @@
 // All three are accepted, because retyping someone else's menu into one
 // fixed format is the slowest part of setting a new business up.
 
-const PRICE_AT_END = /^(.*?)[\s.,:;\-–—]*(\d[\d\s.,]*)(?:\s*(?:so'm|so‘m|som|sum|uzs|usd|\$))?$/i;
+// The price is the number the line ends with. A digit inside the dish's own
+// name — "Dom Burger x3", "Pitsa 50/50", "Combo 5" — must not be swallowed
+// into it, so a price may only carry internal separators between groups of
+// exactly three digits, the way a written thousand is. "x3 50000" therefore
+// cannot read as 350000; the name keeps its 3 and the price stays 50000.
+const PRICE = String.raw`\d{1,3}(?:[\s.,]\d{3})+|\d+`;
+const PRICE_AT_END = new RegExp(
+  String.raw`^(.*?)[\s.,:;\-–—]*(${PRICE})(?:\s*(?:so'm|so‘m|som|sum|uzs|usd|\$))?$`,
+  "i"
+);
 
 // Prices arrive as "45000", "45 000", "45,000" or "45.000 so'm" — the
 // separators differ by who typed them, the number does not.
