@@ -28,7 +28,7 @@ if (!process.env.JWT_SECRET) {
 }
 
 const prisma = require("./lib/prisma");
-const { bot, USE_WEBHOOK, WEBHOOK_PATH } = require("./bot");
+const { bot, USE_WEBHOOK, WEBHOOK_PATH, syncMenuButton } = require("./bot");
 const errorHandler = require("./middleware/errorHandler");
 
 const productsRouter = require("./routes/products");
@@ -185,6 +185,9 @@ ensureDefaultAdmin()
     app.listen(PORT, () => {
       console.log(`✅ Backend server http://localhost:${PORT} manzilida ishga tushdi`);
       console.log(`🤖 Telegram bot ${USE_WEBHOOK ? "webhook" : "polling"} rejimida ishlamoqda`);
+      // Points the chat's menu button at this deployment's Mini App. Safe to
+      // repeat: Telegram just overwrites whatever was there before.
+      syncMenuButton();
       startKeepAwake();
     });
   });

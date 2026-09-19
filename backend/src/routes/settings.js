@@ -58,6 +58,8 @@ const settingsSchema = z.object({
   pickupEnabled: z.boolean().optional(),
   pickupAddress: z.string().trim().max(300).nullable().optional(),
   cardPaymentEnabled: z.boolean().optional(),
+  cardPaymentDetails: z.string().trim().max(120).nullable().optional(),
+  cardPaymentHolder: z.string().trim().max(120).nullable().optional(),
 });
 
 router.put(

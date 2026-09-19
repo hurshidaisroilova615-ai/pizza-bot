@@ -47,6 +47,8 @@ export default function Settings({ onBusinessNameChange }) {
         pickupEnabled: form.pickupEnabled,
         pickupAddress: form.pickupAddress || null,
         cardPaymentEnabled: form.cardPaymentEnabled,
+        cardPaymentDetails: form.cardPaymentDetails || null,
+        cardPaymentHolder: form.cardPaymentHolder || null,
         welcomeMessage: form.welcomeMessage || null,
         aboutText: form.aboutText || null,
       });
@@ -199,6 +201,35 @@ export default function Settings({ onBusinessNameChange }) {
             />
             Karta orqali to'lov (mijoz naqd yoki karta tanlaydi)
           </label>
+          {form.cardPaymentEnabled && (
+            <>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Karta raqami</label>
+                  <input
+                    value={form.cardPaymentDetails || ""}
+                    onChange={(e) => update("cardPaymentDetails", e.target.value)}
+                    placeholder="8600 1234 5678 9012"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Karta egasining ismi</label>
+                  <input
+                    value={form.cardPaymentHolder || ""}
+                    onChange={(e) => update("cardPaymentHolder", e.target.value)}
+                    placeholder="Masalan: Alisher T."
+                  />
+                </div>
+              </div>
+              <p className="field-hint">
+                Mijoz «Karta» ni tanlaganda shu raqam ko'rsatiladi va u pulni o'tkazib,
+                chekni botga yuboradi. Raqam kiritilmasa, mijozga karta varianti
+                umuman ko'rsatilmaydi. Bu Payme yoki Click orqali avtomatik to'lov
+                emas — pul to'g'ridan-to'g'ri shu kartaga tushadi va tushganini o'zingiz
+                tekshirasiz.
+              </p>
+            </>
+          )}
         </div>
 
         <div className="settings-section">

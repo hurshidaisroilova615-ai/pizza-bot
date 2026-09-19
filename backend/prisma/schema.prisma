@@ -80,6 +80,12 @@ model Settings {
   pickupEnabled         Boolean  @default(false)
   pickupAddress         String?
   cardPaymentEnabled    Boolean  @default(false)
+  // Where a card payment actually goes. Shops of this size take card by
+  // transfer to the owner's own Humo/Uzcard number, so the Mini App has to
+  // show the customer that number and whose name is on it — otherwise
+  // "Karta" is a button that collects nothing.
+  cardPaymentDetails    String?
+  cardPaymentHolder     String?
   // Which revision of the bundled demo catalog has been applied. Lets a
   // newer catalog ship on deploy without re-adding items the owner deleted.
   catalogVersion        Int      @default(0)

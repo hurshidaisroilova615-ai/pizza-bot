@@ -196,6 +196,14 @@ router.post(
         publicMessage: "Yetkazib berish xizmati mavjud emas",
       });
     }
+    // Card without a destination is a button that collects nothing, so the
+    // API refuses it even if a stale client still shows the option.
+    if (data.paymentMethod === "CARD" && settings.cardPaymentEnabled && !settings.cardPaymentDetails) {
+      throw Object.assign(new Error("Card not configured"), {
+        status: 400,
+        publicMessage: "Karta orqali to'lov hozircha sozlanmagan. Iltimos, naqd pulni tanlang.",
+      });
+    }
     if (data.paymentMethod === "CARD" && !settings.cardPaymentEnabled) {
       throw Object.assign(new Error("Card off"), {
         status: 400,
@@ -316,6 +324,7 @@ router.post(
         `🆕 Yangi buyurtma #${order.id}`,
         `Mijoz: ${user.firstName || user.telegramId}`,
         `${how} · ${paid}`,
+        order.paymentMethod === "CARD" ? "⚠️ Karta to'lovi — tushganini tekshiring" : null,
         order.deliveryAddress ? `Manzil: ${order.deliveryAddress}` : null,
         order.phone ? `Telefon: ${order.phone}` : null,
         `Jami: ${order.totalPrice.toLocaleString()}`,

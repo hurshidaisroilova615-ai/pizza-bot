@@ -58,6 +58,35 @@ function orderButton() {
   };
 }
 
+// The square beside the message box. It used to be set by hand in BotFather,
+// which meant every new shop needed a step nobody remembered, and a bot set
+// up against a temporary tunnel kept pointing at it long after the tunnel
+// was gone — the customer tapped it and got an error page from ngrok. The
+// bot owns it now, so it is correct from the first deploy and corrects
+// itself on the next one whenever the address changes.
+async function syncMenuButton() {
+  if (!/^https:\/\//.test(MINIAPP_URL)) {
+    console.log(
+      `ℹ️  Menyu tugmasi qo'yilmadi — MINIAPP_PUBLIC_URL https bo'lishi kerak (hozir: ${MINIAPP_URL})`
+    );
+    return false;
+  }
+  try {
+    await bot.setChatMenuButton({
+      menu_button: JSON.stringify({
+        type: "web_app",
+        text: "Menyu",
+        web_app: { url: MINIAPP_URL },
+      }),
+    });
+    console.log(`✅ Telegram menyu tugmasi qo'yildi → ${MINIAPP_URL}`);
+    return true;
+  } catch (err) {
+    console.error("❌ Menyu tugmasini qo'yib bo'lmadi:", err.message);
+    return false;
+  }
+}
+
 bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
   const telegramId = String(msg.from.id);
@@ -197,6 +226,7 @@ module.exports = {
   WEBHOOK_PATH,
   notifyOrderCreated,
   notifyOrderStatusChanged,
+  syncMenuButton,
   notifyOffer,
   notifyAdmins,
   STATUS_LABELS,

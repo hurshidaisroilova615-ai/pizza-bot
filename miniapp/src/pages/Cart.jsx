@@ -31,6 +31,20 @@ export default function Cart({ onOrderPlaced }) {
   const [quoteError, setQuoteError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [useLoyalty, setUseLoyalty] = useState(false);
+  const [cardCopied, setCardCopied] = useState(false);
+
+  // navigator.clipboard is missing in some in-app browsers, so the number
+  // stays visible and selectable either way — the copy is a convenience.
+  async function copyCard() {
+    try {
+      await navigator.clipboard.writeText(settings.cardPaymentDetails || "");
+      hapticFeedback("light");
+      setCardCopied(true);
+      setTimeout(() => setCardCopied(false), 2500);
+    } catch {
+      // clipboard unavailable; the customer can still read and type it
+    }
+  }
 
   useEffect(() => {
     if (items.length === 0) {
@@ -113,6 +127,9 @@ export default function Cart({ onOrderPlaced }) {
   // rather than leaving the customer to work out why confirm is dead.
   const soldOut = quote?.unavailableItems || [];
   const soldOutIds = new Set(soldOut.map((p) => p.id));
+  // No card number, no card option: a customer who picks it would have
+  // nowhere to send the money.
+  const cardOffered = settings.cardPaymentEnabled && Boolean(settings.cardPaymentDetails);
 
   return (
     <div>
@@ -215,7 +232,7 @@ export default function Cart({ onOrderPlaced }) {
         </>
       )}
 
-      {settings.cardPaymentEnabled && (
+      {cardOffered && (
         <>
           <p className="field-label">To'lov turi</p>
           <div className="choice-row" role="group" aria-label="To'lov turi">
@@ -260,6 +277,24 @@ export default function Cart({ onOrderPlaced }) {
           </p>
         )
       )}
+      {cardOffered && paymentMethod === "CARD" && (
+        <div className="card-details">
+          <p className="card-details-label">Shu kartaga o'tkazing</p>
+          <button type="button" className="card-number" onClick={copyCard}>
+            <span>{settings.cardPaymentDetails}</span>
+            <Icon name={cardCopied ? "check" : "card"} size={18} strokeWidth={2} />
+          </button>
+          {settings.cardPaymentHolder && (
+            <p className="card-details-holder">{settings.cardPaymentHolder}</p>
+          )}
+          <p className="card-details-hint">
+            {cardCopied
+              ? "Karta raqami nusxalandi"
+              : "Pulni o'tkazib, chekni shu botga yuboring — buyurtma shundan keyin tayyorlanadi."}
+          </p>
+        </div>
+      )}
+
       <input
         className="location-input"
         placeholder="Izoh (ixtiyoriy)"

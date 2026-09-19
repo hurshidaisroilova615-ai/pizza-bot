@@ -2094,3 +2094,61 @@ button {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ---------- Card payment ---------- */
+/* Picking "Karta" used to record a preference and say nothing else. The
+   shops this serves take card as a transfer to the owner's own number, so
+   the number has to be on screen, tappable to copy, with what to do next. */
+.card-details {
+  margin: 0 20px 14px;
+  padding: 15px 16px 14px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.card-details-label {
+  margin: 0 0 9px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.card-number {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: left;
+  transition: transform 0.18s var(--ease-spring);
+}
+
+.card-number:active {
+  transform: scale(0.985);
+}
+
+.card-details-holder {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.card-details-hint {
+  margin: 8px 0 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
