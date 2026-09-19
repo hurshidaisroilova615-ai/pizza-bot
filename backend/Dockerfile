@@ -1,7 +1,11 @@
-# Debian rather than Alpine: Prisma's engines need OpenSSL, which Alpine
-# does not carry, and the failure only appears when the image is built —
-# not in a local install on a normal distribution.
 FROM node:20-slim
+
+# Prisma's schema and query engines link against OpenSSL, which the slim
+# image leaves out. Without it the build succeeds and the container then
+# dies on the first migration with "Schema engine error".
+RUN apt-get update -y \
+    && apt-get install -y --no-install-recommends openssl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
