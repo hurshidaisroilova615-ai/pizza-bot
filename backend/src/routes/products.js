@@ -6,6 +6,7 @@ const { OWNER_MANAGED_CATALOG } = require("../lib/catalog");
 const { invalidateSettingsCache } = require("../lib/settings");
 const { requireAdmin } = require("../middleware/adminAuth");
 const { placeholderFor } = require("../lib/placeholderImage");
+const { getSettings } = require("../lib/settings");
 
 const router = express.Router();
 
@@ -177,6 +178,9 @@ router.post(
 
     const created = [];
     const skipped = [];
+    // Generated cards carry the business's own accent, so a menu imported
+    // without photographs still looks like it belongs to this shop.
+    const { primaryColor } = await getSettings();
 
     for (const item of items) {
       const exists = await prisma.product.findFirst({ where: { name: item.name } });
@@ -188,7 +192,7 @@ router.post(
         data: {
           name: item.name,
           description: item.description || "",
-          imageUrl: placeholderFor(item.name, item.category),
+          imageUrl: placeholderFor(item.name, item.category, primaryColor),
           price: item.price,
           oldPrice: item.oldPrice ?? null,
           categoryId: item.category ? categories.get(item.category) : null,

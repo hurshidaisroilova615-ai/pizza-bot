@@ -117,7 +117,7 @@ async function main() {
             price: item.price,
             oldPrice: item.oldPrice ?? null,
             description: item.description ?? "",
-            imageUrl: photoUrl || placeholderFor(item.name, group.name),
+            imageUrl: photoUrl || placeholderFor(item.name, group.name, catalog.settings?.primaryColor),
             categoryId: category.id,
             sortOrder: position,
           },
