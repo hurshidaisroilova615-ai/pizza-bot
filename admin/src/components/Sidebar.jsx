@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import WorkspaceSwitcher from "./WorkspaceSwitcher";
 
 const LINKS = [
   { to: "/", label: "Statistika", icon: "📊", end: true },
@@ -17,7 +18,7 @@ export default function Sidebar({ businessName }) {
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-logo">🛍 {businessName || "Admin"}</div>
+      <WorkspaceSwitcher businessName={businessName} />
       <nav className="sidebar-nav">
         {LINKS.map((link) => (
           <NavLink

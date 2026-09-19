@@ -11,6 +11,7 @@ import ProductRail from "../components/ProductRail";
 import FeaturedHero from "../components/FeaturedHero";
 import CategoryTiles from "../components/CategoryTiles";
 import { useI18n } from "../i18n/LanguageContext";
+import LanguageButton from "../components/LanguageButton";
 
 export default function Home({
   firstName,
@@ -84,8 +85,11 @@ export default function Home({
           <p className="header-greeting">{t("home.greeting")}</p>
           <h1 className="header-name">{firstName}</h1>
         </div>
-        <div className="header-avatar">
-          <Icon name="user" size={22} />
+        <div className="header-actions">
+          <LanguageButton />
+          <div className="header-avatar">
+            <Icon name="user" size={22} />
+          </div>
         </div>
       </div>
 

@@ -4,6 +4,7 @@ import ProductSheet from "../components/ProductSheet";
 import { api } from "../api";
 import ProductSkeleton from "../components/ProductSkeleton";
 import Icon from "../components/Icon";
+import LanguageButton from "../components/LanguageButton";
 import { useI18n } from "../i18n/LanguageContext";
 
 const ALL = "__all__";
@@ -33,7 +34,10 @@ export default function Catalog({ products, onAdd, initialCategory }) {
 
   return (
     <div>
-      <h1 className="page-title">{t("catalog.title")}</h1>
+      <div className="page-head">
+        <h1 className="page-title">{t("catalog.title")}</h1>
+        <LanguageButton />
+      </div>
 
       <div className="tag-row">
         {tabs.map((cat) => (

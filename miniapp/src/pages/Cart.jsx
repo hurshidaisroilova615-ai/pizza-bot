@@ -213,7 +213,7 @@ export default function Cart({ onOrderPlaced }) {
       {bothWaysOffered && (
         <>
           <p className="field-label">{t("cart.howLabel")}</p>
-          <div className="choice-row" role="group" aria-label="Buyurtma turi">
+          <div className="choice-row" role="group" aria-label={t("cart.howLabel")}>
             <button
               type="button"
               className={`choice ${orderType === "DELIVERY" ? "active" : ""}`}
@@ -237,7 +237,7 @@ export default function Cart({ onOrderPlaced }) {
       {cardOffered && (
         <>
           <p className="field-label">{t("cart.paymentLabel")}</p>
-          <div className="choice-row" role="group" aria-label="To'lov turi">
+          <div className="choice-row" role="group" aria-label={t("cart.paymentLabel")}>
             <button
               type="button"
               className={`choice ${paymentMethod === "CASH" ? "active" : ""}`}

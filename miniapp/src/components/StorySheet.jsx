@@ -1,5 +1,6 @@
 import ProductCard from "./ProductCard";
 import { useSettings } from "../context/SettingsContext";
+import { useI18n } from "../i18n/LanguageContext";
 
 function ProductList({ products, emptyText, onOpenProduct, onAdd }) {
   if (products.length === 0) {
@@ -21,6 +22,7 @@ function ProductList({ products, emptyText, onOpenProduct, onAdd }) {
 
 export default function StorySheet({ story, onClose, onOpenProduct, onAdd }) {
   const settings = useSettings();
+  const { t } = useI18n();
   if (!story) return null;
 
   const money = (n) => `${n.toLocaleString()} ${settings.currency}`;
@@ -30,16 +32,14 @@ export default function StorySheet({ story, onClose, onOpenProduct, onAdd }) {
       <div className="sheet" onClick={(e) => e.stopPropagation()}>
         <div className="sheet-handle" />
         <div className="sheet-body">
-          <h2 className="sheet-title">
-            {story.emoji} {story.title}
-          </h2>
+          <h2 className="sheet-title">{story.title}</h2>
 
           {story.type === "discounts" && (
             <>
-              <p className="sheet-desc">Bugungi chegirmalar — narxi tushirilgan mahsulotlar.</p>
+              <p className="sheet-desc">{t("sheet.discountsDesc")}</p>
               <ProductList
                 products={story.products}
-                emptyText="Hozircha chegirma yo'q"
+                emptyText={t("sheet.discountsEmpty")}
                 onOpenProduct={onOpenProduct}
                 onAdd={onAdd}
               />
@@ -48,10 +48,10 @@ export default function StorySheet({ story, onClose, onOpenProduct, onAdd }) {
 
           {story.type === "new" && (
             <>
-              <p className="sheet-desc">Menyuga eng oxirgi qo'shilganlar.</p>
+              <p className="sheet-desc">{t("sheet.newDesc")}</p>
               <ProductList
                 products={story.products}
-                emptyText="Yangi mahsulot yo'q"
+                emptyText={t("sheet.newEmpty")}
                 onOpenProduct={onOpenProduct}
                 onAdd={onAdd}
               />
@@ -60,10 +60,10 @@ export default function StorySheet({ story, onClose, onOpenProduct, onAdd }) {
 
           {story.type === "top" && (
             <>
-              <p className="sheet-desc">Mijozlar eng ko'p buyurtma qilgan mahsulotlar.</p>
+              <p className="sheet-desc">{t("sheet.topDesc")}</p>
               <ProductList
                 products={story.products}
-                emptyText="Hali yetarli buyurtma yo'q"
+                emptyText={t("sheet.topEmpty")}
                 onOpenProduct={onOpenProduct}
                 onAdd={onAdd}
               />
@@ -74,18 +74,13 @@ export default function StorySheet({ story, onClose, onOpenProduct, onAdd }) {
             <div className="info-block">
               <div className="info-hero">
                 <span className="info-hero-value">{story.balance}</span>
-                <span className="info-hero-label">bonus ball</span>
+                <span className="info-hero-label">{t("sheet.bonusLabel")}</span>
               </div>
               <ul className="info-list">
-                <li>
-                  Har bir buyurtmadan <strong>{Math.round(settings.loyaltyEarnRate * 100)}%</strong> ball
-                  qaytadi
-                </li>
-                <li>
-                  1 ball = <strong>{money(settings.loyaltyPointValue)}</strong>
-                </li>
-                <li>Ballarni savatda keyingi buyurtmaga ishlatasiz</li>
-                <li>Ball muddatsiz — yonib ketmaydi</li>
+                <li>{t("sheet.bonusEarn", { percent: Math.round(settings.loyaltyEarnRate * 100) })}</li>
+                <li>{t("sheet.bonusValue", { value: money(settings.loyaltyPointValue) })}</li>
+                <li>{t("sheet.bonusUse")}</li>
+                <li>{t("sheet.bonusForever")}</li>
               </ul>
             </div>
           )}
@@ -94,25 +89,18 @@ export default function StorySheet({ story, onClose, onOpenProduct, onAdd }) {
             <div className="info-block">
               <ul className="info-list">
                 <li>
-                  Yetkazib berish: <strong>{settings.deliveryFee > 0 ? money(settings.deliveryFee) : "bepul"}</strong>
+                  {t("sheet.deliveryFee", {
+                    fee: settings.deliveryFee > 0 ? money(settings.deliveryFee) : t("sheet.deliveryFree"),
+                  })}
                 </li>
-                {settings.freeDeliveryThreshold && (
-                  <li>
-                    <strong>{money(settings.freeDeliveryThreshold)}</strong> dan yuqori buyurtmaga yetkazish
-                    bepul
-                  </li>
+                {settings.freeDeliveryThreshold > 0 && (
+                  <li>{t("sheet.deliveryThreshold", { amount: money(settings.freeDeliveryThreshold) })}</li>
                 )}
                 {settings.minOrderAmount > 0 && (
-                  <li>
-                    Minimal buyurtma: <strong>{money(settings.minOrderAmount)}</strong>
-                  </li>
+                  <li>{t("sheet.minOrder", { amount: money(settings.minOrderAmount) })}</li>
                 )}
-                <li>Buyurtma holatini botdan kuzatib borasiz</li>
-                {settings.supportPhone && (
-                  <li>
-                    Aloqa: <strong>{settings.supportPhone}</strong>
-                  </li>
-                )}
+                <li>{t("sheet.trackOrder")}</li>
+                {settings.supportPhone && <li>{t("sheet.contact", { phone: settings.supportPhone })}</li>}
               </ul>
             </div>
           )}
@@ -121,7 +109,9 @@ export default function StorySheet({ story, onClose, onOpenProduct, onAdd }) {
             <>
               <p className="sheet-desc">{story.offer.message}</p>
               {story.offer.promoCode && (
-                <div className="promo-highlight">Promo kod: {story.offer.promoCode.code}</div>
+                <div className="promo-highlight">
+                  {t("sheet.promoCode", { code: story.offer.promoCode.code })}
+                </div>
               )}
             </>
           )}
@@ -129,7 +119,7 @@ export default function StorySheet({ story, onClose, onOpenProduct, onAdd }) {
 
         <div className="sheet-cta">
           <button className="btn-primary" onClick={onClose}>
-            Yopish
+            {t("sheet.close")}
           </button>
         </div>
       </div>

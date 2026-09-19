@@ -1,5 +1,7 @@
 import { resolveApiBase } from "./apiBase";
-const BASE_URL = resolveApiBase();
+
+// Exported so the sidebar can say which business is on screen.
+export const BASE_URL = resolveApiBase();
 
 // Scoped to the backend it came from, so switching between two clients'
 // panels on the same device does not carry one's session into the other.

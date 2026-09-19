@@ -11,7 +11,8 @@ import Customers from "./pages/Customers";
 import PromoCodes from "./pages/PromoCodes";
 import Offers from "./pages/Offers";
 import Settings from "./pages/Settings";
-import { api } from "./api";
+import { api, BASE_URL } from "./api";
+import { nameBase } from "./apiBase";
 
 function Layout() {
   const [businessName, setBusinessName] = useState("");
@@ -19,7 +20,12 @@ function Layout() {
   useEffect(() => {
     api
       .getSettings()
-      .then((s) => setBusinessName(s.businessName))
+      .then((s) => {
+        setBusinessName(s.businessName);
+        // Lets the switcher list this backend by the shop's name rather
+        // than by its hostname next time.
+        nameBase(BASE_URL, s.businessName);
+      })
       .catch(() => {});
   }, []);
 

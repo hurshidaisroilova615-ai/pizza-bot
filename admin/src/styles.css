@@ -1051,3 +1051,112 @@ td.row-actions .btn + .btn {
 .row-muted td:not(.row-actions) {
   opacity: 0.55;
 }
+
+/* ---------- Which shop am I looking at ---------- */
+/* One admin page serves every client, so the name of the one on screen has
+   to be unmissable — and switching has to be deliberate. */
+.workspace {
+  position: relative;
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.workspace-current {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 30px 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+}
+
+.workspace-current:disabled {
+  cursor: default;
+}
+
+.workspace-current.open {
+  border-color: var(--accent);
+}
+
+.workspace-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.25;
+}
+
+.workspace-host {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.workspace-caret {
+  position: absolute;
+  right: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.workspace-list {
+  margin-top: 6px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.workspace-item {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--border);
+}
+
+.workspace-item:last-child {
+  border-bottom: none;
+}
+
+.workspace-switch {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 10px 12px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.workspace-switch:hover {
+  background: var(--bg);
+}
+
+.workspace-switch .workspace-name {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.workspace-forget {
+  border: none;
+  background: none;
+  padding: 0 11px;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.workspace-forget:hover {
+  color: var(--danger);
+}
