@@ -31,7 +31,7 @@ const PUBLIC_BASE = (process.env.BOT_WEBHOOK_URL || process.env.RENDER_EXTERNAL_
 
 const MIME = { ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".webp": "image/webp" };
 
-async function storePhoto(tx, relativePath) {
+async function storePhoto(db, relativePath) {
   // Without a public address the served URL would be wrong on every device,
   // so fall back to the drawn icon instead of shipping a broken link.
   if (!relativePath || !PUBLIC_BASE) return null;
@@ -43,7 +43,7 @@ async function storePhoto(tx, relativePath) {
   }
 
   const data = fs.readFileSync(photo);
-  const asset = await tx.mediaAsset.create({
+  const asset = await db.mediaAsset.create({
     data: {
       mimeType: MIME[path.extname(photo).toLowerCase()] || "image/jpeg",
       size: data.length,
@@ -77,6 +77,19 @@ async function main() {
     return;
   }
 
+  // Uploading the photographs first keeps them out of the transaction: two
+  // dozen image rows written over a network connection take far longer than
+  // an interactive transaction is allowed to stay open, and the whole swap
+  // was being rolled back because of it.
+  const photoUrls = new Map();
+  for (const group of catalog.categories) {
+    for (const item of group.products) {
+      if (!item.image) continue;
+      const url = await storePhoto(prisma, item.image);
+      if (url) photoUrls.set(item.name, url);
+    }
+  }
+
   const counts = await prisma.$transaction(async (tx) => {
     await tx.orderItem.updateMany({
       where: { productId: { not: null } },
@@ -96,7 +109,7 @@ async function main() {
       for (const [position, item] of group.products.entries()) {
         // A dish without a usable photograph opens with the drawn icon its
         // name suggests, until the owner uploads a real one.
-        const photoUrl = await storePhoto(tx, item.image);
+        const photoUrl = photoUrls.get(item.name);
 
         const product = await tx.product.create({
           data: {
@@ -134,7 +147,7 @@ async function main() {
     });
 
     return { productCount, categoryCount: catalog.categories.length };
-  });
+  }, { maxWait: 30000, timeout: 120000 });
 
   console.log(
     `📦 "${name}" katalogi qo'yildi: ${counts.categoryCount} kategoriya, ${counts.productCount} mahsulot`
