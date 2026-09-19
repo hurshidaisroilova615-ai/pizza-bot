@@ -1,5 +1,5 @@
 {
-  "revision": 3,
+  "revision": 4,
   "settings": {
     "businessName": "Fedya Shaurma",
     "businessType": "food",
@@ -42,22 +42,22 @@
         {
           "name": "Pitada shaurma 160 gr",
           "price": 45000,
-          "image": "fedya-shaurma/shaurma.jpg"
+          "image": "fedya-shaurma/pita.jpg"
         },
         {
           "name": "Pitada shaurma 120 gr",
           "price": 35000,
-          "image": "fedya-shaurma/shaurma.jpg"
+          "image": "fedya-shaurma/pita.jpg"
         },
         {
           "name": "Pitada shaurma 100 gr",
           "price": 28000,
-          "image": "fedya-shaurma/shaurma.jpg"
+          "image": "fedya-shaurma/pita.jpg"
         },
         {
           "name": "Pitada shaurma 80 gr",
           "price": 23000,
-          "image": "fedya-shaurma/shaurma.jpg"
+          "image": "fedya-shaurma/pita.jpg"
         }
       ]
     },
