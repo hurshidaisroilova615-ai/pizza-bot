@@ -20,6 +20,39 @@ const { placeholderFor } = require("../src/lib/placeholderImage");
 
 const prisma = new PrismaClient();
 
+// Photographs ship with the catalog as ordinary image files. They are stored
+// the way an upload from the admin panel is stored — a row the API serves
+// with a long cache — so the Mini App fetches each picture once instead of
+// receiving all of them inline with every catalog request.
+const PUBLIC_BASE = (process.env.BOT_WEBHOOK_URL || process.env.RENDER_EXTERNAL_URL || "").replace(
+  /\/+$/,
+  ""
+);
+
+const MIME = { ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".webp": "image/webp" };
+
+async function storePhoto(tx, relativePath) {
+  // Without a public address the served URL would be wrong on every device,
+  // so fall back to the drawn icon instead of shipping a broken link.
+  if (!relativePath || !PUBLIC_BASE) return null;
+
+  const photo = path.join(__dirname, "catalogs", relativePath);
+  if (!fs.existsSync(photo)) {
+    console.warn(`⚠️  Rasm topilmadi: ${relativePath}`);
+    return null;
+  }
+
+  const data = fs.readFileSync(photo);
+  const asset = await tx.mediaAsset.create({
+    data: {
+      mimeType: MIME[path.extname(photo).toLowerCase()] || "image/jpeg",
+      size: data.length,
+      data,
+    },
+  });
+  return `${PUBLIC_BASE}/api/uploads/${asset.id}`;
+}
+
 async function main() {
   const name = (process.env.APPLY_CATALOG || "").trim();
   if (!name) return;
@@ -61,16 +94,17 @@ async function main() {
       });
 
       for (const [position, item] of group.products.entries()) {
+        // A dish without a usable photograph opens with the drawn icon its
+        // name suggests, until the owner uploads a real one.
+        const photoUrl = await storePhoto(tx, item.image);
+
         const product = await tx.product.create({
           data: {
             name: item.name,
             price: item.price,
             oldPrice: item.oldPrice ?? null,
             description: item.description ?? "",
-            // A prepared catalog carries no photographs, so each dish opens
-            // with the drawn icon its name suggests until the owner
-            // uploads a real one.
-            imageUrl: item.imageUrl || placeholderFor(item.name, group.name),
+            imageUrl: photoUrl || placeholderFor(item.name, group.name),
             categoryId: category.id,
             sortOrder: position,
           },

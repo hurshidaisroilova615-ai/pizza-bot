@@ -1,5 +1,5 @@
 {
-  "revision": 1,
+  "revision": 2,
   "settings": {
     "businessName": "Dom Pizza",
     "businessType": "food",
@@ -12,55 +12,169 @@
     {
       "name": "Pitsalar",
       "products": [
-        { "name": "Pitsa Premium", "price": 100000 },
-        { "name": "Pitsa Italiya", "price": 100000 },
-        { "name": "Brisket Pizza", "price": 100000 },
-        { "name": "Dom Pizza", "price": 95000 },
-        { "name": "Pitsa Assorti", "price": 95000 },
-        { "name": "Pitsa Super Kombo", "price": 85000 },
-        { "name": "Pitsa 50/50", "price": 85000 },
-        { "name": "Pitsa Chizburger", "price": 80000 },
-        { "name": "Pitsa Oxotnichiy", "price": 80000 },
-        { "name": "Pitsa Go'shtli", "price": 80000 },
-        { "name": "Pitsa Tovuqli", "price": 80000 },
-        { "name": "Pitsa Qo'ziqorinli", "price": 80000 },
-        { "name": "Pitsa Kebab", "price": 80000 },
-        { "name": "Pitsa Pepperoni", "price": 70000 },
-        { "name": "Pitsa Kanada", "price": 70000 }
+        {
+          "name": "Pitsa Premium",
+          "price": 100000,
+          "image": "dom-pizza/pitsa-premium.jpg"
+        },
+        {
+          "name": "Pitsa Italiya",
+          "price": 100000,
+          "image": "dom-pizza/pitsa-italiya.jpg"
+        },
+        {
+          "name": "Brisket Pizza",
+          "price": 100000,
+          "image": "dom-pizza/brisket-pizza.jpg"
+        },
+        {
+          "name": "Dom Pizza",
+          "price": 95000,
+          "image": "dom-pizza/dom-pizza.jpg"
+        },
+        {
+          "name": "Pitsa Assorti",
+          "price": 95000,
+          "image": "dom-pizza/pitsa-assorti.jpg"
+        },
+        {
+          "name": "Pitsa Super Kombo",
+          "price": 85000,
+          "image": "dom-pizza/pitsa-super-kombo.jpg"
+        },
+        {
+          "name": "Pitsa 50/50",
+          "price": 85000,
+          "image": "dom-pizza/pitsa-50-50.jpg"
+        },
+        {
+          "name": "Pitsa Chizburger",
+          "price": 80000,
+          "image": "dom-pizza/pitsa-chizburger.jpg"
+        },
+        {
+          "name": "Pitsa Oxotnichiy",
+          "price": 80000,
+          "image": "dom-pizza/pitsa-oxotnichiy.jpg"
+        },
+        {
+          "name": "Pitsa Go'shtli",
+          "price": 80000,
+          "image": "dom-pizza/pitsa-goshtli.jpg"
+        },
+        {
+          "name": "Pitsa Tovuqli",
+          "price": 80000,
+          "image": "dom-pizza/pitsa-tovuqli.jpg"
+        },
+        {
+          "name": "Pitsa Qo'ziqorinli",
+          "price": 80000,
+          "image": "dom-pizza/pitsa-qoziqorinli.jpg"
+        },
+        {
+          "name": "Pitsa Kebab",
+          "price": 80000,
+          "image": "dom-pizza/pitsa-kebab.jpg"
+        },
+        {
+          "name": "Pitsa Pepperoni",
+          "price": 70000,
+          "image": "dom-pizza/pitsa-pepperoni.jpg"
+        },
+        {
+          "name": "Pitsa Kanada",
+          "price": 70000,
+          "image": "dom-pizza/pitsa-kanada.jpg"
+        }
       ]
     },
     {
       "name": "Burgerlar va tost",
       "products": [
-        { "name": "Dom Burger x3", "price": 50000 },
-        { "name": "Chizburger", "price": 36000 },
-        { "name": "Go'shtli Tost", "price": 35000 }
+        {
+          "name": "Dom Burger x3",
+          "price": 50000,
+          "image": "dom-pizza/dom-burger-x3.jpg"
+        },
+        {
+          "name": "Chizburger",
+          "price": 36000,
+          "image": "dom-pizza/chizburger.jpg"
+        },
+        {
+          "name": "Go'shtli Tost",
+          "price": 35000,
+          "image": "dom-pizza/goshtli-tost.jpg"
+        }
       ]
     },
     {
       "name": "Hot-dog va shaverma",
       "products": [
-        { "name": "Xot-Dog 4-Sosiska", "price": 25000 },
-        { "name": "Shashlik Xot-Dog", "price": 25000 },
-        { "name": "Shaverma", "price": 25000 },
-        { "name": "Xot-Dog 2-Sosiska", "price": 18000 }
+        {
+          "name": "Xot-Dog 4-Sosiska",
+          "price": 25000,
+          "image": "dom-pizza/xot-dog-4-sosiska.jpg"
+        },
+        {
+          "name": "Shashlik Xot-Dog",
+          "price": 25000,
+          "image": "dom-pizza/shashlik-xot-dog.jpg"
+        },
+        {
+          "name": "Shaverma",
+          "price": 25000,
+          "image": "dom-pizza/shaverma.jpg"
+        },
+        {
+          "name": "Xot-Dog 2-Sosiska",
+          "price": 18000,
+          "image": "dom-pizza/xot-dog-2-sosiska.jpg"
+        }
       ]
     },
     {
       "name": "Qo'shimchalar",
       "products": [
-        { "name": "Naggets (200 gr)", "price": 20000 },
-        { "name": "Fri", "price": 15000 }
+        {
+          "name": "Naggets (200 gr)",
+          "price": 20000,
+          "image": "dom-pizza/naggets-200-gr.jpg"
+        },
+        {
+          "name": "Fri",
+          "price": 15000,
+          "image": "dom-pizza/fri.jpg"
+        }
       ]
     }
   ],
   "crossSell": {
-    "Pitsa Premium": ["Fri", "Naggets (200 gr)"],
-    "Pitsa Italiya": ["Fri", "Naggets (200 gr)"],
-    "Dom Pizza": ["Fri", "Naggets (200 gr)"],
-    "Pitsa Pepperoni": ["Fri", "Naggets (200 gr)"],
-    "Dom Burger x3": ["Fri"],
-    "Chizburger": ["Fri"],
-    "Shaverma": ["Fri"]
+    "Pitsa Premium": [
+      "Fri",
+      "Naggets (200 gr)"
+    ],
+    "Pitsa Italiya": [
+      "Fri",
+      "Naggets (200 gr)"
+    ],
+    "Dom Pizza": [
+      "Fri",
+      "Naggets (200 gr)"
+    ],
+    "Pitsa Pepperoni": [
+      "Fri",
+      "Naggets (200 gr)"
+    ],
+    "Dom Burger x3": [
+      "Fri"
+    ],
+    "Chizburger": [
+      "Fri"
+    ],
+    "Shaverma": [
+      "Fri"
+    ]
   }
 }
