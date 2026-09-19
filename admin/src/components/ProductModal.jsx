@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSave } from "../lib/useSave";
 import Modal from "./Modal";
 import ImageField from "./ImageField";
 
@@ -14,7 +15,7 @@ export default function ProductModal({ product, categories, allProducts, onClose
     isRecommended: product?.isRecommended ?? false,
     recommendedProductIds: product?.recommendedProducts?.map((p) => p.id) || [],
   });
-  const [saving, setSaving] = useState(false);
+  const { saving, error, save } = useSave();
 
   function update(key, value) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -35,17 +36,14 @@ export default function ProductModal({ product, categories, allProducts, onClose
       alert("Mahsulot uchun rasm yuklang yoki havola kiriting");
       return;
     }
-    setSaving(true);
-    try {
-      await onSave({
+    await save(() =>
+      onSave({
         ...form,
         price: Number(form.price),
         oldPrice: form.oldPrice === "" ? null : Number(form.oldPrice),
         categoryId: form.categoryId === "" ? null : Number(form.categoryId),
-      });
-    } finally {
-      setSaving(false);
-    }
+      })
+    );
   }
 
   const otherProducts = (allProducts || []).filter((p) => p.id !== product?.id);
@@ -114,6 +112,8 @@ export default function ProductModal({ product, categories, allProducts, onClose
             ))}
           </div>
         </div>
+
+        {error && <p className="form-error save-error">{error}</p>}
 
         <div className="modal-actions">
           <button type="button" className="btn btn-outline" onClick={onClose}>

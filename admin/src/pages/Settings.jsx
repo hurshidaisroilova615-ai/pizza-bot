@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import ChangePasswordForm from "../components/ChangePasswordForm";
+import { useSave } from "../lib/useSave";
 
 export default function Settings({ onBusinessNameChange }) {
   const [form, setForm] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [loadError, setLoadError] = useState("");
   const [saved, setSaved] = useState(false);
+  const { saving, error, save } = useSave();
 
   useEffect(() => {
     api
       .getSettings()
       .then(setForm)
-      .catch(console.error)
+      // Without this the page sat on "Yuklanmoqda..." for ever and never
+      // said why, which looks identical to a slow connection.
+      .catch((err) => setLoadError(err?.message || "Sozlamalarni yuklab bo'lmadi."))
       .finally(() => setLoading(false));
   }, []);
 
@@ -23,9 +27,9 @@ export default function Settings({ onBusinessNameChange }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setSaving(true);
-    try {
-      const updated = await api.updateSettings({
+    setSaved(false);
+    const { ok, result } = await save(() =>
+      api.updateSettings({
         businessName: form.businessName,
         businessType: form.businessType,
         currency: form.currency,
@@ -51,16 +55,30 @@ export default function Settings({ onBusinessNameChange }) {
         cardPaymentHolder: form.cardPaymentHolder || null,
         welcomeMessage: form.welcomeMessage || null,
         aboutText: form.aboutText || null,
-      });
-      setForm(updated);
-      onBusinessNameChange?.(updated.businessName);
-      setSaved(true);
-    } finally {
-      setSaving(false);
-    }
+      })
+    );
+    if (!ok) return;
+    setForm(result);
+    onBusinessNameChange?.(result.businessName);
+    setSaved(true);
   }
 
-  if (loading || !form) return <p className="empty-note">Yuklanmoqda...</p>;
+  if (loading) return <p className="empty-note">Yuklanmoqda...</p>;
+  if (loadError || !form) {
+    return (
+      <div>
+        <div className="page-header">
+          <h1>Biznes sozlamalari</h1>
+        </div>
+        <p className="form-error save-error">
+          {loadError || "Sozlamalarni yuklab bo'lmadi."}
+        </p>
+        <button className="btn btn-outline" onClick={() => window.location.reload()}>
+          Qayta urinish
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -298,6 +316,7 @@ export default function Settings({ onBusinessNameChange }) {
 
         <div className="modal-actions">
           {saved && <span className="form-success">Saqlandi ✓</span>}
+          {error && <span className="form-error save-error">{error}</span>}
           <button type="submit" className="btn btn-accent" disabled={saving}>
             {saving ? "Saqlanmoqda..." : "Sozlamalarni saqlash"}
           </button>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSave } from "../lib/useSave";
 import Modal from "./Modal";
 
 export default function CategoryModal({ category, onClose, onSave }) {
@@ -8,7 +9,7 @@ export default function CategoryModal({ category, onClose, onSave }) {
     sortOrder: category?.sortOrder ?? 0,
     isActive: category?.isActive ?? true,
   });
-  const [saving, setSaving] = useState(false);
+  const { saving, error, save } = useSave();
 
   function update(key, value) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -16,12 +17,7 @@ export default function CategoryModal({ category, onClose, onSave }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setSaving(true);
-    try {
-      await onSave({ ...form, sortOrder: Number(form.sortOrder) });
-    } finally {
-      setSaving(false);
-    }
+    await save(() => onSave({ ...form, sortOrder: Number(form.sortOrder) }));
   }
 
   return (
@@ -43,6 +39,8 @@ export default function CategoryModal({ category, onClose, onSave }) {
           <input type="checkbox" checked={form.isActive} onChange={(e) => update("isActive", e.target.checked)} />
           Faol
         </label>
+        {error && <p className="form-error save-error">{error}</p>}
+
         <div className="modal-actions">
           <button type="button" className="btn btn-outline" onClick={onClose}>
             Bekor qilish

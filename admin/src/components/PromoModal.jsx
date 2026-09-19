@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSave } from "../lib/useSave";
 import Modal from "./Modal";
 
 function toInputDate(value) {
@@ -18,7 +19,7 @@ export default function PromoModal({ promo, onClose, onSave }) {
     startsAt: toInputDate(promo?.startsAt),
     expiresAt: toInputDate(promo?.expiresAt),
   });
-  const [saving, setSaving] = useState(false);
+  const { saving, error, save } = useSave();
 
   function update(key, value) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -26,9 +27,7 @@ export default function PromoModal({ promo, onClose, onSave }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setSaving(true);
-    try {
-      await onSave({
+    await save(() => onSave({
         ...form,
         value: Number(form.value),
         minOrderAmount: Number(form.minOrderAmount) || 0,
@@ -36,10 +35,7 @@ export default function PromoModal({ promo, onClose, onSave }) {
         perUserLimit: Number(form.perUserLimit) || 1,
         startsAt: form.startsAt ? new Date(form.startsAt).toISOString() : null,
         expiresAt: form.expiresAt ? new Date(form.expiresAt).toISOString() : null,
-      });
-    } finally {
-      setSaving(false);
-    }
+      }));
   }
 
   return (
@@ -117,6 +113,8 @@ export default function PromoModal({ promo, onClose, onSave }) {
             Faol
           </label>
         </div>
+        {error && <p className="form-error save-error">{error}</p>}
+
         <div className="modal-actions">
           <button type="button" className="btn btn-outline" onClick={onClose}>
             Bekor qilish

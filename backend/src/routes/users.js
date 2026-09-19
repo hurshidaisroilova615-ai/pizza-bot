@@ -23,11 +23,14 @@ router.post(
         firstName,
         lastName,
         username,
-        // Only a request that names a language may change it. The Mini App
-        // opens with a call that carries none, and letting that one through
-        // wiped the customer's choice on every launch — they picked Russian,
-        // reopened the app, and the bot went back to Uzbek.
-        ...(chosen && { languageCode: chosen }),
+        // Telegram's own setting is refreshed when the request actually
+        // carries one. A call that does not know it — the Mini App opened
+        // outside Telegram, an older client — must not erase what is on
+        // record, or a customer who never chose explicitly loses the only
+        // thing the bot had to go on. The choice itself lives in `language`
+        // and changes only when a request names one, for the same reason.
+        ...(languageCode && { languageCode }),
+        ...(chosen && { language: chosen }),
         ...(phone !== undefined && { phone }),
       },
       create: {
@@ -35,7 +38,8 @@ router.post(
         firstName,
         lastName,
         username,
-        languageCode: chosen || languageCode,
+        languageCode,
+        language: chosen,
         phone: phone || null,
       },
     });

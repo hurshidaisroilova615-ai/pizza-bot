@@ -10,6 +10,7 @@ const { validatePromoCode, markPromoUsed, PromoError } = require("../lib/promo")
 const { calculateEarnedPoints, earnPoints, redeemPoints } = require("../lib/loyalty");
 const { notifyOrderCreated, notifyOrderStatusChanged, notifyAdmins } = require("../bot");
 const { orderTypeLabel, paymentLabel } = require("../lib/orderLabels");
+const { effectiveLanguage } = require("../lib/botMessages");
 
 const router = express.Router();
 
@@ -313,7 +314,7 @@ router.post(
       return created;
     });
 
-    notifyOrderCreated(user.telegramId, order, user.languageCode);
+    notifyOrderCreated(user.telegramId, order, effectiveLanguage(user));
     // The alert is what the kitchen acts on, so it carries the two things
     // they would otherwise have to open the panel for: how it goes out, and
     // how it is paid.
@@ -377,7 +378,7 @@ router.put(
       return updated;
     });
 
-    notifyOrderStatusChanged(order.user.telegramId, order, order.user.languageCode);
+    notifyOrderStatusChanged(order.user.telegramId, order, effectiveLanguage(order.user));
     res.json(serializeOrder(order));
   })
 );

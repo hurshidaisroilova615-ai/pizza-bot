@@ -50,6 +50,10 @@ export default function Offers() {
       const result = await api.sendOffer(offer.id);
       alert(`Yuborildi: ${result.sent}/${result.total} mijozga`);
       load();
+    } catch (err) {
+      // A campaign that silently fails to send is worse than one that
+      // fails loudly: the owner waits for orders that are never coming.
+      alert(`Yuborib bo'lmadi: ${err.message}`);
     } finally {
       setSendingId(null);
     }

@@ -49,7 +49,13 @@ if (USE_WEBHOOK) {
 const MINIAPP_URL = process.env.MINIAPP_PUBLIC_URL || "http://localhost:5173";
 
 const { STATUS_LABELS, statusLabel } = require("./lib/orderLabels");
-const { messagesFor, statusLabelFor } = require("./lib/botMessages");
+const {
+  messagesFor,
+  statusLabelFor,
+  effectiveLanguage,
+  LANGUAGE_CHOICES,
+  SUPPORTED,
+} = require("./lib/botMessages");
 
 function orderButton(languageCode) {
   return {
@@ -90,13 +96,42 @@ async function syncMenuButton() {
   }
 }
 
+// Offered once, on a first /start, and again whenever someone sends /til.
+// Each label is in its own language so a customer who cannot read the other
+// two still finds theirs.
+function languageKeyboard() {
+  return {
+    reply_markup: {
+      inline_keyboard: LANGUAGE_CHOICES.map((c) => [
+        { text: c.label, callback_data: `lang:${c.code}` },
+      ]),
+    },
+  };
+}
+
+async function sendWelcome(chatId, user, firstName) {
+  const settings = await getSettings().catch(() => null);
+  const businessName = settings?.businessName || "SmartOrder";
+  const lang = effectiveLanguage(user);
+  const m = messagesFor(lang);
+  // An owner who has written their own welcome gets it sent as they wrote
+  // it. Translating someone's own words into a language they never checked
+  // is worse than showing them in one language.
+  const welcome = settings?.welcomeMessage
+    ? settings.welcomeMessage
+    : `${m.greeting.replace("!", `, ${firstName}!`)}\n\n${m.welcome(businessName)} ${m.orderPrompt}`;
+
+  return notifySafe(chatId, `${welcome}\n\n${m.languageCommand}`, orderButton(lang));
+}
+
 bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
   const telegramId = String(msg.from.id);
   const firstName = msg.from.first_name || "";
 
+  let user = null;
   try {
-    await prisma.user.upsert({
+    user = await prisma.user.upsert({
       where: { telegramId },
       update: {
         firstName,
@@ -116,18 +151,50 @@ bot.onText(/\/start/, async (msg) => {
     console.error("Foydalanuvchini saqlashda xatolik:", err.message);
   }
 
-  const settings = await getSettings().catch(() => null);
-  const businessName = settings?.businessName || "SmartOrder";
-  const languageCode = msg.from.language_code;
-  const m = messagesFor(languageCode);
-  // An owner who has written their own welcome gets it sent as they wrote
-  // it. Translating someone's own words into a language they never checked
-  // is worse than showing them in one language.
-  const welcome = settings?.welcomeMessage
-    ? settings.welcomeMessage
-    : `${m.greeting.replace("!", `, ${firstName}!`)}\n\n${m.welcome(businessName)} ${m.orderPrompt}`;
+  // Asked once, on the very first /start. Telegram's own language is only a
+  // guess — plenty of people here read Uzbek on a phone set to Russian — so
+  // the customer says which they want before anything else is put in front
+  // of them. After that the bot never asks again.
+  if (!user?.language) {
+    return bot.sendMessage(chatId, messagesFor(msg.from.language_code).chooseLanguage, languageKeyboard());
+  }
 
-  bot.sendMessage(chatId, welcome, orderButton(languageCode));
+  return sendWelcome(chatId, user, firstName);
+});
+
+bot.onText(/\/til|\/language|\/yazyk/, (msg) => {
+  bot.sendMessage(msg.chat.id, messagesFor(msg.from.language_code).chooseLanguage, languageKeyboard());
+});
+
+bot.on("callback_query", async (query) => {
+  const data = query.data || "";
+  if (!data.startsWith("lang:")) return;
+
+  const code = data.slice(5);
+  const chatId = query.message?.chat?.id;
+  if (!SUPPORTED.includes(code) || !chatId) {
+    return bot.answerCallbackQuery(query.id).catch(() => {});
+  }
+
+  const telegramId = String(query.from.id);
+  let user = null;
+  try {
+    user = await prisma.user.update({
+      where: { telegramId },
+      data: { language: code },
+    });
+  } catch (err) {
+    console.error("Tilni saqlashda xatolik:", err.message);
+  }
+
+  await bot.answerCallbackQuery(query.id, { text: messagesFor(code).languageSet }).catch(() => {});
+  // The three buttons have done their job; leaving them sitting in the chat
+  // invites a second tap that changes nothing.
+  await bot
+    .editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: query.message.message_id })
+    .catch(() => {});
+
+  return sendWelcome(chatId, user || { language: code }, query.from.first_name || "");
 });
 
 // Setting up order alerts needs a chat id, and hunting one down otherwise
@@ -142,7 +209,7 @@ bot.onText(/\/id/, (msg) => {
 bot.onText(/\/help/, (msg) => {
   bot.sendMessage(
     msg.chat.id,
-    "/start — Mini App'ni ochish\n/orders — Oxirgi buyurtmalaringiz\n/id — Telegram ID raqamingiz\n/help — Yordam"
+    "/start — Mini App'ni ochish\n/orders — Oxirgi buyurtmalaringiz\n/til — Tilni o'zgartirish\n/id — Telegram ID raqamingiz\n/help — Yordam"
   );
 });
 
@@ -151,6 +218,7 @@ bot.onText(/\/orders/, async (msg) => {
   try {
     const user = await prisma.user.findUnique({ where: { telegramId } });
     if (!user) return bot.sendMessage(msg.chat.id, messagesFor(msg.from.language_code).noOrders);
+    const lang = effectiveLanguage(user);
 
     const orders = await prisma.order.findMany({
       where: { userId: user.id },
@@ -160,15 +228,15 @@ bot.onText(/\/orders/, async (msg) => {
     });
 
     if (orders.length === 0) {
-      return bot.sendMessage(msg.chat.id, messagesFor(msg.from.language_code).noOrders);
+      return bot.sendMessage(msg.chat.id, messagesFor(lang).noOrders);
     }
 
     const text = orders
       .map(
         (o) =>
-          `#${o.id} — ${statusLabelFor(o, msg.from.language_code)}\n${o.items
+          `#${o.id} — ${statusLabelFor(o, lang)}\n${o.items
             .map((i) => `${i.name} x${i.quantity}`)
-            .join(", ")}\n${messagesFor(msg.from.language_code).total}: ${o.totalPrice.toLocaleString()}`
+            .join(", ")}\n${messagesFor(lang).total}: ${o.totalPrice.toLocaleString()}`
       )
       .join("\n\n");
 

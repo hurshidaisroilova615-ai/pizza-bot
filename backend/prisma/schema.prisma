@@ -169,7 +169,14 @@ model User {
   firstName     String?
   lastName      String?
   phone         String?
+  // What Telegram reports the customer's own app is set to. It changes
+  // under us whenever they change their phone, so it is a hint, not a
+  // decision.
   languageCode  String?
+  // What the customer actually picked, in the bot or in the Mini App.
+  // Null means they never did, and the hint above is used instead — which
+  // is also how the bot knows whether to offer the choice on /start.
+  language      String?
   loyaltyPoints Int      @default(0)
 
   orders      Order[]

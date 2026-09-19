@@ -1,24 +1,23 @@
 import { useState } from "react";
+import { useSave } from "../lib/useSave";
 import { api } from "../api";
 
 export default function CustomerDetailDrawer({ customer, onClose, onAdjusted }) {
   const [points, setPoints] = useState("");
   const [note, setNote] = useState("");
-  const [saving, setSaving] = useState(false);
+  const { saving, error, save } = useSave();
 
   if (!customer) return null;
 
   async function handleAdjust() {
     if (!points) return;
-    setSaving(true);
-    try {
+    const { ok } = await save(async () => {
       await api.adjustLoyalty(customer.id, Number(points), note || undefined);
-      setPoints("");
-      setNote("");
-      onAdjusted();
-    } finally {
-      setSaving(false);
-    }
+    });
+    if (!ok) return;
+    setPoints("");
+    setNote("");
+    onAdjusted();
   }
 
   return (
@@ -78,9 +77,10 @@ export default function CustomerDetailDrawer({ customer, onClose, onAdjusted }) 
             />
             <input placeholder="Izoh" value={note} onChange={(e) => setNote(e.target.value)} />
             <button className="btn btn-accent" onClick={handleAdjust} disabled={saving || !points}>
-              Qo'llash
+              {saving ? "Saqlanmoqda..." : "Qo'llash"}
             </button>
           </div>
+          {error && <p className="form-error save-error">{error}</p>}
         </div>
 
         <div className="drawer-section">

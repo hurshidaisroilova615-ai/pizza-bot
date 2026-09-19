@@ -1,0 +1,114 @@
+// The bot's own language flow, exercised against the real database.
+//
+// Telegram is unreachable from here, so the handlers are driven directly:
+// what matters is which language is stored, which is offered, and what the
+// bot would say afterwards — not that a socket to Telegram opened.
+process.env.DATABASE_URL =
+  process.env.DATABASE_URL || "postgresql://postgres:testpass@localhost:5432/pizzatest";
+process.env.BOT_TOKEN = "000:test";
+
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+const {
+  messagesFor,
+  effectiveLanguage,
+  LANGUAGE_CHOICES,
+  SUPPORTED,
+} = require("../src/lib/botMessages");
+
+let pass = 0,
+  fail = 0;
+const check = (name, cond, extra = "") => {
+  if (cond) {
+    pass++;
+    console.log("  PASS  " + name);
+  } else {
+    fail++;
+    console.log("  FAIL  " + name + "  " + extra);
+  }
+};
+
+const BASE = process.env.API_BASE || "http://localhost:4111/api";
+const TG = "770077";
+
+(async () => {
+  await prisma.user.deleteMany({ where: { telegramId: TG } });
+
+  console.log("\n1) Birinchi /start — til so'raladi");
+  // A phone set to Russian, which is only a hint.
+  const created = await prisma.user.create({
+    data: { telegramId: TG, firstName: "Test", languageCode: "ru-RU" },
+  });
+  check("a new customer has made no choice", created.language === null, String(created.language));
+  check("so the bot would ask", !created.language);
+  check("three languages offered", LANGUAGE_CHOICES.length === 3, String(LANGUAGE_CHOICES.length));
+  check(
+    "each label is in its own language",
+    LANGUAGE_CHOICES.some((c) => c.label.includes("O'zbekcha")) &&
+      LANGUAGE_CHOICES.some((c) => c.label.includes("Русский")) &&
+      LANGUAGE_CHOICES.some((c) => c.label.includes("English")),
+    LANGUAGE_CHOICES.map((c) => c.label).join(",")
+  );
+  check(
+    "the prompt is readable in all three",
+    messagesFor("ru").chooseLanguage.includes("Tilni") &&
+      messagesFor("ru").chooseLanguage.includes("Выберите") &&
+      messagesFor("ru").chooseLanguage.includes("Choose"),
+    messagesFor("ru").chooseLanguage
+  );
+
+  console.log("\n2) Tanlagandan keyin");
+  const chosen = await prisma.user.update({ where: { telegramId: TG }, data: { language: "uz" } });
+  check("choice stored", chosen.language === "uz", String(chosen.language));
+  check(
+    "choice beats the phone's setting",
+    effectiveLanguage(chosen) === "uz",
+    effectiveLanguage(chosen)
+  );
+  check(
+    "the bot now answers in Uzbek",
+    messagesFor(effectiveLanguage(chosen)).orderCreated(1, "1").includes("qabul qilindi"),
+    messagesFor(effectiveLanguage(chosen)).orderCreated(1, "1")
+  );
+  check("and never asks again", Boolean(chosen.language));
+
+  console.log("\n3) Mini App bilan bir xil");
+  const res = await fetch(`${BASE}/users/upsert?telegramId=${TG}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ telegramId: TG, language: "en" }),
+  });
+  check("Mini App may change it", res.status === 200, String(res.status));
+  let after = await prisma.user.findUnique({ where: { telegramId: TG } });
+  check("and the bot follows", effectiveLanguage(after) === "en", effectiveLanguage(after));
+
+  const me = await fetch(`${BASE}/users/me?telegramId=${TG}`).then((r) => r.json());
+  check("Mini App can read the choice back", me.language === "en", String(me.language));
+
+  // The Mini App's opening call carries no language and must not disturb it.
+  await fetch(`${BASE}/users/upsert?telegramId=${TG}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ telegramId: TG, firstName: "Test" }),
+  });
+  after = await prisma.user.findUnique({ where: { telegramId: TG } });
+  check("opening the app keeps the choice", after.language === "en", String(after.language));
+
+  console.log("\n4) Telefon sozlamasi alohida saqlanadi");
+  check("the phone's setting is still recorded", after.languageCode === "ru-RU", String(after.languageCode));
+  check(
+    "a customer who never chose falls back to it",
+    effectiveLanguage({ language: null, languageCode: "ru-RU" }) === "ru"
+  );
+  check("junk in the choice is ignored", effectiveLanguage({ language: "klingon", languageCode: "en" }) === "en");
+  check("only three are accepted", SUPPORTED.join(",") === "uz,ru,en", SUPPORTED.join(","));
+
+  await prisma.user.deleteMany({ where: { telegramId: TG } });
+  console.log(`\n${pass} passed, ${fail} failed`);
+  await prisma.$disconnect();
+  process.exit(fail ? 1 : 0);
+})().catch(async (e) => {
+  console.error(e);
+  await prisma.$disconnect();
+  process.exit(1);
+});

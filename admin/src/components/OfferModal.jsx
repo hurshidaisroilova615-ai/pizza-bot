@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSave } from "../lib/useSave";
 import Modal from "./Modal";
 
 const SEGMENTS = [
@@ -17,7 +18,7 @@ export default function OfferModal({ offer, promoCodes, onClose, onSave }) {
     promoCodeId: offer?.promoCodeId ?? "",
     isActive: offer?.isActive ?? true,
   });
-  const [saving, setSaving] = useState(false);
+  const { saving, error, save } = useSave();
 
   function update(key, value) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -25,16 +26,11 @@ export default function OfferModal({ offer, promoCodes, onClose, onSave }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setSaving(true);
-    try {
-      await onSave({
+    await save(() => onSave({
         ...form,
         imageUrl: form.imageUrl || null,
         promoCodeId: form.promoCodeId === "" ? null : Number(form.promoCodeId),
-      });
-    } finally {
-      setSaving(false);
-    }
+      }));
   }
 
   return (
@@ -79,6 +75,8 @@ export default function OfferModal({ offer, promoCodes, onClose, onSave }) {
           <input type="checkbox" checked={form.isActive} onChange={(e) => update("isActive", e.target.checked)} />
           Faol
         </label>
+        {error && <p className="form-error save-error">{error}</p>}
+
         <div className="modal-actions">
           <button type="button" className="btn btn-outline" onClick={onClose}>
             Bekor qilish
