@@ -10,7 +10,7 @@ export default function ClosedBanner() {
 
   return (
     <div className="closed-banner">
-      <span className="closed-banner-dot" />
+      <span className="closed-banner-dot" aria-hidden="true" />
       <div>
         <p className="closed-banner-title">Hozir yopiqmiz</p>
         <p className="closed-banner-text">

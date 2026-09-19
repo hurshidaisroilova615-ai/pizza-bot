@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContext";
 import { useSettings } from "../context/SettingsContext";
 import OrderStatusBadge from "../components/OrderStatusBadge";
 import OrderTracker from "../components/OrderTracker";
+import Icon from "../components/Icon";
 
 export default function Profile({ telegramUser, onNavigateCatalog, refreshKey }) {
   const settings = useSettings();
@@ -43,20 +44,37 @@ export default function Profile({ telegramUser, onNavigateCatalog, refreshKey })
   return (
     <div>
       <div className="profile-header">
-        <div className="profile-avatar">🙂</div>
+        <div className="profile-avatar">
+          <Icon name="user" size={30} strokeWidth={1.6} />
+        </div>
         <h1 className="profile-name">{telegramUser.firstName}</h1>
         {settings.loyaltyEnabled && (
-          <div className="loyalty-badge">🎁 {loyalty?.balance ?? 0} bonus ball</div>
+          <div className="loyalty-badge">
+            <Icon name="gift" size={15} strokeWidth={2} />
+            {loyalty?.balance ?? 0} bonus ball
+          </div>
         )}
       </div>
 
-      <h2 className="section-title">📜 Mening buyurtmalarim</h2>
+      <h2 className="section-title">Mening buyurtmalarim</h2>
 
-      {loading && <p style={{ textAlign: "center", color: "#8b8b93" }}>Yuklanmoqda...</p>}
+      {loading && (
+        <div className="order-skeletons">
+          {[0, 1].map((i) => (
+            <div className="order-history-item" key={i}>
+              <div className="skeleton skeleton-line" style={{ width: "40%" }} />
+              <div className="skeleton skeleton-line" style={{ width: "75%", marginTop: 12 }} />
+              <div className="skeleton skeleton-line short" style={{ marginTop: 10 }} />
+            </div>
+          ))}
+        </div>
+      )}
 
       {!loading && orders.length === 0 && (
         <div className="empty-state">
-          <div className="empty-emoji">📦</div>
+          <div className="empty-emoji">
+            <Icon name="bag" size={30} strokeWidth={1.5} />
+          </div>
           <p>Hali buyurtmalar yo'q</p>
         </div>
       )}
@@ -74,7 +92,7 @@ export default function Profile({ telegramUser, onNavigateCatalog, refreshKey })
               <span className="order-date">{new Date(order.createdAt).toLocaleDateString("uz-UZ")}</span>
             </div>
 
-            {expanded && <OrderTracker status={order.status} />}
+            {expanded && <OrderTracker status={order.status} orderType={order.orderType} />}
 
             <p className="order-items-text">{order.items.map((i) => `${i.name} x${i.quantity}`).join(", ")}</p>
             <div className="order-total">

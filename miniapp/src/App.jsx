@@ -10,12 +10,15 @@ import { SettingsProvider, useSettings, useSettingsStatus } from "./context/Sett
 import WakeScreen from "./components/WakeScreen";
 import ClosedBanner from "./components/ClosedBanner";
 import { api } from "./api";
-import { initTelegram, getTelegramUser } from "./telegram";
+import { initTelegram, getTelegramUser, watchColorScheme } from "./telegram";
 
 function AppContent({ telegramUser }) {
   const [tab, setTab] = useState("home");
   const [products, setProducts] = useState([]);
   const [ordersRefreshKey, setOrdersRefreshKey] = useState(0);
+  // Set when the customer taps a category on the home screen, so the catalog
+  // opens already filtered instead of on "Barchasi".
+  const [catalogCategory, setCatalogCategory] = useState(null);
   const { addItem, totalCount } = useCart();
 
   useEffect(() => {
@@ -32,9 +35,17 @@ function AppContent({ telegramUser }) {
           products={products}
           onAdd={addItem}
           onOrderClick={() => setTab("catalog")}
+          onOpenCategory={(name) => {
+            setCatalogCategory(name);
+            setTab("catalog");
+          }}
+          onOpenProfile={() => setTab("profile")}
+          ordersRefreshKey={ordersRefreshKey}
         />
       )}
-      {tab === "catalog" && <Catalog products={products} onAdd={addItem} />}
+      {tab === "catalog" && (
+        <Catalog products={products} onAdd={addItem} initialCategory={catalogCategory} />
+      )}
       {tab === "cart" && <Cart onOrderPlaced={() => setOrdersRefreshKey((k) => k + 1)} />}
       {tab === "profile" && (
         <Profile telegramUser={telegramUser} onNavigateCatalog={() => setTab("catalog")} refreshKey={ordersRefreshKey} />
@@ -68,6 +79,7 @@ export default function App() {
     const user = getTelegramUser();
     setTelegramUser(user);
     api.upsertUser({ firstName: user.firstName }).catch(console.error);
+    return watchColorScheme(() => {});
   }, []);
 
   function finishOnboarding() {

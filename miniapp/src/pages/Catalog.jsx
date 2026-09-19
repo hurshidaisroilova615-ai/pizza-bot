@@ -2,13 +2,20 @@ import { useEffect, useMemo, useState } from "react";
 import ProductCard from "../components/ProductCard";
 import ProductSheet from "../components/ProductSheet";
 import { api } from "../api";
+import ProductSkeleton from "../components/ProductSkeleton";
+import Icon from "../components/Icon";
 
 const ALL = "Barchasi";
 
-export default function Catalog({ products, onAdd }) {
+export default function Catalog({ products, onAdd, initialCategory }) {
   const [categories, setCategories] = useState([]);
-  const [activeCategory, setActiveCategory] = useState(ALL);
+  const [activeCategory, setActiveCategory] = useState(initialCategory || ALL);
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  // Arriving from a category tile on the home screen.
+  useEffect(() => {
+    if (initialCategory) setActiveCategory(initialCategory);
+  }, [initialCategory]);
 
   useEffect(() => {
     api
@@ -38,9 +45,13 @@ export default function Catalog({ products, onAdd }) {
         ))}
       </div>
 
-      {filtered.length === 0 && (
+      {products.length === 0 && <ProductSkeleton />}
+
+      {products.length > 0 && filtered.length === 0 && (
         <div className="empty-state">
-          <div className="empty-emoji">🔍</div>
+          <div className="empty-emoji">
+            <Icon name="search" size={30} strokeWidth={1.5} />
+          </div>
           <p>Bu kategoriyada mahsulot topilmadi</p>
         </div>
       )}

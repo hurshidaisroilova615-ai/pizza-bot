@@ -1,9 +1,13 @@
+import { useState } from "react";
 import { useSettings } from "../context/SettingsContext";
+import Icon from "./Icon";
+import { hapticFeedback } from "../telegram";
 
 export default function ProductCard({ product, onOpen, onQuickAdd }) {
   const settings = useSettings();
 
   const soldOut = product.isAvailable === false;
+  const [justAdded, setJustAdded] = useState(false);
 
   return (
     <div className={`product-card ${soldOut ? "sold-out" : ""}`} onClick={() => onOpen(product)}>
@@ -15,14 +19,17 @@ export default function ProductCard({ product, onOpen, onQuickAdd }) {
           simply offers no button, and the ribbon explains why. */}
       {!soldOut && (
         <button
-          className="add-btn"
+          className={`add-btn ${justAdded ? "added" : ""}`}
           onClick={(e) => {
             e.stopPropagation();
+            hapticFeedback("light");
             onQuickAdd(product);
+            setJustAdded(true);
+            setTimeout(() => setJustAdded(false), 900);
           }}
           aria-label={`${product.name} savatchaga qo'shish`}
         >
-          +
+          <Icon name={justAdded ? "check" : "plus"} size={17} strokeWidth={2.6} />
         </button>
       )}
       <div className="product-card-body">

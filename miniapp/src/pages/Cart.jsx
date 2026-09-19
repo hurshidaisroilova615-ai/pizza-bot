@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useSettings } from "../context/SettingsContext";
 import { api } from "../api";
-import { closeMiniApp, hapticFeedback } from "../telegram";
+import { closeMiniApp, hapticFeedback, notificationHaptic } from "../telegram";
+import Icon from "../components/Icon";
 
 export default function Cart({ onOrderPlaced }) {
   const {
@@ -74,7 +75,7 @@ export default function Cart({ onOrderPlaced }) {
         loyaltyPointsToRedeem: useLoyalty ? redeemPoints : 0,
       });
 
-      hapticFeedback("medium");
+      notificationHaptic("success");
       clearCart();
       onOrderPlaced();
       closeMiniApp();
@@ -90,7 +91,9 @@ export default function Cart({ onOrderPlaced }) {
       <div>
         <h1 className="page-title">Savatcha</h1>
         <div className="empty-state">
-          <div className="empty-emoji">🛒</div>
+          <div className="empty-emoji">
+            <Icon name="cart" size={30} strokeWidth={1.5} />
+          </div>
           <p>
             Savatchangiz hozircha bo'sh.
             <br />
@@ -197,14 +200,16 @@ export default function Cart({ onOrderPlaced }) {
               className={`choice ${orderType === "DELIVERY" ? "active" : ""}`}
               onClick={() => setOrderType("DELIVERY")}
             >
-              🛵 Yetkazib berish
+              <Icon name="truck" size={17} strokeWidth={2} />
+              Yetkazib berish
             </button>
             <button
               type="button"
               className={`choice ${orderType === "PICKUP" ? "active" : ""}`}
               onClick={() => setOrderType("PICKUP")}
             >
-              🚶 Olib ketaman
+              <Icon name="walk" size={17} strokeWidth={2} />
+              Olib ketaman
             </button>
           </div>
         </>
@@ -219,14 +224,16 @@ export default function Cart({ onOrderPlaced }) {
               className={`choice ${paymentMethod === "CASH" ? "active" : ""}`}
               onClick={() => setPaymentMethod("CASH")}
             >
-              💵 Naqd
+              <Icon name="cash" size={17} strokeWidth={2} />
+              Naqd
             </button>
             <button
               type="button"
               className={`choice ${paymentMethod === "CARD" ? "active" : ""}`}
               onClick={() => setPaymentMethod("CARD")}
             >
-              💳 Karta
+              <Icon name="card" size={17} strokeWidth={2} />
+              Karta
             </button>
           </div>
         </>
@@ -247,7 +254,10 @@ export default function Cart({ onOrderPlaced }) {
         />
       ) : (
         settings.pickupAddress && (
-          <p className="pickup-note">📍 Olib ketish manzili: {settings.pickupAddress}</p>
+          <p className="pickup-note">
+            <Icon name="pin" size={16} strokeWidth={2} />
+            Olib ketish manzili: {settings.pickupAddress}
+          </p>
         )
       )}
       <input
