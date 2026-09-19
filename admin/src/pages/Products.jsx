@@ -46,6 +46,22 @@ export default function Products() {
     load();
   }
 
+  // Optimistic: the owner taps this while serving customers, so the row has
+  // to flip instantly. A failure puts the old value back and says why.
+  async function toggleAvailability(product) {
+    const next = !product.isAvailable;
+    setProducts((prev) => prev.map((p) => (p.id === product.id ? { ...p, isAvailable: next } : p)));
+    try {
+      const updated = await api.setProductAvailability(product.id, next);
+      setProducts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+    } catch (err) {
+      setProducts((prev) =>
+        prev.map((p) => (p.id === product.id ? { ...p, isAvailable: product.isAvailable } : p))
+      );
+      alert(`O'zgartirib bo'lmadi: ${err.message}`);
+    }
+  }
+
   async function handleDelete(product) {
     if (!confirm(`"${product.name}" mahsulotini o'chirmoqchimisiz?`)) return;
     await api.deleteProduct(product.id);
@@ -90,7 +106,7 @@ export default function Products() {
             </thead>
             <tbody>
               {products.map((product) => (
-                <tr key={product.id}>
+                <tr key={product.id} className={product.isAvailable ? "" : "row-muted"}>
                   <td data-label="Rasm">
                     <img className="thumb" src={product.imageUrl} alt={product.name} />
                   </td>
@@ -99,11 +115,19 @@ export default function Products() {
                   <td data-label="Eski narx">{product.oldPrice ? product.oldPrice.toLocaleString() : "—"}</td>
                   <td data-label="Narx">{product.price.toLocaleString()}</td>
                   <td data-label="Holati">
-                    <span className={`status-pill ${product.isAvailable ? "done" : ""}`}>
-                      {product.isAvailable ? "Mavjud" : "Mavjud emas"}
-                    </span>
+                    <button
+                      className={`stock-toggle ${product.isAvailable ? "in-stock" : "out-of-stock"}`}
+                      onClick={() => toggleAvailability(product)}
+                      title={
+                        product.isAvailable
+                          ? "Bosing — «Tugadi» qilib qo'yiladi"
+                          : "Bosing — yana sotuvga qaytadi"
+                      }
+                    >
+                      {product.isAvailable ? "✅ Bor" : "🚫 Tugadi"}
+                    </button>
                   </td>
-                  <td className="row-actions" style={{ display: "flex", gap: 8 }}>
+                  <td className="row-actions">
                     <button className="btn btn-outline" onClick={() => openEdit(product)}>
                       Tahrirlash
                     </button>

@@ -48,13 +48,7 @@ if (USE_WEBHOOK) {
 // be the deployed HTTPS URL of the miniapp (see DEPLOYMENT.md).
 const MINIAPP_URL = process.env.MINIAPP_PUBLIC_URL || "http://localhost:5173";
 
-const STATUS_LABELS = {
-  PENDING: "Qabul qilindi ✅",
-  PREPARING: "Tayyorlanmoqda 👨‍🍳",
-  ON_DELIVERY: "Kuryerda 🚚",
-  DELIVERED: "Yetkazildi 🎉",
-  CANCELLED: "Bekor qilindi ❌",
-};
+const { STATUS_LABELS, statusLabel } = require("./lib/orderLabels");
 
 function orderButton() {
   return {
@@ -135,7 +129,7 @@ bot.onText(/\/orders/, async (msg) => {
     const text = orders
       .map(
         (o) =>
-          `#${o.id} — ${STATUS_LABELS[o.status] || o.status}\n${o.items
+          `#${o.id} — ${statusLabel(o)}\n${o.items
             .map((i) => `${i.name} x${i.quantity}`)
             .join(", ")}\nJami: ${o.totalPrice.toLocaleString()}`
       )
@@ -169,7 +163,7 @@ async function notifyOrderCreated(telegramId, order) {
 }
 
 async function notifyOrderStatusChanged(telegramId, order) {
-  const label = STATUS_LABELS[order.status] || order.status;
+  const label = statusLabel(order);
   return notifySafe(telegramId, `Buyurtmangiz #${order.id} holati yangilandi:\n${label}`);
 }
 

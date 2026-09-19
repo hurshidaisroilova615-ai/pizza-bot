@@ -227,6 +227,24 @@ th {
   white-space: nowrap;
 }
 
+.nowrap-cell {
+  white-space: nowrap;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Two buttons side by side in the last column. Making the cell itself a
+   flex container takes it out of the table layout and the column spills
+   past the table's edge, so the cell stays a cell and the buttons just
+   sit on one line. */
+td.row-actions {
+  white-space: nowrap;
+}
+
+td.row-actions .btn + .btn {
+  margin-left: 8px;
+}
+
 .thumb {
   width: 40px;
   height: 40px;
@@ -260,6 +278,7 @@ th {
   color: var(--accent);
   border: none;
   display: inline-block;
+  white-space: nowrap;
 }
 
 .status-pill.done {
@@ -994,4 +1013,41 @@ th {
   font-size: 11px;
   color: var(--text-muted);
   text-align: center;
+}
+
+/* The sold-out switch in the product list. It reads as a state, but it is a
+   button, so it gets a pressable look and a clear colour for each state. */
+.stock-toggle {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.stock-toggle:hover {
+  filter: brightness(0.96);
+}
+
+.stock-toggle:active {
+  transform: scale(0.97);
+}
+
+.stock-toggle.in-stock {
+  background: #e7f5ec;
+  border-color: #b8e0c6;
+  color: #1c7a42;
+}
+
+.stock-toggle.out-of-stock {
+  background: #fdeceb;
+  border-color: #f3c2bf;
+  color: var(--danger);
+}
+
+.row-muted td:not(.row-actions) {
+  opacity: 0.55;
 }

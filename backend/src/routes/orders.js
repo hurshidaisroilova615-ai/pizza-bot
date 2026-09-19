@@ -5,9 +5,11 @@ const asyncHandler = require("../middleware/asyncHandler");
 const { requireAdmin } = require("../middleware/adminAuth");
 const telegramUser = require("../middleware/telegramUser");
 const { getSettings } = require("../lib/settings");
+const { openingState } = require("../lib/openingHours");
 const { validatePromoCode, markPromoUsed, PromoError } = require("../lib/promo");
 const { calculateEarnedPoints, earnPoints, redeemPoints } = require("../lib/loyalty");
 const { notifyOrderCreated, notifyOrderStatusChanged, notifyAdmins } = require("../bot");
+const { orderTypeLabel, paymentLabel } = require("../lib/orderLabels");
 
 const router = express.Router();
 
@@ -16,8 +18,18 @@ const orderItemSchema = z.object({
   quantity: z.number().int().positive().max(50),
 });
 
+// Collection costs nothing to deliver, and a large enough order may carry
+// no charge either.
+function feeFor(orderType, afterDiscount, settings) {
+  if (orderType === "PICKUP") return 0;
+  if (settings.freeDeliveryThreshold && afterDiscount >= settings.freeDeliveryThreshold) return 0;
+  return settings.deliveryFee;
+}
+
 const createOrderSchema = z.object({
   items: z.array(orderItemSchema).min(1),
+  orderType: z.enum(["DELIVERY", "PICKUP"]).optional().default("DELIVERY"),
+  paymentMethod: z.enum(["CASH", "CARD"]).optional().default("CASH"),
   phone: z.string().trim().min(5).max(30).optional(),
   deliveryAddress: z.string().trim().max(300).optional(),
   comment: z.string().trim().max(500).optional(),
@@ -99,7 +111,7 @@ router.post(
   "/quote",
   telegramUser,
   asyncHandler(async (req, res) => {
-    const { items, promoCode, loyaltyPointsToRedeem = 0 } = req.body;
+    const { items, promoCode, loyaltyPointsToRedeem = 0, orderType = "DELIVERY" } = req.body;
     const settings = await getSettings();
 
     const productIds = (items || []).map((i) => i.productId);
@@ -110,6 +122,14 @@ router.post(
       const product = productMap.get(i.productId);
       return product ? sum + product.price * i.quantity : sum;
     }, 0);
+
+    // A dish can sell out while it sits in someone's cart. The quote says so
+    // now, so the cart can warn before the customer taps confirm and gets a
+    // rejection they don't understand.
+    const unavailableItems = (items || [])
+      .map((i) => productMap.get(i.productId))
+      .filter((product) => product && !product.isAvailable)
+      .map((product) => ({ id: product.id, name: product.name }));
 
     const user = await prisma.user.findUnique({ where: { telegramId: req.telegramUser.telegramId } });
     const isNewCustomer = !user || (await prisma.order.count({ where: { userId: user.id } })) === 0;
@@ -130,10 +150,7 @@ router.post(
     const loyaltyDiscount = Math.min(loyaltyPointsToRedeem, maxRedeemable) * settings.loyaltyPointValue;
 
     const afterDiscount = Math.max(subtotal - discountAmount - loyaltyDiscount, 0);
-    const deliveryFee =
-      settings.freeDeliveryThreshold && afterDiscount >= settings.freeDeliveryThreshold
-        ? 0
-        : settings.deliveryFee;
+    const deliveryFee = feeFor(orderType, afterDiscount, settings);
     const totalPrice = afterDiscount + deliveryFee;
 
     res.json({
@@ -146,6 +163,7 @@ router.post(
       loyaltyBalance: user?.loyaltyPoints || 0,
       minOrderAmount: settings.minOrderAmount,
       meetsMinimum: subtotal >= settings.minOrderAmount,
+      unavailableItems,
     });
   })
 );
@@ -157,6 +175,33 @@ router.post(
   asyncHandler(async (req, res) => {
     const data = createOrderSchema.parse(req.body);
     const settings = await getSettings();
+
+    const opening = openingState(settings);
+    if (!opening.isOpen) {
+      throw Object.assign(new Error("Closed"), {
+        status: 400,
+        publicMessage: `Hozir buyurtma qabul qilinmaydi. Ish vaqti: ${opening.openTime} - ${opening.closeTime}`,
+      });
+    }
+
+    if (data.orderType === "PICKUP" && !settings.pickupEnabled) {
+      throw Object.assign(new Error("Pickup off"), {
+        status: 400,
+        publicMessage: "Olib ketish xizmati mavjud emas",
+      });
+    }
+    if (data.orderType === "DELIVERY" && !settings.deliveryEnabled) {
+      throw Object.assign(new Error("Delivery off"), {
+        status: 400,
+        publicMessage: "Yetkazib berish xizmati mavjud emas",
+      });
+    }
+    if (data.paymentMethod === "CARD" && !settings.cardPaymentEnabled) {
+      throw Object.assign(new Error("Card off"), {
+        status: 400,
+        publicMessage: "Karta orqali to'lov mavjud emas",
+      });
+    }
     const { telegramId, firstName, lastName, username, languageCode } = req.telegramUser;
 
     const user = await prisma.user.upsert({
@@ -212,10 +257,7 @@ router.post(
     const loyaltyDiscount = pointsToRedeem * settings.loyaltyPointValue;
 
     const afterDiscount = Math.max(subtotal - discountAmount - loyaltyDiscount, 0);
-    const deliveryFee =
-      settings.freeDeliveryThreshold && afterDiscount >= settings.freeDeliveryThreshold
-        ? 0
-        : settings.deliveryFee;
+    const deliveryFee = feeFor(data.orderType, afterDiscount, settings);
     const totalPrice = afterDiscount + deliveryFee;
     const pointsEarned = calculateEarnedPoints(afterDiscount, settings);
 
@@ -229,8 +271,10 @@ router.post(
           loyaltyPointsUsed: pointsToRedeem,
           loyaltyPointsEarned: pointsEarned,
           totalPrice,
+          orderType: data.orderType,
+          paymentMethod: data.paymentMethod,
           phone: data.phone || user.phone || null,
-          deliveryAddress: data.deliveryAddress || null,
+          deliveryAddress: data.orderType === "PICKUP" ? null : data.deliveryAddress || null,
           comment: data.comment || null,
           promoCodeId: promo?.id || null,
           items: {
@@ -262,8 +306,22 @@ router.post(
     });
 
     notifyOrderCreated(user.telegramId, order);
+    // The alert is what the kitchen acts on, so it carries the two things
+    // they would otherwise have to open the panel for: how it goes out, and
+    // how it is paid.
+    const how = orderTypeLabel(order.orderType);
+    const paid = paymentLabel(order.paymentMethod);
     notifyAdmins(
-      `🆕 Yangi buyurtma #${order.id}\nMijoz: ${user.firstName || user.telegramId}\nJami: ${order.totalPrice.toLocaleString()}`
+      [
+        `🆕 Yangi buyurtma #${order.id}`,
+        `Mijoz: ${user.firstName || user.telegramId}`,
+        `${how} · ${paid}`,
+        order.deliveryAddress ? `Manzil: ${order.deliveryAddress}` : null,
+        order.phone ? `Telefon: ${order.phone}` : null,
+        `Jami: ${order.totalPrice.toLocaleString()}`,
+      ]
+        .filter(Boolean)
+        .join("\n")
     );
 
     res.status(201).json(serializeOrder(order));

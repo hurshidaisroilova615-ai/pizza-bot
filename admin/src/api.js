@@ -90,6 +90,11 @@ export const api = {
     request("/products/bulk", { method: "POST", body: JSON.stringify({ items }) }),
   updateProduct: (id, data) => request(`/products/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   deleteProduct: (id) => request(`/products/${id}`, { method: "DELETE" }),
+  setProductAvailability: (id, isAvailable) =>
+    request(`/products/${id}/availability`, {
+      method: "PATCH",
+      body: JSON.stringify({ isAvailable }),
+    }),
   clearCatalog: () => request("/products", { method: "DELETE" }),
 
   getCategories: () => request("/categories?all=1"),

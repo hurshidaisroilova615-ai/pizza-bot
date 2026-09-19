@@ -31,14 +31,14 @@ function serialize(product) {
   };
 }
 
-// Public: catalog listing for the Mini App. Only available products by
-// default; admin panel passes ?all=1 to see everything.
+// Public: catalog listing for the Mini App. Sold-out dishes stay in the
+// list, in their usual place — a customer who can't find yesterday's
+// favourite assumes the shop stopped making it, and one that has moved to
+// the bottom is just as hard to find. The Mini App greys them out instead.
 router.get(
   "/",
   asyncHandler(async (req, res) => {
-    const includeAll = req.query.all === "1";
     const products = await prisma.product.findMany({
-      where: includeAll ? undefined : { isAvailable: true },
       orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
       include: {
         category: true,
@@ -133,6 +133,23 @@ router.put(
     const product = await prisma.product.update({
       where: { id },
       data,
+      include: { category: true, recommendsTo: { include: { recommendedProduct: true } } },
+    });
+    res.json(serialize(product));
+  })
+);
+
+// Admin: the one-tap "sold out" switch. Marking a dish unavailable in the
+// middle of a rush has to be a single tap in the product list, not a trip
+// through the full edit form.
+router.patch(
+  "/:id/availability",
+  requireAdmin,
+  asyncHandler(async (req, res) => {
+    const { isAvailable } = z.object({ isAvailable: z.boolean() }).parse(req.body);
+    const product = await prisma.product.update({
+      where: { id: Number(req.params.id) },
+      data: { isAvailable },
       include: { category: true, recommendsTo: { include: { recommendedProduct: true } } },
     });
     res.json(serialize(product));

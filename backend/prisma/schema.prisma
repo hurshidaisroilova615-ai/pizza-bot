@@ -7,6 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// How the customer takes the order, and how they pay for it — both are
+// the first things a kitchen asks on the phone today.
+enum OrderType {
+  DELIVERY
+  PICKUP
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+}
+
 enum OrderStatus {
   PENDING
   PREPARING
@@ -57,6 +69,17 @@ model Settings {
   orderNotifyChatIds    String?
   welcomeMessage        String?
   aboutText             String?
+  // Trading hours on the business's own clock. A window whose end is
+  // earlier than its start runs past midnight, which is how a late-night
+  // kitchen actually works: 07:00 to 02:00.
+  openTime              String?
+  closeTime             String?
+  timezoneOffset        Int      @default(5)
+  // Not every business delivers, and many take collection as well.
+  deliveryEnabled       Boolean  @default(true)
+  pickupEnabled         Boolean  @default(false)
+  pickupAddress         String?
+  cardPaymentEnabled    Boolean  @default(false)
   // Which revision of the bundled demo catalog has been applied. Lets a
   // newer catalog ship on deploy without re-adding items the owner deleted.
   catalogVersion        Int      @default(0)
@@ -165,7 +188,9 @@ model Order {
   phone               String?
   deliveryAddress     String?
   comment             String?
-  status              OrderStatus @default(PENDING)
+  status              OrderStatus   @default(PENDING)
+  orderType           OrderType     @default(DELIVERY)
+  paymentMethod       PaymentMethod @default(CASH)
 
   promoCodeId Int?
   promoCode   PromoCode? @relation(fields: [promoCodeId], references: [id])

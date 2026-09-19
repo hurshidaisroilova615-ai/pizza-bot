@@ -4,6 +4,7 @@ const prisma = require("../lib/prisma");
 const asyncHandler = require("../middleware/asyncHandler");
 const { requireAdmin } = require("../middleware/adminAuth");
 const { getSettings, invalidateSettingsCache } = require("../lib/settings");
+const { openingState } = require("../lib/openingHours");
 
 const router = express.Router();
 
@@ -16,7 +17,10 @@ router.get(
     // Everything here is branding the Mini App needs, except the owner's
     // alert recipients — those are nobody else's business.
     const { orderNotifyChatIds, ...publicSettings } = await getSettings();
-    res.json(publicSettings);
+    // The Mini App needs to know whether the kitchen is taking orders now,
+    // not just what the hours say, so the comparison happens here where the
+    // business's own clock is known.
+    res.json({ ...publicSettings, opening: openingState(publicSettings) });
   })
 );
 
@@ -47,6 +51,13 @@ const settingsSchema = z.object({
   orderNotifyChatIds: z.string().trim().max(300).nullable().optional(),
   welcomeMessage: z.string().trim().max(500).nullable().optional(),
   aboutText: z.string().trim().max(2000).nullable().optional(),
+  openTime: z.string().trim().regex(/^\d{2}:\d{2}$/).nullable().optional(),
+  closeTime: z.string().trim().regex(/^\d{2}:\d{2}$/).nullable().optional(),
+  timezoneOffset: z.number().int().min(-12).max(14).optional(),
+  deliveryEnabled: z.boolean().optional(),
+  pickupEnabled: z.boolean().optional(),
+  pickupAddress: z.string().trim().max(300).nullable().optional(),
+  cardPaymentEnabled: z.boolean().optional(),
 });
 
 router.put(

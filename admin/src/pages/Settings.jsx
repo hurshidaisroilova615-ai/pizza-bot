@@ -40,6 +40,13 @@ export default function Settings({ onBusinessNameChange }) {
         supportPhone: form.supportPhone || null,
         supportUsername: form.supportUsername || null,
         orderNotifyChatIds: form.orderNotifyChatIds || null,
+        openTime: form.openTime || null,
+        closeTime: form.closeTime || null,
+        timezoneOffset: Number(form.timezoneOffset ?? 5),
+        deliveryEnabled: form.deliveryEnabled,
+        pickupEnabled: form.pickupEnabled,
+        pickupAddress: form.pickupAddress || null,
+        cardPaymentEnabled: form.cardPaymentEnabled,
         welcomeMessage: form.welcomeMessage || null,
         aboutText: form.aboutText || null,
       });
@@ -113,6 +120,85 @@ export default function Settings({ onBusinessNameChange }) {
               <input type="number" value={form.minOrderAmount} onChange={(e) => update("minOrderAmount", e.target.value)} />
             </div>
           </div>
+        </div>
+
+        <div className="settings-section">
+          <h3>Ish vaqti</h3>
+          <p className="field-hint" style={{ marginBottom: 16 }}>
+            Ish vaqtidan tashqarida bot buyurtma qabul qilmaydi va mijozga qachon
+            ochilishini aytadi. Tunda yopiladigan joylar uchun yopilish vaqti ochilishdan
+            kichik bo'lishi mumkin — masalan 07:00 dan 02:00 gacha.
+          </p>
+          <div className="form-row">
+            <div className="form-group">
+              <label>Ochilish vaqti</label>
+              <input
+                type="time"
+                value={form.openTime || ""}
+                onChange={(e) => update("openTime", e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>Yopilish vaqti</label>
+              <input
+                type="time"
+                value={form.closeTime || ""}
+                onChange={(e) => update("closeTime", e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>Vaqt mintaqasi (UTC+)</label>
+              <input
+                type="number"
+                min="-12"
+                max="14"
+                value={form.timezoneOffset ?? 5}
+                onChange={(e) => update("timezoneOffset", e.target.value)}
+              />
+              <span className="field-hint">O'zbekiston 5, Qirg'iziston 6</span>
+            </div>
+          </div>
+          <p className="field-hint">
+            Ikkala katak bo'sh bo'lsa, bot doim buyurtma qabul qiladi.
+          </p>
+        </div>
+
+        <div className="settings-section">
+          <h3>Buyurtma va to'lov turlari</h3>
+          <label className="checkbox-row">
+            <input
+              type="checkbox"
+              checked={form.deliveryEnabled !== false}
+              onChange={(e) => update("deliveryEnabled", e.target.checked)}
+            />
+            Yetkazib berish
+          </label>
+          <label className="checkbox-row">
+            <input
+              type="checkbox"
+              checked={Boolean(form.pickupEnabled)}
+              onChange={(e) => update("pickupEnabled", e.target.checked)}
+            />
+            Olib ketish (mijoz o'zi keladi — yetkazish narxi olinmaydi)
+          </label>
+          {form.pickupEnabled && (
+            <div className="form-group">
+              <label>Olib ketish manzili</label>
+              <input
+                value={form.pickupAddress || ""}
+                onChange={(e) => update("pickupAddress", e.target.value)}
+                placeholder="Mijoz qaerdan oladi"
+              />
+            </div>
+          )}
+          <label className="checkbox-row">
+            <input
+              type="checkbox"
+              checked={Boolean(form.cardPaymentEnabled)}
+              onChange={(e) => update("cardPaymentEnabled", e.target.checked)}
+            />
+            Karta orqali to'lov (mijoz naqd yoki karta tanlaydi)
+          </label>
         </div>
 
         <div className="settings-section">

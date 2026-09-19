@@ -5,10 +5,23 @@ import { api } from "../api";
 import { closeMiniApp, hapticFeedback } from "../telegram";
 
 export default function Cart({ onOrderPlaced }) {
-  const { items, changeQty, subtotal, clearCart, promoCode, setPromoCode, redeemPoints, setRedeemPoints } =
-    useCart();
+  const {
+    items,
+    changeQty,
+    removeItem,
+    subtotal,
+    clearCart,
+    promoCode,
+    setPromoCode,
+    redeemPoints,
+    setRedeemPoints,
+  } = useCart();
   const settings = useSettings();
 
+  // Collection and card payment only appear when the business offers them,
+  // so a shop that only delivers shows no choice at all.
+  const [orderType, setOrderType] = useState(settings.deliveryEnabled === false ? "PICKUP" : "DELIVERY");
+  const [paymentMethod, setPaymentMethod] = useState("CASH");
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
   const [comment, setComment] = useState("");
@@ -29,6 +42,7 @@ export default function Cart({ onOrderPlaced }) {
         items: items.map((i) => ({ productId: i.productId, quantity: i.qty })),
         promoCode: promoCode || undefined,
         loyaltyPointsToRedeem: useLoyalty ? redeemPoints : 0,
+        orderType,
       })
       .then((data) => {
         if (!active) return;
@@ -39,7 +53,7 @@ export default function Cart({ onOrderPlaced }) {
     return () => {
       active = false;
     };
-  }, [items, promoCode, redeemPoints, useLoyalty]);
+  }, [items, promoCode, redeemPoints, useLoyalty, orderType]);
 
   function applyPromo() {
     setPromoCode(promoInput.trim().toUpperCase());
@@ -51,6 +65,8 @@ export default function Cart({ onOrderPlaced }) {
     try {
       await api.createOrder({
         items: items.map((i) => ({ productId: i.productId, quantity: i.qty })),
+        orderType,
+        paymentMethod,
         phone: phone || undefined,
         deliveryAddress: location || undefined,
         comment: comment || undefined,
@@ -86,20 +102,47 @@ export default function Cart({ onOrderPlaced }) {
   }
 
   const loyaltyBalance = quote?.loyaltyBalance || 0;
+  // Only worth asking how the order goes out when the business does both.
+  const bothWaysOffered = settings.deliveryEnabled !== false && settings.pickupEnabled === true;
+  const closed = settings.opening?.isOpen === false;
   const meetsMinimum = quote ? quote.meetsMinimum : true;
+  // Sold out while the cart sat open — say which dish, and offer to drop it
+  // rather than leaving the customer to work out why confirm is dead.
+  const soldOut = quote?.unavailableItems || [];
+  const soldOutIds = new Set(soldOut.map((p) => p.id));
 
   return (
     <div>
       <h1 className="page-title">Savatcha</h1>
 
+      {soldOut.length > 0 && (
+        <div className="sold-out-warning">
+          <p>{soldOut.map((p) => p.name).join(", ")} — hozircha tugadi.</p>
+          <button
+            type="button"
+            className="sold-out-remove"
+            onClick={() => soldOut.forEach((p) => removeItem(p.id))}
+          >
+            Savatchadan olib tashlash
+          </button>
+        </div>
+      )}
+
       {items.map((item) => (
-        <div className="cart-item" key={item.productId}>
+        <div
+          className={`cart-item ${soldOutIds.has(item.productId) ? "sold-out" : ""}`}
+          key={item.productId}
+        >
           <img className="cart-item-img" src={item.imageUrl} alt={item.name} />
           <div className="cart-item-info">
             <p className="cart-item-name">{item.name}</p>
-            <span className="cart-item-price">
-              {item.price.toLocaleString()} {settings.currency}
-            </span>
+            {soldOutIds.has(item.productId) ? (
+              <span className="cart-item-soldout">Hozircha tugadi</span>
+            ) : (
+              <span className="cart-item-price">
+                {item.price.toLocaleString()} {settings.currency}
+              </span>
+            )}
           </div>
           <div className="qty-control">
             <button onClick={() => changeQty(item.productId, -1)}>−</button>
@@ -145,18 +188,68 @@ export default function Cart({ onOrderPlaced }) {
         />
       )}
 
+      {bothWaysOffered && (
+        <>
+          <p className="field-label">Qanday olasiz?</p>
+          <div className="choice-row" role="group" aria-label="Buyurtma turi">
+            <button
+              type="button"
+              className={`choice ${orderType === "DELIVERY" ? "active" : ""}`}
+              onClick={() => setOrderType("DELIVERY")}
+            >
+              🛵 Yetkazib berish
+            </button>
+            <button
+              type="button"
+              className={`choice ${orderType === "PICKUP" ? "active" : ""}`}
+              onClick={() => setOrderType("PICKUP")}
+            >
+              🚶 Olib ketaman
+            </button>
+          </div>
+        </>
+      )}
+
+      {settings.cardPaymentEnabled && (
+        <>
+          <p className="field-label">To'lov turi</p>
+          <div className="choice-row" role="group" aria-label="To'lov turi">
+            <button
+              type="button"
+              className={`choice ${paymentMethod === "CASH" ? "active" : ""}`}
+              onClick={() => setPaymentMethod("CASH")}
+            >
+              💵 Naqd
+            </button>
+            <button
+              type="button"
+              className={`choice ${paymentMethod === "CARD" ? "active" : ""}`}
+              onClick={() => setPaymentMethod("CARD")}
+            >
+              💳 Karta
+            </button>
+          </div>
+        </>
+      )}
+
       <input
         className="location-input"
         placeholder="Telefon raqamingiz"
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
       />
-      <input
-        className="location-input"
-        placeholder="Yetkazish manzili"
-        value={location}
-        onChange={(e) => setLocation(e.target.value)}
-      />
+      {orderType === "DELIVERY" ? (
+        <input
+          className="location-input"
+          placeholder="Yetkazish manzili"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+        />
+      ) : (
+        settings.pickupAddress && (
+          <p className="pickup-note">📍 Olib ketish manzili: {settings.pickupAddress}</p>
+        )
+      )}
       <input
         className="location-input"
         placeholder="Izoh (ixtiyoriy)"
@@ -203,6 +296,12 @@ export default function Cart({ onOrderPlaced }) {
         </div>
       </div>
 
+      {closed && (
+        <p className="form-error" style={{ padding: "8px 20px 0" }}>
+          Hozir yopiqmiz. Ish vaqti: {settings.opening.openTime} - {settings.opening.closeTime}
+        </p>
+      )}
+
       {!meetsMinimum && (
         <p className="form-error" style={{ padding: "8px 20px 0" }}>
           Minimal buyurtma summasi: {quote.minOrderAmount.toLocaleString()} {settings.currency}
@@ -213,9 +312,15 @@ export default function Cart({ onOrderPlaced }) {
         <button
           className="btn-primary"
           onClick={handleConfirm}
-          disabled={submitting || !meetsMinimum}
+          disabled={submitting || !meetsMinimum || closed || soldOut.length > 0}
         >
-          {submitting ? "Yuborilmoqda..." : "Buyurtmani tasdiqlash"}
+          {closed
+            ? "Hozir yopiq"
+            : soldOut.length > 0
+            ? "Tugagan mahsulotni olib tashlang"
+            : submitting
+            ? "Yuborilmoqda..."
+            : "Buyurtmani tasdiqlash"}
         </button>
       </div>
     </div>

@@ -8,6 +8,7 @@ import Profile from "./pages/Profile";
 import { CartProvider, useCart } from "./context/CartContext";
 import { SettingsProvider, useSettings, useSettingsStatus } from "./context/SettingsContext";
 import WakeScreen from "./components/WakeScreen";
+import ClosedBanner from "./components/ClosedBanner";
 import { api } from "./api";
 import { initTelegram, getTelegramUser } from "./telegram";
 
@@ -23,6 +24,8 @@ function AppContent({ telegramUser }) {
 
   return (
     <div className="app-shell">
+      <ClosedBanner />
+
       {tab === "home" && (
         <Home
           firstName={telegramUser.firstName}

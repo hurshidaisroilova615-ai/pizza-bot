@@ -1,10 +1,6 @@
-const STATUS_OPTIONS = [
-  { value: "PENDING", label: "Qabul qilindi" },
-  { value: "PREPARING", label: "Tayyorlanmoqda" },
-  { value: "ON_DELIVERY", label: "Kuryerda" },
-  { value: "DELIVERED", label: "Yetkazildi" },
-  { value: "CANCELLED", label: "Bekor qilindi" },
-];
+import { statusLabel, orderTypeLabel, paymentLabel } from "../lib/orderLabels";
+
+const STATUS_VALUES = ["PENDING", "PREPARING", "ON_DELIVERY", "DELIVERED", "CANCELLED"];
 
 export default function OrderDetailDrawer({ order, onClose, onStatusChange }) {
   if (!order) return null;
@@ -27,8 +23,15 @@ export default function OrderDetailDrawer({ order, onClose, onStatusChange }) {
         </div>
 
         <div className="drawer-section">
-          <h4>Yetkazish</h4>
-          <p>{order.deliveryAddress || "Manzil ko'rsatilmagan"}</p>
+          <h4>Buyurtma turi</h4>
+          <p>
+            {orderTypeLabel(order.orderType)} · {paymentLabel(order.paymentMethod)}
+          </p>
+          {order.orderType === "PICKUP" ? (
+            <p className="muted">Mijoz o'zi olib ketadi</p>
+          ) : (
+            <p>{order.deliveryAddress || "Manzil ko'rsatilmagan"}</p>
+          )}
           {order.comment && <p className="muted">Izoh: {order.comment}</p>}
         </div>
 
@@ -78,9 +81,9 @@ export default function OrderDetailDrawer({ order, onClose, onStatusChange }) {
             value={order.status}
             onChange={(e) => onStatusChange(order, e.target.value)}
           >
-            {STATUS_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
+            {STATUS_VALUES.map((value) => (
+              <option key={value} value={value}>
+                {statusLabel(value, order.orderType)}
               </option>
             ))}
           </select>
@@ -88,7 +91,7 @@ export default function OrderDetailDrawer({ order, onClose, onStatusChange }) {
           <div className="status-timeline">
             {order.statusHistory?.map((h) => (
               <div className="status-timeline-row" key={h.id}>
-                <span>{STATUS_OPTIONS.find((o) => o.value === h.status)?.label || h.status}</span>
+                <span>{statusLabel(h.status, order.orderType)}</span>
                 <span className="muted">{new Date(h.createdAt).toLocaleString("uz-UZ")}</span>
               </div>
             ))}

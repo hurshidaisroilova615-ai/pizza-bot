@@ -32,6 +32,10 @@ export function CartProvider({ children }) {
     );
   }
 
+  function removeItem(productId) {
+    setItems((prev) => prev.filter((i) => i.productId !== productId));
+  }
+
   function clearCart() {
     setItems([]);
     setPromoCode("");
@@ -45,6 +49,7 @@ export function CartProvider({ children }) {
     items,
     addItem,
     changeQty,
+    removeItem,
     clearCart,
     subtotal,
     totalCount,

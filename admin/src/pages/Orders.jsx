@@ -1,14 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import OrderDetailDrawer from "../components/OrderDetailDrawer";
-
-const STATUS_LABELS = {
-  PENDING: "Qabul qilindi",
-  PREPARING: "Tayyorlanmoqda",
-  ON_DELIVERY: "Kuryerda",
-  DELIVERED: "Yetkazildi",
-  CANCELLED: "Bekor qilindi",
-};
+import { STATUS_LABELS, statusLabel, orderTypeLabel, paymentLabel } from "../lib/orderLabels";
 
 const STATUS_FILTERS = ["", "PENDING", "PREPARING", "ON_DELIVERY", "DELIVERED", "CANCELLED"];
 
@@ -92,6 +85,7 @@ export default function Orders() {
                 <th>#</th>
                 <th>Mijoz</th>
                 <th>Telefon</th>
+                <th>Turi</th>
                 <th>Mahsulotlar</th>
                 <th>Jami</th>
                 <th>Sana</th>
@@ -105,6 +99,11 @@ export default function Orders() {
                   <td data-label="#">#{order.id}</td>
                   <td data-label="Mijoz">{order.user?.firstName || "—"}</td>
                   <td data-label="Telefon">{order.phone || order.user?.phone || "—"}</td>
+                  <td data-label="Turi" className="nowrap-cell">
+                    {orderTypeLabel(order.orderType)}
+                    <br />
+                    <span className="muted">{paymentLabel(order.paymentMethod)}</span>
+                  </td>
                   <td data-label="Mahsulotlar" className="truncate-cell">
                     {order.items.map((i) => `${i.name} x${i.quantity}`).join(", ")}
                   </td>
@@ -112,7 +111,7 @@ export default function Orders() {
                   <td data-label="Sana">{new Date(order.createdAt).toLocaleString("uz-UZ")}</td>
                   <td data-label="Holati">
                     <span className={`status-pill status-${order.status.toLowerCase()}`}>
-                      {STATUS_LABELS[order.status]}
+                      {statusLabel(order.status, order.orderType)}
                     </span>
                   </td>
                   <td data-label="Keyingi qadam" className="row-actions">
@@ -124,7 +123,7 @@ export default function Orders() {
                           handleStatusChange(order, NEXT_STATUS[order.status]);
                         }}
                       >
-                        {STATUS_LABELS[NEXT_STATUS[order.status]]} →
+                        {statusLabel(NEXT_STATUS[order.status], order.orderType)} →
                       </button>
                     ) : (
                       <span className="muted">—</span>

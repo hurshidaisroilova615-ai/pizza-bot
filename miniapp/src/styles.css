@@ -116,8 +116,16 @@ button {
   font-weight: 600;
 }
 
-.btn-primary:active {
+.btn-primary:active:not(:disabled) {
   opacity: 0.85;
+}
+
+/* A button that can't be pressed must not look pressable — a full-colour
+   "Hozircha tugadi" button reads as an invitation to tap. */
+.btn-primary:disabled {
+  background: var(--border);
+  color: var(--text-muted);
+  cursor: not-allowed;
 }
 
 /* ---------- Header ---------- */
@@ -817,17 +825,45 @@ button {
 }
 
 /* ---------- Product unavailable ---------- */
-.product-unavailable-badge {
+/* Sold out: the dish stays on the menu so the customer knows the kitchen
+   still makes it, but the photo is drained of colour and a ribbon sits
+   across it, so the state reads at a glance without any tap. */
+.product-card-media,
+.sheet-media {
+  position: relative;
+  line-height: 0;
+}
+
+.product-card.sold-out .product-card-img,
+.sheet-media.sold-out .sheet-img {
+  filter: grayscale(1) brightness(1.06);
+}
+
+.product-card.sold-out .product-card-body {
+  opacity: 0.6;
+}
+
+.sold-out-ribbon {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  background: rgba(23, 23, 26, 0.75);
-  color: white;
-  font-size: 10px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(23, 23, 26, 0.82);
+  color: #fff;
+  font-size: 11px;
   font-weight: 700;
-  padding: 3px 8px;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  padding: 7px 12px;
   border-radius: 999px;
+  white-space: nowrap;
   z-index: 2;
+  backdrop-filter: blur(2px);
+}
+
+.sheet-media .sold-out-ribbon {
+  font-size: 13px;
+  padding: 9px 16px;
 }
 
 .add-btn:disabled {
@@ -1085,4 +1121,127 @@ button {
   font-size: 13.5px;
   line-height: 1.5;
   color: var(--text-muted);
+}
+
+/* ---------- Order type and payment ---------- */
+/* Four pills in a row mean nothing without a word above them. */
+.field-label {
+  margin: 4px 0 8px;
+  padding: 0 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* Two choices side by side, the selected one carrying the business's own
+   accent so the picked option is obvious at a glance. */
+.choice-row {
+  display: flex;
+  gap: 10px;
+  padding: 0 20px 12px;
+}
+
+.choice {
+  flex: 1;
+  padding: 12px 10px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.choice.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.pickup-note {
+  margin: 0 20px 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--accent-soft);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Something in the cart sold out while it was sitting there. This sits at
+   the top of the cart: the customer must meet it before the dead confirm
+   button at the bottom, not after. */
+.sold-out-warning {
+  margin: 0 20px 14px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: #fdeceb;
+  border: 1px solid #f3c2bf;
+}
+
+.sold-out-warning p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #9c1f16;
+}
+
+.sold-out-remove {
+  margin-top: 8px;
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #9c1f16;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.cart-item.sold-out .cart-item-img,
+.cart-item.sold-out .cart-item-name {
+  filter: grayscale(1);
+  opacity: 0.6;
+}
+
+.cart-item-soldout {
+  font-size: 13px;
+  font-weight: 700;
+  color: #9c1f16;
+}
+
+/* ---------- Closed for the day ---------- */
+.closed-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 12px 20px 0;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: #fff4e5;
+  border: 1px solid #f5d9ab;
+}
+
+.closed-banner-dot {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: #d97706;
+}
+
+.closed-banner-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #8a4b08;
+}
+
+.closed-banner-text {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #9a6320;
 }

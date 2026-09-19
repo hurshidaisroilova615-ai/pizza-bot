@@ -73,7 +73,7 @@ export default function PromoCodes() {
                   <td data-label="Holati">
                     <span className={`status-pill ${p.isActive ? "done" : ""}`}>{p.isActive ? "Faol" : "Nofaol"}</span>
                   </td>
-                  <td className="row-actions" style={{ display: "flex", gap: 8 }}>
+                  <td className="row-actions">
                     <button
                       className="btn btn-outline"
                       onClick={() => {

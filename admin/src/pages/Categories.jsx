@@ -67,7 +67,7 @@ export default function Categories() {
                   <td data-label="Holati">
                     <span className={`status-pill ${c.isActive ? "done" : ""}`}>{c.isActive ? "Faol" : "Nofaol"}</span>
                   </td>
-                  <td className="row-actions" style={{ display: "flex", gap: 8 }}>
+                  <td className="row-actions">
                     <button
                       className="btn btn-outline"
                       onClick={() => {
