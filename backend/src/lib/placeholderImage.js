@@ -2,14 +2,17 @@
 // something deliberate. Inline rather than a hosted file: it needs no
 // network, no storage, and survives a database moving between deployments.
 const PALETTE = [
-  { match: ["pizza", "picca"], emoji: "🍕", background: "#fff1f0" },
+  { match: ["pizza", "pitsa", "picca"], emoji: "🍕", background: "#fff1f0" },
   { match: ["burger", "gamburger", "chizburger"], emoji: "🍔", background: "#fff6e5" },
-  { match: ["lavash", "donar", "doner", "shaurma"], emoji: "🌯", background: "#f3f0e7" },
+  // Before the kebab entry, so "Shashlik Xot-Dog" reads as a hot dog.
+  { match: ["hot-dog", "hot dog", "xot-dog", "xot dog", "hotdog", "sosiska"], emoji: "🌭", background: "#fdf1e0" },
+  { match: ["lavash", "donar", "doner", "shaurma", "shaverma", "shawarma", "burrito"], emoji: "🌯", background: "#f3f0e7" },
   { match: ["sushi", "roll"], emoji: "🍣", background: "#eaf1ff" },
   { match: ["kola", "cola", "ichimlik", "choy", "suv", "fresh", "sok"], emoji: "🥤", background: "#f7f7f8" },
   { match: ["shirinlik", "tort", "keks", "chizkeyk", "muzqaymoq", "desert"], emoji: "🍰", background: "#fdeef3" },
-  { match: ["fri", "kartoshka", "nugget", "snack", "sous"], emoji: "🍟", background: "#fdf3e3" },
+  { match: ["fri", "kartoshka", "nugget", "naggets", "snack", "sous"], emoji: "🍟", background: "#fdf3e3" },
   { match: ["salat", "salad"], emoji: "🥗", background: "#eef6ea" },
+  { match: ["tost", "sendvich", "sandwich", "klab"], emoji: "🥪", background: "#f6f1e6" },
   { match: ["kombo", "set", "combo"], emoji: "🍱", background: "#fff1f0" },
   { match: ["sho'rva", "shorva", "lagmon", "osh", "palov", "mastava"], emoji: "🍲", background: "#f6efe7" },
   { match: ["somsa", "patir", "non", "lepyoshka"], emoji: "🥟", background: "#f7f0e4" },
@@ -21,9 +24,9 @@ const PALETTE = [
 
 const DEFAULT = { emoji: "🍽", background: "#f7f7f8" };
 
-function pickStyle(...hints) {
-  const haystack = hints.filter(Boolean).join(" ").toLowerCase();
-  return PALETTE.find((entry) => entry.match.some((word) => haystack.includes(word))) || DEFAULT;
+function matchStyle(text) {
+  const haystack = (text || "").toLowerCase();
+  return PALETTE.find((entry) => entry.match.some((word) => haystack.includes(word)));
 }
 
 function placeholderImage(emoji, background) {
@@ -38,7 +41,10 @@ function placeholderImage(emoji, background) {
 // Guesses a fitting icon from the product and category names, so a menu
 // imported without photographs still looks sorted rather than blank.
 function placeholderFor(name, categoryName) {
-  const style = pickStyle(name, categoryName);
+  // The dish's own name decides, and the category only fills in when the
+  // name says nothing — otherwise a shawarma sitting in a "Hot-dog va
+  // shaverma" category would borrow the hot dog's icon.
+  const style = matchStyle(name) || matchStyle(categoryName) || DEFAULT;
   return placeholderImage(style.emoji, style.background);
 }
 

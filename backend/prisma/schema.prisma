@@ -60,6 +60,10 @@ model Settings {
   // Which revision of the bundled demo catalog has been applied. Lets a
   // newer catalog ship on deploy without re-adding items the owner deleted.
   catalogVersion        Int      @default(0)
+  // Which prepared client catalog this deployment last loaded, as
+  // "<name>:<revision>". Stops a deploy from re-applying a catalog over
+  // changes the owner has made since.
+  appliedCatalog        String?
   updatedAt             DateTime @updatedAt
 }
 

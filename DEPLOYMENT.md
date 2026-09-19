@@ -164,3 +164,32 @@ beriladi va xizmat 15 daqiqa harakatsizlikdan keyin uxlaydi. Shuning uchun
 bir vaqtda 4–5 ta demo backend bemalol sig'adi, lekin `KEEP_AWAKE=true`ni
 faqat hozir ko'rsatayotgan bittasida yoqing — u xizmatni uxlatmaydi va
 soatlarni tez yeydi.
+
+## Mijozning menyusini deploy orqali yuklash
+
+Menyuni admin paneldan qo'lda kiritish o'rniga, uni **fayl** ko'rinishida
+tayyorlab, deploy paytida yuklash mumkin. Mijozga tayyor bot ko'rsatish
+uchun eng tez yo'l — biznes nomi, telefoni, valyutasi, butun katalogi va
+qo'shimcha tavsiyalari bitta faylda keladi.
+
+**Qanday ishlaydi:**
+
+1. Katalog fayli: `backend/prisma/catalogs/<nom>.json`
+2. Render'da o'sha xizmatga `APPLY_CATALOG=<nom>` qo'shiladi
+3. Keyingi deployda katalog o'z-o'zidan yuklanadi
+
+**Ikkita himoya bor:**
+
+- `APPLY_CATALOG` qo'yilmagan deploymentga umuman tegmaydi — ya'ni boshqa
+  mijozlarning serverlari xavfsiz
+- Yuklangandan keyin `Settings.appliedCatalog` ga belgi yoziladi, shuning
+  uchun har bir deployda takrorlanmaydi va egasining keyingi
+  o'zgartirishlari saqlanib qoladi. Qayta yuklash kerak bo'lsa, fayldagi
+  `revision` raqami oshiriladi.
+
+Eski buyurtmalar saqlanadi: har bir buyurtma qatorida mahsulot nomi va
+narxi alohida yozilgan, tozalash faqat mahsulotga bog'lanishni uzadi.
+
+Rasm yuklanmagan mahsulotlarga nomiga qarab belgi qo'yiladi (pitsa → 🍕,
+xot-dog → 🌭, shaverma → 🌯), keyin egasi panel orqali haqiqiy rasmlarini
+qo'yishi mumkin.
