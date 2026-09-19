@@ -1,5 +1,5 @@
 {
-  "revision": 4,
+  "revision": 5,
   "settings": {
     "businessName": "Fedya Shaurma",
     "businessType": "food",
@@ -17,22 +17,22 @@
         {
           "name": "Lavash 160 gr",
           "price": 45000,
-          "image": "fedya-shaurma/shaurma.jpg"
+          "image": "fedya-shaurma/lavash.jpg"
         },
         {
           "name": "Lavash 120 gr",
           "price": 35000,
-          "image": "fedya-shaurma/shaurma.jpg"
+          "image": "fedya-shaurma/lavash.jpg"
         },
         {
           "name": "Lavash 100 gr",
           "price": 28000,
-          "image": "fedya-shaurma/shaurma.jpg"
+          "image": "fedya-shaurma/lavash.jpg"
         },
         {
           "name": "Lavash 80 gr",
           "price": 23000,
-          "image": "fedya-shaurma/shaurma.jpg"
+          "image": "fedya-shaurma/lavash.jpg"
         }
       ]
     },
