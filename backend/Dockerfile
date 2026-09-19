@@ -1,4 +1,7 @@
-FROM node:20-alpine
+# Debian rather than Alpine: Prisma's engines need OpenSSL, which Alpine
+# does not carry, and the failure only appears when the image is built —
+# not in a local install on a normal distribution.
+FROM node:20-slim
 
 WORKDIR /app
 
