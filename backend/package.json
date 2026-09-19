@@ -10,7 +10,8 @@
     "seed": "node prisma/seed.js",
     "migrate": "prisma migrate deploy",
     "migrate:dev": "prisma migrate dev",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test:e2e": "node tests/e2e.js"
   },
   "dependencies": {
     "@prisma/client": "^5.20.0",

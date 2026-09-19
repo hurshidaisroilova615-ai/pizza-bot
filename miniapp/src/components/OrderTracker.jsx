@@ -1,25 +1,27 @@
 import Icon from "./Icon";
+import { useI18n } from "../i18n/LanguageContext";
 
 const STEPS = [
-  { key: "PENDING", label: "Qabul qilindi", icon: "check" },
-  { key: "PREPARING", label: "Tayyorlanmoqda", icon: "chef" },
-  { key: "ON_DELIVERY", label: "Kuryerda", icon: "truck" },
-  { key: "DELIVERED", label: "Yetkazildi", icon: "bag" },
+  { key: "PENDING", label: "order.pending", icon: "check" },
+  { key: "PREPARING", label: "order.preparing", icon: "chef" },
+  { key: "ON_DELIVERY", label: "order.courier", icon: "truck" },
+  { key: "DELIVERED", label: "order.delivered", icon: "bag" },
 ];
 
 // A collected order has no courier, so the same four steps are worded for
 // the customer who is coming to fetch it.
 const PICKUP_STEPS = STEPS.map((s) =>
   s.key === "ON_DELIVERY"
-    ? { ...s, label: "Olib ketishga tayyor", icon: "walk" }
+    ? { ...s, label: "order.readyForPickup", icon: "walk" }
     : s.key === "DELIVERED"
-    ? { ...s, label: "Topshirildi" }
+    ? { ...s, label: "order.handedOver" }
     : s
 );
 
 export default function OrderTracker({ status, orderType }) {
+  const { t } = useI18n();
   if (status === "CANCELLED") {
-    return <p className="order-cancelled-note">Bu buyurtma bekor qilingan</p>;
+    return <p className="order-cancelled-note">{t("order.cancelledNote")}</p>;
   }
 
   const steps = orderType === "PICKUP" ? PICKUP_STEPS : STEPS;
@@ -37,7 +39,7 @@ export default function OrderTracker({ status, orderType }) {
           <div className="tracker-dot">
             <Icon name={step.icon} size={15} strokeWidth={2.2} />
           </div>
-          <span className="tracker-label">{step.label}</span>
+          <span className="tracker-label">{t(step.label)}</span>
           {i < steps.length - 1 && <div className={`tracker-line ${i < currentIndex ? "done" : ""}`} />}
         </div>
       ))}

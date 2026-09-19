@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useSettings } from "../context/SettingsContext";
 import Icon from "./Icon";
 import { hapticFeedback } from "../telegram";
+import { useI18n } from "../i18n/LanguageContext";
 
 export default function Onboarding({ onFinish }) {
   const settings = useSettings();
+  const { t } = useI18n();
   const [step, setStep] = useState(0);
 
   // A title carrying two sentences was doing the job of a title and a
@@ -14,17 +16,17 @@ export default function Onboarding({ onFinish }) {
     {
       icon: "bag",
       title: `${settings.businessName}`,
-      text: "Butun menyu shu yerda. Tanlang, savatchaga soling va buyurtma bering.",
+      text: t("onboarding.menuText"),
     },
     {
       icon: "truck",
-      title: "Tez va oson",
-      text: "Yetkazib beramiz yoki o'zingiz olib ketasiz — buyurtmangiz qaysi bosqichda ekanini shu yerda kuzatib turasiz.",
+      title: t("onboarding.deliveryTitle"),
+      text: t("onboarding.deliveryText"),
     },
     {
       icon: "gift",
-      title: "Har xarid uchun bonus",
-      text: "To'plangan ballaringiz keyingi buyurtmangizda chegirmaga aylanadi.",
+      title: t("onboarding.bonusTitle"),
+      text: t("onboarding.bonusText"),
     },
   ];
 
@@ -42,7 +44,7 @@ export default function Onboarding({ onFinish }) {
       <div className="onboarding-top">
         {!isLast && (
           <button className="onboarding-skip" onClick={onFinish}>
-            O'tkazib yuborish
+            {t("onboarding.skip")}
           </button>
         )}
       </div>
@@ -65,7 +67,7 @@ export default function Onboarding({ onFinish }) {
 
       <div className="onboarding-footer">
         <button className="btn-primary" onClick={next}>
-          {isLast ? "Boshladik" : "Davom etish"}
+          {isLast ? t("onboarding.start") : t("onboarding.next")}
         </button>
       </div>
     </div>

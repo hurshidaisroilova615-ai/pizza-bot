@@ -49,11 +49,14 @@ if (USE_WEBHOOK) {
 const MINIAPP_URL = process.env.MINIAPP_PUBLIC_URL || "http://localhost:5173";
 
 const { STATUS_LABELS, statusLabel } = require("./lib/orderLabels");
+const { messagesFor, statusLabelFor } = require("./lib/botMessages");
 
-function orderButton() {
+function orderButton(languageCode) {
   return {
     reply_markup: {
-      inline_keyboard: [[{ text: "🛍 Buyurtma berish", web_app: { url: MINIAPP_URL } }]],
+      inline_keyboard: [
+        [{ text: messagesFor(languageCode).orderButton, web_app: { url: MINIAPP_URL } }],
+      ],
     },
   };
 }
@@ -75,7 +78,7 @@ async function syncMenuButton() {
     await bot.setChatMenuButton({
       menu_button: JSON.stringify({
         type: "web_app",
-        text: "Menyu",
+        text: messagesFor().menuButton,
         web_app: { url: MINIAPP_URL },
       }),
     });
@@ -115,11 +118,16 @@ bot.onText(/\/start/, async (msg) => {
 
   const settings = await getSettings().catch(() => null);
   const businessName = settings?.businessName || "SmartOrder";
-  const welcome =
-    settings?.welcomeMessage ||
-    `Assalomu alaykum, ${firstName}! 👋\n\n${businessName}ga xush kelibsiz. Buyurtma berish uchun pastdagi tugmani bosing.`;
+  const languageCode = msg.from.language_code;
+  const m = messagesFor(languageCode);
+  // An owner who has written their own welcome gets it sent as they wrote
+  // it. Translating someone's own words into a language they never checked
+  // is worse than showing them in one language.
+  const welcome = settings?.welcomeMessage
+    ? settings.welcomeMessage
+    : `${m.greeting.replace("!", `, ${firstName}!`)}\n\n${m.welcome(businessName)} ${m.orderPrompt}`;
 
-  bot.sendMessage(chatId, welcome, orderButton());
+  bot.sendMessage(chatId, welcome, orderButton(languageCode));
 });
 
 // Setting up order alerts needs a chat id, and hunting one down otherwise
@@ -142,7 +150,7 @@ bot.onText(/\/orders/, async (msg) => {
   const telegramId = String(msg.from.id);
   try {
     const user = await prisma.user.findUnique({ where: { telegramId } });
-    if (!user) return bot.sendMessage(msg.chat.id, "Sizda hali buyurtmalar yo'q.");
+    if (!user) return bot.sendMessage(msg.chat.id, messagesFor(msg.from.language_code).noOrders);
 
     const orders = await prisma.order.findMany({
       where: { userId: user.id },
@@ -152,15 +160,15 @@ bot.onText(/\/orders/, async (msg) => {
     });
 
     if (orders.length === 0) {
-      return bot.sendMessage(msg.chat.id, "Sizda hali buyurtmalar yo'q.");
+      return bot.sendMessage(msg.chat.id, messagesFor(msg.from.language_code).noOrders);
     }
 
     const text = orders
       .map(
         (o) =>
-          `#${o.id} — ${statusLabel(o)}\n${o.items
+          `#${o.id} — ${statusLabelFor(o, msg.from.language_code)}\n${o.items
             .map((i) => `${i.name} x${i.quantity}`)
-            .join(", ")}\nJami: ${o.totalPrice.toLocaleString()}`
+            .join(", ")}\n${messagesFor(msg.from.language_code).total}: ${o.totalPrice.toLocaleString()}`
       )
       .join("\n\n");
 
@@ -184,16 +192,14 @@ async function notifySafe(chatId, text, opts) {
   }
 }
 
-async function notifyOrderCreated(telegramId, order) {
-  return notifySafe(
-    telegramId,
-    `Buyurtmangiz #${order.id} qabul qilindi! ✅\nJami: ${order.totalPrice.toLocaleString()}\n\nHolatini shu botdan yoki Mini App profilingizdan kuzatib borishingiz mumkin.`
-  );
+async function notifyOrderCreated(telegramId, order, languageCode) {
+  const m = messagesFor(languageCode);
+  return notifySafe(telegramId, m.orderCreated(order.id, order.totalPrice.toLocaleString()));
 }
 
-async function notifyOrderStatusChanged(telegramId, order) {
-  const label = statusLabel(order);
-  return notifySafe(telegramId, `Buyurtmangiz #${order.id} holati yangilandi:\n${label}`);
+async function notifyOrderStatusChanged(telegramId, order, languageCode) {
+  const m = messagesFor(languageCode);
+  return notifySafe(telegramId, m.statusChanged(order.id, statusLabelFor(order, languageCode)));
 }
 
 async function notifyOffer(telegramId, offer) {

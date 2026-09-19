@@ -6,6 +6,7 @@ import Catalog from "./pages/Catalog";
 import Cart from "./pages/Cart";
 import Profile from "./pages/Profile";
 import { CartProvider, useCart } from "./context/CartContext";
+import { LanguageProvider } from "./i18n/LanguageContext";
 import { SettingsProvider, useSettings, useSettingsStatus } from "./context/SettingsContext";
 import WakeScreen from "./components/WakeScreen";
 import ClosedBanner from "./components/ClosedBanner";
@@ -91,7 +92,8 @@ export default function App() {
 
   return (
     <SettingsProvider>
-      <ThemedApp>
+      <LanguageProvider>
+        <ThemedApp>
         {showOnboarding ? (
           <Onboarding onFinish={finishOnboarding} />
         ) : (
@@ -99,7 +101,8 @@ export default function App() {
             <AppContent telegramUser={telegramUser} />
           </CartProvider>
         )}
-      </ThemedApp>
+        </ThemedApp>
+      </LanguageProvider>
     </SettingsProvider>
   );
 }

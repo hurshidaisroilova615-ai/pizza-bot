@@ -313,7 +313,7 @@ router.post(
       return created;
     });
 
-    notifyOrderCreated(user.telegramId, order);
+    notifyOrderCreated(user.telegramId, order, user.languageCode);
     // The alert is what the kitchen acts on, so it carries the two things
     // they would otherwise have to open the panel for: how it goes out, and
     // how it is paid.
@@ -377,7 +377,7 @@ router.put(
       return updated;
     });
 
-    notifyOrderStatusChanged(order.user.telegramId, order);
+    notifyOrderStatusChanged(order.user.telegramId, order, order.user.languageCode);
     res.json(serializeOrder(order));
   })
 );

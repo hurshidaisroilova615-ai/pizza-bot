@@ -4,10 +4,12 @@ import ProductSheet from "../components/ProductSheet";
 import { api } from "../api";
 import ProductSkeleton from "../components/ProductSkeleton";
 import Icon from "../components/Icon";
+import { useI18n } from "../i18n/LanguageContext";
 
-const ALL = "Barchasi";
+const ALL = "__all__";
 
 export default function Catalog({ products, onAdd, initialCategory }) {
+  const { t } = useI18n();
   const [categories, setCategories] = useState([]);
   const [activeCategory, setActiveCategory] = useState(initialCategory || ALL);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -31,7 +33,7 @@ export default function Catalog({ products, onAdd, initialCategory }) {
 
   return (
     <div>
-      <h1 className="page-title">Katalog</h1>
+      <h1 className="page-title">{t("catalog.title")}</h1>
 
       <div className="tag-row">
         {tabs.map((cat) => (
@@ -40,7 +42,7 @@ export default function Catalog({ products, onAdd, initialCategory }) {
             className={`tag ${activeCategory === cat ? "active" : ""}`}
             onClick={() => setActiveCategory(cat)}
           >
-            {cat}
+            {cat === ALL ? t("catalog.all") : cat}
           </button>
         ))}
       </div>
@@ -52,7 +54,7 @@ export default function Catalog({ products, onAdd, initialCategory }) {
           <div className="empty-emoji">
             <Icon name="search" size={30} strokeWidth={1.5} />
           </div>
-          <p>Bu kategoriyada mahsulot topilmadi</p>
+          <p>{t("catalog.empty")}</p>
         </div>
       )}
 

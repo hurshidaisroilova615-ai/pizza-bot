@@ -4,6 +4,7 @@ import { useSettings } from "../context/SettingsContext";
 import { api } from "../api";
 import { closeMiniApp, hapticFeedback, notificationHaptic } from "../telegram";
 import Icon from "../components/Icon";
+import { useI18n } from "../i18n/LanguageContext";
 
 export default function Cart({ onOrderPlaced }) {
   const {
@@ -18,6 +19,7 @@ export default function Cart({ onOrderPlaced }) {
     setRedeemPoints,
   } = useCart();
   const settings = useSettings();
+  const { t } = useI18n();
 
   // Collection and card payment only appear when the business offers them,
   // so a shop that only delivers shows no choice at all.
@@ -103,15 +105,15 @@ export default function Cart({ onOrderPlaced }) {
   if (items.length === 0) {
     return (
       <div>
-        <h1 className="page-title">Savatcha</h1>
+        <h1 className="page-title">{t("cart.title")}</h1>
         <div className="empty-state">
           <div className="empty-emoji">
             <Icon name="cart" size={30} strokeWidth={1.5} />
           </div>
           <p>
-            Savatchangiz hozircha bo'sh.
+            {t("cart.empty")}
             <br />
-            Katalogdan mahsulot tanlab qo'shing!
+            {t("cart.emptyHint")}
           </p>
         </div>
       </div>
@@ -133,17 +135,17 @@ export default function Cart({ onOrderPlaced }) {
 
   return (
     <div>
-      <h1 className="page-title">Savatcha</h1>
+      <h1 className="page-title">{t("cart.title")}</h1>
 
       {soldOut.length > 0 && (
         <div className="sold-out-warning">
-          <p>{soldOut.map((p) => p.name).join(", ")} — hozircha tugadi.</p>
+          <p>{t("cart.soldOutNotice", { names: soldOut.map((p) => p.name).join(", ") })}</p>
           <button
             type="button"
             className="sold-out-remove"
             onClick={() => soldOut.forEach((p) => removeItem(p.id))}
           >
-            Savatchadan olib tashlash
+            {t("cart.removeSoldOut")}
           </button>
         </div>
       )}
@@ -157,7 +159,7 @@ export default function Cart({ onOrderPlaced }) {
           <div className="cart-item-info">
             <p className="cart-item-name">{item.name}</p>
             {soldOutIds.has(item.productId) ? (
-              <span className="cart-item-soldout">Hozircha tugadi</span>
+              <span className="cart-item-soldout">{t("product.soldOut")}</span>
             ) : (
               <span className="cart-item-price">
                 {item.price.toLocaleString()} {settings.currency}
@@ -175,21 +177,21 @@ export default function Cart({ onOrderPlaced }) {
       <div className="promo-row">
         <input
           className="promo-input"
-          placeholder="Promo kod"
+          placeholder={t("cart.promo")}
           value={promoInput}
           onChange={(e) => setPromoInput(e.target.value)}
         />
         <button className="promo-apply-btn" onClick={applyPromo} disabled={!promoInput.trim()}>
-          Qo'llash
+          {t("cart.apply")}
         </button>
       </div>
       {quoteError && <p className="form-error">{quoteError}</p>}
-      {quote?.promoValid && <p className="form-success">Promo kod qo'llandi 🎉</p>}
+      {quote?.promoValid && <p className="form-success">{t("cart.promoApplied")}</p>}
 
       {settings.loyaltyEnabled && loyaltyBalance > 0 && (
         <div className="upsell-row">
           <span className="upsell-text">
-            Bonus balansingiz: {loyaltyBalance} ball. Ishlatishni xohlaysizmi?
+            {t("cart.loyaltyPrompt", { points: loyaltyBalance })}
           </span>
           <label className="switch">
             <input type="checkbox" checked={useLoyalty} onChange={(e) => setUseLoyalty(e.target.checked)} />
@@ -210,7 +212,7 @@ export default function Cart({ onOrderPlaced }) {
 
       {bothWaysOffered && (
         <>
-          <p className="field-label">Qanday olasiz?</p>
+          <p className="field-label">{t("cart.howLabel")}</p>
           <div className="choice-row" role="group" aria-label="Buyurtma turi">
             <button
               type="button"
@@ -218,7 +220,7 @@ export default function Cart({ onOrderPlaced }) {
               onClick={() => setOrderType("DELIVERY")}
             >
               <Icon name="truck" size={17} strokeWidth={2} />
-              Yetkazib berish
+              {t("cart.delivery")}
             </button>
             <button
               type="button"
@@ -226,7 +228,7 @@ export default function Cart({ onOrderPlaced }) {
               onClick={() => setOrderType("PICKUP")}
             >
               <Icon name="walk" size={17} strokeWidth={2} />
-              Olib ketaman
+              {t("cart.pickup")}
             </button>
           </div>
         </>
@@ -234,7 +236,7 @@ export default function Cart({ onOrderPlaced }) {
 
       {cardOffered && (
         <>
-          <p className="field-label">To'lov turi</p>
+          <p className="field-label">{t("cart.paymentLabel")}</p>
           <div className="choice-row" role="group" aria-label="To'lov turi">
             <button
               type="button"
@@ -242,7 +244,7 @@ export default function Cart({ onOrderPlaced }) {
               onClick={() => setPaymentMethod("CASH")}
             >
               <Icon name="cash" size={17} strokeWidth={2} />
-              Naqd
+              {t("cart.cash")}
             </button>
             <button
               type="button"
@@ -250,7 +252,7 @@ export default function Cart({ onOrderPlaced }) {
               onClick={() => setPaymentMethod("CARD")}
             >
               <Icon name="card" size={17} strokeWidth={2} />
-              Karta
+              {t("cart.card")}
             </button>
           </div>
         </>
@@ -258,14 +260,14 @@ export default function Cart({ onOrderPlaced }) {
 
       <input
         className="location-input"
-        placeholder="Telefon raqamingiz"
+        placeholder={t("cart.phone")}
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
       />
       {orderType === "DELIVERY" ? (
         <input
           className="location-input"
-          placeholder="Yetkazish manzili"
+          placeholder={t("cart.address")}
           value={location}
           onChange={(e) => setLocation(e.target.value)}
         />
@@ -273,13 +275,13 @@ export default function Cart({ onOrderPlaced }) {
         settings.pickupAddress && (
           <p className="pickup-note">
             <Icon name="pin" size={16} strokeWidth={2} />
-            Olib ketish manzili: {settings.pickupAddress}
+            {t("cart.pickupAddress", { address: settings.pickupAddress })}
           </p>
         )
       )}
       {cardOffered && paymentMethod === "CARD" && (
         <div className="card-details">
-          <p className="card-details-label">Shu kartaga o'tkazing</p>
+          <p className="card-details-label">{t("cart.cardLabel")}</p>
           <button type="button" className="card-number" onClick={copyCard}>
             <span>{settings.cardPaymentDetails}</span>
             <Icon name={cardCopied ? "check" : "card"} size={18} strokeWidth={2} />
@@ -288,30 +290,28 @@ export default function Cart({ onOrderPlaced }) {
             <p className="card-details-holder">{settings.cardPaymentHolder}</p>
           )}
           <p className="card-details-hint">
-            {cardCopied
-              ? "Karta raqami nusxalandi"
-              : "Pulni o'tkazib, chekni shu botga yuboring — buyurtma shundan keyin tayyorlanadi."}
+            {cardCopied ? t("cart.cardCopied") : t("cart.cardHint")}
           </p>
         </div>
       )}
 
       <input
         className="location-input"
-        placeholder="Izoh (ixtiyoriy)"
+        placeholder={t("cart.comment")}
         value={comment}
         onChange={(e) => setComment(e.target.value)}
       />
 
       <div className="summary-box">
         <div className="summary-row">
-          <span>Mahsulotlar</span>
+          <span>{t("cart.items")}</span>
           <span>
             {subtotal.toLocaleString()} {settings.currency}
           </span>
         </div>
         {quote?.discountAmount > 0 && (
           <div className="summary-row">
-            <span>Promo chegirma</span>
+            <span>{t("cart.promoDiscount")}</span>
             <span>
               -{quote.discountAmount.toLocaleString()} {settings.currency}
             </span>
@@ -319,7 +319,7 @@ export default function Cart({ onOrderPlaced }) {
         )}
         {quote?.loyaltyDiscount > 0 && (
           <div className="summary-row">
-            <span>Bonus ball</span>
+            <span>{t("cart.loyaltyDiscount")}</span>
             <span>
               -{quote.loyaltyDiscount.toLocaleString()} {settings.currency}
             </span>
@@ -327,14 +327,14 @@ export default function Cart({ onOrderPlaced }) {
         )}
         {quote?.deliveryFee > 0 && (
           <div className="summary-row">
-            <span>Yetkazib berish</span>
+            <span>{t("cart.deliveryFee")}</span>
             <span>
               {quote.deliveryFee.toLocaleString()} {settings.currency}
             </span>
           </div>
         )}
         <div className="summary-row total">
-          <span>Jami</span>
+          <span>{t("cart.total")}</span>
           <span>
             {(quote?.totalPrice ?? subtotal).toLocaleString()} {settings.currency}
           </span>
@@ -343,13 +343,19 @@ export default function Cart({ onOrderPlaced }) {
 
       {closed && (
         <p className="form-error" style={{ padding: "8px 20px 0" }}>
-          Hozir yopiqmiz. Ish vaqti: {settings.opening.openTime} - {settings.opening.closeTime}
+          {t("cart.closedNotice", {
+            open: settings.opening.openTime,
+            close: settings.opening.closeTime,
+          })}
         </p>
       )}
 
       {!meetsMinimum && (
         <p className="form-error" style={{ padding: "8px 20px 0" }}>
-          Minimal buyurtma summasi: {quote.minOrderAmount.toLocaleString()} {settings.currency}
+          {t("cart.minOrder", {
+            amount: quote.minOrderAmount.toLocaleString(),
+            currency: settings.currency,
+          })}
         </p>
       )}
 
@@ -360,12 +366,12 @@ export default function Cart({ onOrderPlaced }) {
           disabled={submitting || !meetsMinimum || closed || soldOut.length > 0}
         >
           {closed
-            ? "Hozir yopiq"
+            ? t("cart.closedBtn")
             : soldOut.length > 0
-            ? "Tugagan mahsulotni olib tashlang"
+            ? t("cart.removeSoldOutBtn")
             : submitting
-            ? "Yuborilmoqda..."
-            : "Buyurtmani tasdiqlash"}
+            ? t("cart.sending")
+            : t("cart.confirm")}
         </button>
       </div>
     </div>

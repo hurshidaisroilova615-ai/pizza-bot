@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useSettings } from "../context/SettingsContext";
+import { useI18n } from "../i18n/LanguageContext";
 
 // The first thing on the home screen, and the one place a dish is shown at
 // the size the photograph deserves. A grid of thumbnails tells a customer
 // what is on the menu; this tells them they are hungry.
 export default function FeaturedHero({ products, onOpen, onBrowse }) {
   const settings = useSettings();
+  const { t } = useI18n();
   const [index, setIndex] = useState(0);
 
   const picks = products.filter((p) => p.isAvailable !== false).slice(0, 5);
@@ -48,10 +50,10 @@ export default function FeaturedHero({ products, onOpen, onBrowse }) {
               onOpen(dish);
             }}
           >
-            Buyurtma berish
+            {t("home.order")}
           </button>
           <button className="featured-btn ghost" onClick={onBrowse}>
-            Butun menyu
+            {t("home.wholeMenu")}
           </button>
         </div>
       </div>

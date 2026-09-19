@@ -5,9 +5,12 @@ import { useSettings } from "../context/SettingsContext";
 import OrderStatusBadge from "../components/OrderStatusBadge";
 import OrderTracker from "../components/OrderTracker";
 import Icon from "../components/Icon";
+import LanguagePicker from "../components/LanguagePicker";
+import { useI18n } from "../i18n/LanguageContext";
 
 export default function Profile({ telegramUser, onNavigateCatalog, refreshKey }) {
   const settings = useSettings();
+  const { t } = useI18n();
   const [orders, setOrders] = useState([]);
   const [loyalty, setLoyalty] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -51,12 +54,14 @@ export default function Profile({ telegramUser, onNavigateCatalog, refreshKey })
         {settings.loyaltyEnabled && (
           <div className="loyalty-badge">
             <Icon name="gift" size={15} strokeWidth={2} />
-            {loyalty?.balance ?? 0} bonus ball
+            {t("profile.bonus", { points: loyalty?.balance ?? 0 })}
           </div>
         )}
       </div>
 
-      <h2 className="section-title">Mening buyurtmalarim</h2>
+      <LanguagePicker />
+
+      <h2 className="section-title">{t("profile.orders")}</h2>
 
       {loading && (
         <div className="order-skeletons">
@@ -75,7 +80,7 @@ export default function Profile({ telegramUser, onNavigateCatalog, refreshKey })
           <div className="empty-emoji">
             <Icon name="bag" size={30} strokeWidth={1.5} />
           </div>
-          <p>Hali buyurtmalar yo'q</p>
+          <p>{t("profile.noOrders")}</p>
         </div>
       )}
 
@@ -88,7 +93,7 @@ export default function Profile({ telegramUser, onNavigateCatalog, refreshKey })
               onClick={() => setExpandedId(expanded ? null : order.id)}
               role="button"
             >
-              <OrderStatusBadge status={order.status} />
+              <OrderStatusBadge status={order.status} orderType={order.orderType} />
               <span className="order-date">{new Date(order.createdAt).toLocaleDateString("uz-UZ")}</span>
             </div>
 
@@ -99,7 +104,7 @@ export default function Profile({ telegramUser, onNavigateCatalog, refreshKey })
               {order.totalPrice.toLocaleString()} {settings.currency}
             </div>
             <button className="repeat-btn" onClick={() => repeatOrder(order)}>
-              Yana shundan buyurtma qilish
+              {t("profile.repeat")}
             </button>
           </div>
         );

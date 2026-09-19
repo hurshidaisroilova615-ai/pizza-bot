@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import Icon from "./Icon";
 import { hapticFeedback } from "../telegram";
+import { useI18n } from "../i18n/LanguageContext";
 
 const TABS = [
-  { key: "home", icon: "home", label: "Bosh sahifa" },
-  { key: "catalog", icon: "search", label: "Katalog" },
-  { key: "cart", icon: "cart", label: "Savatcha" },
-  { key: "profile", icon: "user", label: "Profil" },
+  { key: "home", icon: "home", label: "nav.home" },
+  { key: "catalog", icon: "search", label: "nav.catalog" },
+  { key: "cart", icon: "cart", label: "nav.cart" },
+  { key: "profile", icon: "user", label: "nav.profile" },
 ];
 
 export default function BottomNav({ active, onChange, cartCount }) {
+  const { t } = useI18n();
   // The badge pops when the count goes up, so adding a dish from anywhere in
   // the app has a visible landing point.
   const [bumping, setBumping] = useState(false);
@@ -39,7 +41,7 @@ export default function BottomNav({ active, onChange, cartCount }) {
           <span className="nav-icon">
             <Icon name={tab.icon} size={23} strokeWidth={active === tab.key ? 2.1 : 1.7} />
           </span>
-          <span className="nav-label">{tab.label}</span>
+          <span className="nav-label">{t(tab.label)}</span>
           {tab.key === "cart" && cartCount > 0 && (
             <span className={`nav-badge ${bumping ? "bump" : ""}`}>{cartCount}</span>
           )}

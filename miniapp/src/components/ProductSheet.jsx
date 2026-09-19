@@ -1,7 +1,9 @@
 import { useSettings } from "../context/SettingsContext";
+import { useI18n } from "../i18n/LanguageContext";
 
 export default function ProductSheet({ product, onClose, onAdd }) {
   const settings = useSettings();
+  const { t } = useI18n();
   if (!product) return null;
 
   const ingredients = product.description
@@ -18,7 +20,7 @@ export default function ProductSheet({ product, onClose, onAdd }) {
         <div className="sheet-handle" />
         <div className={`sheet-media ${soldOut ? "sold-out" : ""}`}>
           <img className="sheet-img" src={product.imageUrl} alt={product.name} />
-          {soldOut && <span className="sold-out-ribbon">Hozircha tugadi</span>}
+          {soldOut && <span className="sold-out-ribbon">{t("product.soldOut")}</span>}
         </div>
         <div className="sheet-body">
           <h2 className="sheet-title">{product.name}</h2>
@@ -35,7 +37,7 @@ export default function ProductSheet({ product, onClose, onAdd }) {
 
           {recommended.length > 0 && (
             <div className="upsell-section">
-              <p className="upsell-heading">Bunga mos qo'shimchalar</p>
+              <p className="upsell-heading">{t("product.extras")}</p>
               <div className="upsell-scroll">
                 {recommended.map((rp) => (
                   <button key={rp.id} className="upsell-card" onClick={() => onAdd(rp)}>
@@ -60,8 +62,8 @@ export default function ProductSheet({ product, onClose, onAdd }) {
             }}
           >
             {soldOut
-              ? "Hozircha tugadi"
-              : `Savatchaga qo'shish — ${product.price.toLocaleString()} ${settings.currency}`}
+              ? t("product.soldOut")
+              : `${t("product.addToCart")} — ${product.price.toLocaleString()} ${settings.currency}`}
           </button>
         </div>
       </div>

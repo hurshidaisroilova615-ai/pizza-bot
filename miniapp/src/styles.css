@@ -2152,3 +2152,43 @@ button {
   line-height: 1.45;
   color: var(--text-muted);
 }
+
+/* ---------- Language ---------- */
+.lang-block {
+  margin: 18px 0 6px;
+}
+
+.lang-label {
+  margin-bottom: 9px;
+}
+
+.lang-row {
+  display: flex;
+  gap: 8px;
+  padding: 0 20px;
+}
+
+.lang-chip {
+  flex: 1;
+  padding: 11px 8px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 650;
+  white-space: nowrap;
+  transition: transform 0.18s var(--ease-spring), border-color 0.18s var(--ease-out),
+    background 0.18s var(--ease-out), color 0.18s var(--ease-out);
+}
+
+.lang-chip:active {
+  transform: scale(0.96);
+}
+
+.lang-chip.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}

@@ -13,16 +13,31 @@ router.post(
   asyncHandler(async (req, res) => {
     const { telegramId, firstName, lastName, username, languageCode } = req.telegramUser;
     const phone = req.body?.phone;
+    // The language the Mini App is actually showing, which the bot's own
+    // messages then follow. Only the three the bot speaks are accepted, so
+    // a stale or tampered client can't write anything else onto the record.
+    const chosen = ["uz", "ru", "en"].includes(req.body?.language) ? req.body.language : null;
     const user = await prisma.user.upsert({
       where: { telegramId },
       update: {
         firstName,
         lastName,
         username,
-        languageCode,
+        // Only a request that names a language may change it. The Mini App
+        // opens with a call that carries none, and letting that one through
+        // wiped the customer's choice on every launch — they picked Russian,
+        // reopened the app, and the bot went back to Uzbek.
+        ...(chosen && { languageCode: chosen }),
         ...(phone !== undefined && { phone }),
       },
-      create: { telegramId, firstName, lastName, username, languageCode, phone: phone || null },
+      create: {
+        telegramId,
+        firstName,
+        lastName,
+        username,
+        languageCode: chosen || languageCode,
+        phone: phone || null,
+      },
     });
     res.json(user);
   })

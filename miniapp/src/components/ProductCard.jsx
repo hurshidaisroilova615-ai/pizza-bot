@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useSettings } from "../context/SettingsContext";
 import Icon from "./Icon";
 import { hapticFeedback } from "../telegram";
+import { useI18n } from "../i18n/LanguageContext";
 
 export default function ProductCard({ product, onOpen, onQuickAdd }) {
   const settings = useSettings();
+  const { t } = useI18n();
   const soldOut = product.isAvailable === false;
   const [justAdded, setJustAdded] = useState(false);
   const discounted = product.oldPrice && product.oldPrice > product.price;
@@ -18,8 +20,8 @@ export default function ProductCard({ product, onOpen, onQuickAdd }) {
           shop owner sends from their phone. */}
       <div className="product-card-scrim" />
 
-      {discounted && <span className="product-flag">Chegirma</span>}
-      {soldOut && <span className="sold-out-ribbon">Hozircha tugadi</span>}
+      {discounted && <span className="product-flag">{t("product.discount")}</span>}
+      {soldOut && <span className="sold-out-ribbon">{t("product.soldOut")}</span>}
 
       <div className="product-card-body">
         <p className="product-card-name">{product.name}</p>
@@ -42,7 +44,7 @@ export default function ProductCard({ product, onOpen, onQuickAdd }) {
             setJustAdded(true);
             setTimeout(() => setJustAdded(false), 900);
           }}
-          aria-label={`${product.name} savatchaga qo'shish`}
+          aria-label={`${product.name} — ${t("product.addToCart")}`}
         >
           <Icon name={justAdded ? "check" : "plus"} size={19} strokeWidth={2.6} />
         </button>
