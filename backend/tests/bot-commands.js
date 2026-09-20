@@ -18,7 +18,7 @@ process.env.RENDER_EXTERNAL_URL =
 
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const { bot } = require("../src/bot");
+const { bot, isFresh, STALE_AFTER_SECONDS } = require("../src/bot");
 
 let pass = 0;
 let fail = 0;
@@ -167,7 +167,24 @@ function isSendable(msg) {
     check(`${cmd} replies and is sendable`, sent.length > 0 && p === null, p || "no reply");
   }
 
-  console.log("\n5) Hech narsa jimgina yiqilmadi");
+  console.log("\n5) Kechikkan xabarlar");
+  // Telegram holds what it could not deliver and floods it back when the
+  // service answers again. Four taps of /start twenty minutes ago must not
+  // produce four welcomes now.
+  const now = Math.floor(Date.now() / 1000);
+  const aged = (age) => ({ message: { date: now - age, text: "/start" } });
+  check("a message just sent is answered", isFresh(aged(0)));
+  check("one from a minute ago is answered", isFresh(aged(60)));
+  check(
+    `one older than ${STALE_AFTER_SECONDS}s is ignored`,
+    !isFresh(aged(STALE_AFTER_SECONDS + 1)),
+    String(STALE_AFTER_SECONDS)
+  );
+  check("one from twenty minutes ago is ignored", !isFresh(aged(1200)));
+  check("a button tap carries its age too", !isFresh({ callback_query: { message: { date: now - 1200 } } }));
+  check("an update with no date is still answered", isFresh({ message: { text: "/start" } }));
+
+  console.log("\n6) Hech narsa jimgina yiqilmadi");
   check("no unhandled errors", thrown.length === 0, thrown.join(" | "));
 
   await prisma.user.deleteMany({ where: { telegramId: String(TG) } });

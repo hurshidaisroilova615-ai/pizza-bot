@@ -28,7 +28,15 @@ if (!process.env.JWT_SECRET) {
 }
 
 const prisma = require("./lib/prisma");
-const { bot, USE_WEBHOOK, WEBHOOK_PATH, syncMenuButton, botDelivery } = require("./bot");
+const {
+  bot,
+  USE_WEBHOOK,
+  WEBHOOK_PATH,
+  syncMenuButton,
+  botDelivery,
+  isFresh,
+  updateAge,
+} = require("./bot");
 const errorHandler = require("./middleware/errorHandler");
 
 const productsRouter = require("./routes/products");
@@ -80,8 +88,16 @@ app.use(
 
 if (USE_WEBHOOK) {
   app.post(WEBHOOK_PATH, express.json(), (req, res) => {
-    bot.processUpdate(req.body);
+    // 200 first, whatever happens next: Telegram retries anything it does
+    // not get a prompt answer for, and a retry of a command is a second
+    // reply to the customer.
     res.sendStatus(200);
+
+    if (!isFresh(req.body)) {
+      console.log(`⏭  ${updateAge(req.body)}s kechikkan xabar e'tiborsiz qoldirildi`);
+      return;
+    }
+    bot.processUpdate(req.body);
   });
 }
 

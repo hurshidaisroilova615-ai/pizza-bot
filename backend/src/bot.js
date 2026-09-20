@@ -58,6 +58,27 @@ if (USE_WEBHOOK) {
   transport = { mode: "polling", ready: true, why: "webhook manzili yo'q, polling ishlatilmoqda" };
 }
 
+// Telegram holds an update it could not deliver and sends it the moment the
+// service answers again. After a restart or a cold start that arrives as a
+// burst: four taps of /start twenty minutes ago produced four welcome
+// messages at once, which reads as a bot gone haywire. An update older than
+// this is answered by nobody — whoever sent it has long since given up or
+// tried again, and a reply to it now is noise.
+const STALE_AFTER_SECONDS = 120;
+
+function updateAge(update) {
+  const at =
+    update?.message?.date ??
+    update?.edited_message?.date ??
+    update?.callback_query?.message?.date;
+  if (!at) return 0;
+  return Math.max(0, Math.floor(Date.now() / 1000) - at);
+}
+
+function isFresh(update) {
+  return updateAge(update) <= STALE_AFTER_SECONDS;
+}
+
 // Telegram keeps the reason its own deliveries fail; nothing on this side
 // can see it. Asked at most once a minute so a health page that is being
 // refreshed does not hammer the API.
@@ -386,6 +407,9 @@ module.exports = {
   syncMenuButton,
   miniappUrl,
   botDelivery,
+  isFresh,
+  updateAge,
+  STALE_AFTER_SECONDS,
   notifyOffer,
   notifyAdmins,
   STATUS_LABELS,
