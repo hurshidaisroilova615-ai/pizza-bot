@@ -28,7 +28,7 @@ if (!process.env.JWT_SECRET) {
 }
 
 const prisma = require("./lib/prisma");
-const { bot, USE_WEBHOOK, WEBHOOK_PATH, syncMenuButton } = require("./bot");
+const { bot, USE_WEBHOOK, WEBHOOK_PATH, syncMenuButton, botDelivery } = require("./bot");
 const errorHandler = require("./middleware/errorHandler");
 
 const productsRouter = require("./routes/products");
@@ -95,11 +95,18 @@ const apiLimiter = rateLimit({
 });
 app.use("/api", apiLimiter);
 
-app.get("/api/health", (req, res) => {
+app.get("/api/health", async (req, res) => {
   // Whether the instance is holding itself awake cannot be seen from
   // outside, and it is the first thing worth checking when a demo takes
   // half a minute to open — so the health check reports it in words.
-  res.json({ status: "ok", time: new Date().toISOString(), keepAwake: keepAwakeReport() });
+  // Whether Telegram can actually reach this server is the other half of
+  // "is the bot working", and it fails independently of everything else.
+  res.json({
+    status: "ok",
+    time: new Date().toISOString(),
+    bot: await botDelivery(),
+    keepAwake: keepAwakeReport(),
+  });
 });
 
 app.use("/api/auth", authRouter);

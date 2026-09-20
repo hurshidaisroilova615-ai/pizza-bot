@@ -27,10 +27,20 @@ const WEBHOOK_PATH = `/api/bot/webhook/${crypto
   .digest("hex")
   .slice(0, 32)}`;
 
+// How the bot is currently receiving messages, and whether that is working.
+// Sending and receiving are separate paths: the server can push an order
+// alert to Telegram while Telegram cannot reach the server at all, which
+// looks from the outside like "the bot answers sometimes". Telegram is the
+// only party that knows why its own delivery is failing, so we ask it.
+let transport = { mode: USE_WEBHOOK ? "webhook" : "polling", ready: false, why: "hali tekshirilmadi" };
+
 if (USE_WEBHOOK) {
   bot
     .setWebHook(`${WEBHOOK_BASE}${WEBHOOK_PATH}`)
-    .then(() => console.log(`✅ Webhook o'rnatildi: ${WEBHOOK_BASE}${WEBHOOK_PATH}`))
+    .then(() => {
+      transport = { mode: "webhook", ready: true, why: "o'rnatildi" };
+      console.log(`✅ Webhook o'rnatildi: ${WEBHOOK_BASE}${WEBHOOK_PATH}`);
+    })
     .catch(async (err) => {
       // Never leave the bot with neither transport: fall back to polling,
       // clearing any webhook Telegram still holds so getUpdates isn't 409'd.
@@ -38,10 +48,58 @@ if (USE_WEBHOOK) {
       try {
         await bot.deleteWebHook();
         await bot.startPolling();
+        transport = { mode: "polling", ready: true, why: `webhook o'rnatilmadi: ${err.message}` };
       } catch (fallbackErr) {
+        transport = { mode: "yo'q", ready: false, why: `webhook ham, polling ham ishlamadi: ${fallbackErr.message}` };
         console.error("Polling'ga qaytishda ham xatolik:", fallbackErr.message);
       }
     });
+} else {
+  transport = { mode: "polling", ready: true, why: "webhook manzili yo'q, polling ishlatilmoqda" };
+}
+
+// Telegram keeps the reason its own deliveries fail; nothing on this side
+// can see it. Asked at most once a minute so a health page that is being
+// refreshed does not hammer the API.
+let webhookCache = { at: 0, value: null };
+
+async function botDelivery() {
+  const base = { ...transport };
+  if (!USE_WEBHOOK) return base;
+
+  if (Date.now() - webhookCache.at < 60000 && webhookCache.value) {
+    return { ...base, ...webhookCache.value };
+  }
+
+  try {
+    const info = await bot.getWebHookInfo();
+    let host = null;
+    try {
+      host = info.url ? new URL(info.url).host : null;
+    } catch {
+      host = "noto'g'ri manzil";
+    }
+    const expected = (() => {
+      try {
+        return new URL(WEBHOOK_BASE).host;
+      } catch {
+        return null;
+      }
+    })();
+    const value = {
+      // The path carries a digest of the bot token and is what authenticates
+      // an incoming update, so only the host of it is ever reported.
+      webhookHost: host,
+      pointsHere: Boolean(host && expected && host === expected),
+      waitingUpdates: info.pending_update_count ?? 0,
+      lastErrorAt: info.last_error_date ? new Date(info.last_error_date * 1000).toISOString() : null,
+      lastError: info.last_error_message || null,
+    };
+    webhookCache = { at: Date.now(), value };
+    return { ...base, ...value };
+  } catch (err) {
+    return { ...base, webhookCheckFailed: err.message };
+  }
 }
 
 // Falls back to localhost during local development; in production this must
@@ -327,6 +385,7 @@ module.exports = {
   notifyOrderStatusChanged,
   syncMenuButton,
   miniappUrl,
+  botDelivery,
   notifyOffer,
   notifyAdmins,
   STATUS_LABELS,
