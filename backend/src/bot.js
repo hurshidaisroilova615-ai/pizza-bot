@@ -46,7 +46,32 @@ if (USE_WEBHOOK) {
 
 // Falls back to localhost during local development; in production this must
 // be the deployed HTTPS URL of the miniapp (see DEPLOYMENT.md).
-const MINIAPP_URL = process.env.MINIAPP_PUBLIC_URL || "http://localhost:5173";
+const MINIAPP_BASE = process.env.MINIAPP_PUBLIC_URL || "http://localhost:5173";
+
+// One Mini App serves every shop, and which backend it talks to comes from
+// ?api= on the link. Leaving that to be typed into an environment variable
+// by hand meant a shop whose link was missing it fell back to whichever
+// shop the customer's phone had opened last — Dom Pizza's bot showing
+// Fedya's menu. The backend knows its own address, so it puts itself on
+// the link and the question stops arising.
+function miniappUrl() {
+  const self = (process.env.BOT_WEBHOOK_URL || process.env.RENDER_EXTERNAL_URL || "").replace(
+    /\/+$/,
+    ""
+  );
+  if (!self) return MINIAPP_BASE;
+  try {
+    const url = new URL(MINIAPP_BASE);
+    // An address set deliberately on the link is left alone.
+    if (url.searchParams.get("api")) return MINIAPP_BASE;
+    url.searchParams.set("api", `${self}/api`);
+    return url.toString();
+  } catch {
+    return MINIAPP_BASE;
+  }
+}
+
+const MINIAPP_URL = miniappUrl();
 
 const { STATUS_LABELS, statusLabel } = require("./lib/orderLabels");
 const {
@@ -301,6 +326,7 @@ module.exports = {
   notifyOrderCreated,
   notifyOrderStatusChanged,
   syncMenuButton,
+  miniappUrl,
   notifyOffer,
   notifyAdmins,
   STATUS_LABELS,

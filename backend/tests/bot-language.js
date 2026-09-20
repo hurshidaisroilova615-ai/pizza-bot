@@ -6,6 +6,10 @@
 process.env.DATABASE_URL =
   process.env.DATABASE_URL || "postgresql://postgres:testpass@localhost:5432/pizzatest";
 process.env.BOT_TOKEN = "000:test";
+process.env.MINIAPP_PUBLIC_URL =
+  process.env.MINIAPP_PUBLIC_URL || "https://smartorder-miniapp.onrender.com";
+process.env.RENDER_EXTERNAL_URL =
+  process.env.RENDER_EXTERNAL_URL || "https://test-backend.onrender.com";
 
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
@@ -102,6 +106,17 @@ const TG = "770077";
   );
   check("junk in the choice is ignored", effectiveLanguage({ language: "klingon", languageCode: "en" }) === "en");
   check("only three are accepted", SUPPORTED.join(",") === "uz,ru,en", SUPPORTED.join(","));
+
+  console.log("\n5) Mini App havolasi to'g'ri do'konni ko'rsatadi");
+  // The link the bot opens must name this backend, or a phone that has
+  // opened another shop is shown that shop's menu instead.
+  const { miniappUrl } = require("../src/bot");
+  const stamped = miniappUrl();
+  check(
+    "the bot's own address is on the link",
+    stamped.includes(encodeURIComponent("/api")) || stamped.includes("api="),
+    stamped
+  );
 
   await prisma.user.deleteMany({ where: { telegramId: TG } });
   console.log(`\n${pass} passed, ${fail} failed`);
