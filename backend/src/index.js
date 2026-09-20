@@ -99,7 +99,7 @@ app.get("/api/health", (req, res) => {
   // Whether the instance is holding itself awake cannot be seen from
   // outside, and it is the first thing worth checking when a demo takes
   // half a minute to open — so the health check reports it in words.
-  res.json({ status: "ok", time: new Date().toISOString(), keepAwake: keepAwakeStatus });
+  res.json({ status: "ok", time: new Date().toISOString(), keepAwake: keepAwakeReport() });
 });
 
 app.use("/api/auth", authRouter);
@@ -145,20 +145,48 @@ async function ensureDefaultAdmin() {
 // Requesting our own health endpoint counts as traffic and holds it open.
 // Opt-in: it consumes the free tier's monthly instance hours, which is
 // worth it while a demo is being shown around and not otherwise.
-let keepAwakeStatus = "o'chirilgan";
+//
+// This can only keep a running instance from going to sleep; nothing
+// inside a stopped one can wake it. After a deploy, a crash or a restart,
+// the first visitor still waits for the cold start — that is the free
+// tier, not a fault here.
+const startedAt = Date.now();
+let keepAwake = {
+  on: false,
+  why: "o'chirilgan — Render'da KEEP_AWAKE=true qo'shing",
+  target: null,
+  pings: 0,
+  failures: 0,
+  lastPingAt: null,
+  lastError: null,
+};
+
+// The owner cannot read our logs, so the health page has to answer the
+// question on its own: is this switched on, is it actually reaching
+// itself, and how long has this instance been up? An instance that is
+// genuinely being held awake shows an uptime in hours; one that keeps
+// being restarted shows minutes, which says the fault is elsewhere.
+function keepAwakeReport() {
+  const upMinutes = Math.round((Date.now() - startedAt) / 60000);
+  return {
+    ...keepAwake,
+    uptimeMinutes: upMinutes,
+    uptimeHuman: upMinutes >= 60 ? `${Math.floor(upMinutes / 60)} soat ${upMinutes % 60} daqiqa` : `${upMinutes} daqiqa`,
+  };
+}
 
 function startKeepAwake() {
   const base = process.env.BOT_WEBHOOK_URL || process.env.RENDER_EXTERNAL_URL;
 
   if (process.env.KEEP_AWAKE !== "true") {
-    keepAwakeStatus = "o'chirilgan — Render'da KEEP_AWAKE=true qo'shing";
-    console.log(`⏰ ${keepAwakeStatus}`);
+    console.log(`⏰ ${keepAwake.why}`);
     return;
   }
 
   if (!base) {
-    keepAwakeStatus = "yoqilgan, lekin server o'z manzilini bilmaydi (RENDER_EXTERNAL_URL yo'q)";
-    console.warn(`⏰ ${keepAwakeStatus}`);
+    keepAwake.why =
+      "yoqilgan, lekin server o'z manzilini bilmaydi — Render'da RENDER_EXTERNAL_URL yo'q";
+    console.warn(`⏰ ${keepAwake.why}`);
     return;
   }
 
@@ -167,14 +195,33 @@ function startKeepAwake() {
   // window closes. The requests themselves cost nothing; the free tier
   // bills running time, not traffic.
   const FIVE_MINUTES = 5 * 60 * 1000;
-  setInterval(() => {
-    fetch(`${base}/api/health`).catch((err) =>
-      console.error("Keep-awake so'rovi muvaffaqiyatsiz:", err.message)
-    );
-  }, FIVE_MINUTES).unref();
+  const ping = async () => {
+    try {
+      const res = await fetch(`${base}/api/health`);
+      keepAwake.pings += 1;
+      keepAwake.lastPingAt = new Date().toISOString();
+      if (!res.ok) {
+        keepAwake.failures += 1;
+        keepAwake.lastError = `HTTP ${res.status}`;
+      } else {
+        keepAwake.lastError = null;
+      }
+    } catch (err) {
+      keepAwake.failures += 1;
+      keepAwake.lastError = err.message;
+      console.error("Keep-awake so'rovi muvaffaqiyatsiz:", err.message);
+    }
+  };
 
-  keepAwakeStatus = `yoqilgan — har 5 daqiqada ${base}/api/health`;
-  console.log(`⏰ ${keepAwakeStatus}`);
+  // The first one goes now rather than in five minutes, so the health page
+  // can be trusted the moment a deploy finishes.
+  ping();
+  setInterval(ping, FIVE_MINUTES);
+
+  keepAwake.on = true;
+  keepAwake.target = `${base}/api/health`;
+  keepAwake.why = `yoqilgan — har 5 daqiqada ${keepAwake.target}`;
+  console.log(`⏰ ${keepAwake.why}`);
 }
 
 const PORT = process.env.PORT || 4000;
