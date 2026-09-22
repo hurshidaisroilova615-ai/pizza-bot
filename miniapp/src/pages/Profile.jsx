@@ -6,9 +6,10 @@ import OrderStatusBadge from "../components/OrderStatusBadge";
 import OrderTracker from "../components/OrderTracker";
 import Icon from "../components/Icon";
 import LanguagePicker from "../components/LanguagePicker";
+import TrackOrder from "../components/TrackOrder";
 import { useI18n } from "../i18n/LanguageContext";
 
-export default function Profile({ telegramUser, onNavigateCatalog, refreshKey }) {
+export default function Profile({ customer, onNavigateCatalog, refreshKey }) {
   const settings = useSettings();
   const { t } = useI18n();
   const [orders, setOrders] = useState([]);
@@ -31,7 +32,7 @@ export default function Profile({ telegramUser, onNavigateCatalog, refreshKey })
     return () => {
       active = false;
     };
-  }, [telegramUser.telegramId, refreshKey]);
+  }, [customer.telegramId, refreshKey]);
 
   function repeatOrder(order) {
     order.items.forEach((item) => {
@@ -50,7 +51,7 @@ export default function Profile({ telegramUser, onNavigateCatalog, refreshKey })
         <div className="profile-avatar">
           <Icon name="user" size={30} strokeWidth={1.6} />
         </div>
-        <h1 className="profile-name">{telegramUser.firstName}</h1>
+        <h1 className="profile-name">{customer.firstName || t("profile.guest")}</h1>
         {settings.loyaltyEnabled && (
           <div className="loyalty-badge">
             <Icon name="gift" size={15} strokeWidth={2} />
@@ -60,6 +61,10 @@ export default function Profile({ telegramUser, onNavigateCatalog, refreshKey })
       </div>
 
       <LanguagePicker />
+
+      {/* A browser only remembers its own orders. Someone who ordered from
+          their phone and is now on a laptop needs another way in. */}
+      {customer.viaWeb && <TrackOrder />}
 
       <h2 className="section-title">{t("profile.orders")}</h2>
 

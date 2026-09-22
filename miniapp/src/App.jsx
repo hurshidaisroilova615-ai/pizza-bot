@@ -11,9 +11,10 @@ import { SettingsProvider, useSettings, useSettingsStatus } from "./context/Sett
 import WakeScreen from "./components/WakeScreen";
 import ClosedBanner from "./components/ClosedBanner";
 import { api } from "./api";
-import { initTelegram, getTelegramUser, watchColorScheme } from "./telegram";
+import { initTelegram, watchColorScheme } from "./telegram";
+import { currentCustomer } from "./identity";
 
-function AppContent({ telegramUser }) {
+function AppContent({ customer }) {
   const [tab, setTab] = useState("home");
   const [products, setProducts] = useState([]);
   const [ordersRefreshKey, setOrdersRefreshKey] = useState(0);
@@ -32,7 +33,7 @@ function AppContent({ telegramUser }) {
 
       {tab === "home" && (
         <Home
-          firstName={telegramUser.firstName}
+          firstName={customer.firstName}
           products={products}
           onAdd={addItem}
           onOrderClick={() => setTab("catalog")}
@@ -47,9 +48,14 @@ function AppContent({ telegramUser }) {
       {tab === "catalog" && (
         <Catalog products={products} onAdd={addItem} initialCategory={catalogCategory} />
       )}
-      {tab === "cart" && <Cart onOrderPlaced={() => setOrdersRefreshKey((k) => k + 1)} />}
+      {tab === "cart" && (
+        <Cart
+          onOrderPlaced={() => setOrdersRefreshKey((k) => k + 1)}
+          onBrowseMenu={() => setTab("catalog")}
+        />
+      )}
       {tab === "profile" && (
-        <Profile telegramUser={telegramUser} onNavigateCatalog={() => setTab("catalog")} refreshKey={ordersRefreshKey} />
+        <Profile customer={customer} onNavigateCatalog={() => setTab("catalog")} refreshKey={ordersRefreshKey} />
       )}
 
       <BottomNav active={tab} onChange={setTab} cartCount={totalCount} />
@@ -73,13 +79,15 @@ function ThemedApp({ children }) {
 
 export default function App() {
   const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem("onboarding_seen"));
-  const [telegramUser, setTelegramUser] = useState(null);
+  const [customer, setCustomer] = useState(null);
 
   useEffect(() => {
     initTelegram();
-    const user = getTelegramUser();
-    setTelegramUser(user);
-    api.upsertUser({ firstName: user.firstName }).catch(console.error);
+    const who = currentCustomer();
+    setCustomer(who);
+    // A web customer has no name until their first order, and sending an
+    // empty one would overwrite the one they gave last time.
+    api.upsertUser(who.firstName ? { firstName: who.firstName } : {}).catch(console.error);
     return watchColorScheme(() => {});
   }, []);
 
@@ -88,7 +96,7 @@ export default function App() {
     setShowOnboarding(false);
   }
 
-  if (!telegramUser) return null;
+  if (!customer) return null;
 
   return (
     <SettingsProvider>
@@ -98,7 +106,7 @@ export default function App() {
           <Onboarding onFinish={finishOnboarding} />
         ) : (
           <CartProvider>
-            <AppContent telegramUser={telegramUser} />
+            <AppContent customer={customer} />
           </CartProvider>
         )}
         </ThemedApp>

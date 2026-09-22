@@ -54,23 +54,29 @@ export function watchColorScheme(onChange) {
   return () => mq?.removeEventListener?.("change", handler);
 }
 
+// True only when the app is really running inside Telegram. A page opened
+// at the shop's own web address has the script but no account behind it.
+export function isInsideTelegram() {
+  return Boolean(getTelegramWebApp()?.initDataUnsafe?.user);
+}
+
+// The Telegram customer, or null when there is none.
+//
+// This used to hand back a shared fake account outside Telegram, which was
+// harmless while the app only ever ran inside it. On a public website it
+// would mean every visitor sharing one account and reading each other's
+// orders, so the absence is now reported honestly and identity.js supplies
+// a per-browser one instead.
 export function getTelegramUser() {
   const tg = getTelegramWebApp();
   const user = tg?.initDataUnsafe?.user;
-  if (user) {
-    return {
-      telegramId: String(user.id),
-      firstName: user.first_name || "Mehmon",
-      lastName: user.last_name || "",
-      username: user.username || "",
-    };
-  }
-  // Brauzerda sinash uchun zaxira (fallback) foydalanuvchi
+  if (!user) return null;
   return {
-    telegramId: "000000000",
-    firstName: "Mehmon",
-    lastName: "",
-    username: "",
+    telegramId: String(user.id),
+    firstName: user.first_name || "Mehmon",
+    lastName: user.last_name || "",
+    username: user.username || "",
+    languageCode: user.language_code || "",
   };
 }
 
@@ -81,9 +87,15 @@ export function getInitData() {
   return tg?.initData || "";
 }
 
+// Closing is what finishes an order inside Telegram — the chat is waiting
+// behind the app with the confirmation already in it. On the website there
+// is nothing behind the page, so the caller is told whether the app closed
+// and shows a thank-you screen when it did not.
 export function closeMiniApp() {
   const tg = getTelegramWebApp();
-  if (tg) tg.close();
+  if (!tg || !isInsideTelegram()) return false;
+  tg.close();
+  return true;
 }
 
 export function hapticFeedback(style = "light") {

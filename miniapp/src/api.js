@@ -1,5 +1,6 @@
 import { resolveApiBase } from "./apiBase";
 import { getInitData, getTelegramUser } from "./telegram";
+import { webCustomerId } from "./identity";
 
 const BASE_URL = resolveApiBase();
 
@@ -36,7 +37,12 @@ async function request(path, options = {}) {
         ...options,
         headers: {
           "Content-Type": "application/json",
+          // Inside Telegram the first header identifies the customer and
+          // the second is ignored. On the shop's own web address it is the
+          // other way round: there is no signed payload, and this browser's
+          // own id is what "my orders" is anchored to.
           "X-Telegram-Init-Data": getInitData(),
+          "X-Guest-Id": webCustomerId(),
           ...options.headers,
         },
         body:
@@ -66,10 +72,13 @@ async function request(path, options = {}) {
   }
 }
 
-// Outside real Telegram (local browser dev) there's no signed initData, so
-// we also send telegramId/firstName in the body — the backend only trusts
-// this fallback when NODE_ENV !== production (see telegramUser middleware).
+// Inside Telegram, initData is signed and the body adds nothing. During
+// local development there is neither, so the id travels in the body and the
+// backend trusts it only when NODE_ENV !== production (see the telegramUser
+// middleware). A real web customer is identified by the header instead, so
+// nothing is added for them.
 function withFallbackUser(body, telegramUser) {
+  if (!telegramUser) return body;
   try {
     const parsed = JSON.parse(body);
     return JSON.stringify({ telegramId: telegramUser.telegramId, firstName: telegramUser.firstName, ...parsed });
@@ -80,8 +89,11 @@ function withFallbackUser(body, telegramUser) {
 
 function withQuery(path, params = {}) {
   const telegramUser = getTelegramUser();
-  const query = new URLSearchParams({ telegramId: telegramUser.telegramId, ...params }).toString();
-  return `${path}?${query}`;
+  const query = new URLSearchParams({
+    ...(telegramUser ? { telegramId: telegramUser.telegramId } : {}),
+    ...params,
+  }).toString();
+  return query ? `${path}?${query}` : path;
 }
 
 export const api = {
@@ -100,6 +112,12 @@ export const api = {
   quoteOrder: (data) => request("/orders/quote", { method: "POST", body: JSON.stringify(data) }),
   createOrder: (data) => request("/orders", { method: "POST", body: JSON.stringify(data) }),
   getMyOrders: () => request(withQuery("/orders/me/list")),
+
+  // Public: find one order by its number and the phone it was placed with.
+  // Used by the website's tracking page, where the customer may be on a
+  // different device from the one they ordered on.
+  trackOrder: (orderId, phone) =>
+    request("/orders/track", { method: "POST", body: JSON.stringify({ orderId, phone }) }),
 
   validatePromoCode: (code, subtotal) =>
     request("/promo-codes/validate", { method: "POST", body: JSON.stringify({ code, subtotal }) }),

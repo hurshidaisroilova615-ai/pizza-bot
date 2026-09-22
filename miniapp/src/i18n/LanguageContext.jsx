@@ -23,7 +23,8 @@ function storedLocally() {
 function detect() {
   const stored = storedLocally();
   if (stored) return stored;
-  const code = (getTelegramUser().languageCode || navigator.language || "").slice(0, 2).toLowerCase();
+  // Outside Telegram there is no account to ask, so the browser answers.
+  const code = (getTelegramUser()?.languageCode || navigator.language || "").slice(0, 2).toLowerCase();
   // Kazakh, Kyrgyz and Tajik customers read Russian far more often than
   // English, so they land on Russian rather than the fallback.
   if (["ru", "kk", "ky", "tg", "be", "uk"].includes(code)) return "ru";

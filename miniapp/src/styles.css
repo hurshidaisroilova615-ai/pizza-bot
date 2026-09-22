@@ -2276,3 +2276,170 @@ button {
   opacity: 0.6;
   min-width: 20px;
 }
+
+/* ── Buyurtma qabul qilindi ─────────────────────────────────────────────
+   The confirmation the website shows where Telegram would have closed the
+   app and left the chat holding it. It fills the screen on purpose: after
+   paying attention to a form, the answer should need no reading to find. */
+.placed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 56px 24px 40px;
+  min-height: 70vh;
+}
+
+.placed-mark {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--accent);
+  box-shadow: 0 10px 28px -8px var(--accent);
+  animation: placed-pop 420ms var(--ease-out) both;
+}
+
+@keyframes placed-pop {
+  from { transform: scale(0.6); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.placed-title {
+  margin: 22px 0 0;
+  font-size: 23px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.placed-number {
+  margin: 8px 0 0;
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+.placed-total {
+  margin-top: 18px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+.placed-notes {
+  margin-top: 24px;
+  max-width: 330px;
+  display: grid;
+  gap: 10px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.placed-notes p {
+  margin: 0;
+}
+
+.placed-keep {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.placed-back {
+  margin-top: 32px;
+  width: 100%;
+  max-width: 330px;
+}
+
+/* ── Buyurtmani kuzatish ────────────────────────────────────────────── */
+.track {
+  padding: 0 20px 4px;
+  margin-top: 24px;
+}
+
+/* The heading carries the page's own side padding, which this section has
+   already applied — without this it sits indented twice over. */
+.track .section-title {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.track-hint {
+  margin: -2px 0 14px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.track-form {
+  display: grid;
+  gap: 10px;
+}
+
+.track-form button {
+  margin-top: 4px;
+}
+
+.track-form .location-input {
+  margin: 0;
+  width: 100%;
+}
+
+.track-result {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--surface-2);
+}
+
+.track-result-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.track-result-id {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.track-result-when {
+  margin: 6px 0 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.track-result-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 7px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.track-result-items li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.track-result-total {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}

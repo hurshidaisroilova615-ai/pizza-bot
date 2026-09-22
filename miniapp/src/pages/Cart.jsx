@@ -4,9 +4,11 @@ import { useSettings } from "../context/SettingsContext";
 import { api } from "../api";
 import { closeMiniApp, hapticFeedback, notificationHaptic } from "../telegram";
 import Icon from "../components/Icon";
+import OrderPlaced from "../components/OrderPlaced";
+import { isTelegram, savedContact, rememberContact } from "../identity";
 import { useI18n } from "../i18n/LanguageContext";
 
-export default function Cart({ onOrderPlaced }) {
+export default function Cart({ onOrderPlaced, onBrowseMenu }) {
   const {
     items,
     changeQty,
@@ -25,8 +27,15 @@ export default function Cart({ onOrderPlaced }) {
   // so a shop that only delivers shows no choice at all.
   const [orderType, setOrderType] = useState(settings.deliveryEnabled === false ? "PICKUP" : "DELIVERY");
   const [paymentMethod, setPaymentMethod] = useState("CASH");
-  const [phone, setPhone] = useState("");
-  const [location, setLocation] = useState("");
+  // Telegram already knows who is ordering. A browser does not, so the name
+  // is asked for here — and, like the phone and address, kept for next time,
+  // because typing all three again is where a second order gets abandoned.
+  const onWeb = !isTelegram();
+  const remembered = savedContact();
+  const [customerName, setCustomerName] = useState(remembered.name || "");
+  const [phone, setPhone] = useState(remembered.phone || "");
+  const [location, setLocation] = useState(remembered.address || "");
+  const [placedOrder, setPlacedOrder] = useState(null);
   const [comment, setComment] = useState("");
   const [promoInput, setPromoInput] = useState(promoCode);
   const [quote, setQuote] = useState(null);
@@ -80,10 +89,11 @@ export default function Cart({ onOrderPlaced }) {
     if (items.length === 0) return;
     setSubmitting(true);
     try {
-      await api.createOrder({
+      const order = await api.createOrder({
         items: items.map((i) => ({ productId: i.productId, quantity: i.qty })),
         orderType,
         paymentMethod,
+        customerName: customerName.trim() || undefined,
         phone: phone || undefined,
         deliveryAddress: location || undefined,
         comment: comment || undefined,
@@ -92,14 +102,32 @@ export default function Cart({ onOrderPlaced }) {
       });
 
       notificationHaptic("success");
+      if (onWeb) {
+        rememberContact({ name: customerName.trim(), phone, address: location });
+      }
       clearCart();
       onOrderPlaced();
-      closeMiniApp();
+      // Inside Telegram the app closes and the chat behind it carries the
+      // confirmation. On the website nothing is behind the page, so the
+      // confirmation has to be the page.
+      if (!closeMiniApp()) setPlacedOrder(order);
     } catch (err) {
       alert(err.message);
     } finally {
       setSubmitting(false);
     }
+  }
+
+  if (placedOrder) {
+    return (
+      <OrderPlaced
+        order={placedOrder}
+        onBackToMenu={() => {
+          setPlacedOrder(null);
+          onBrowseMenu();
+        }}
+      />
+    );
   }
 
   if (items.length === 0) {
@@ -132,6 +160,14 @@ export default function Cart({ onOrderPlaced }) {
   // No card number, no card option: a customer who picks it would have
   // nowhere to send the money.
   const cardOffered = settings.cardPaymentEnabled && Boolean(settings.cardPaymentDetails);
+  // A web order with no name, phone or address is one the kitchen cannot
+  // act on, so the button stays down rather than letting the customer send
+  // it and read a rejection.
+  const missingContact =
+    onWeb &&
+    (customerName.trim().length < 2 ||
+      phone.trim().length < 5 ||
+      (orderType === "DELIVERY" && !location.trim()));
 
   return (
     <div>
@@ -258,6 +294,14 @@ export default function Cart({ onOrderPlaced }) {
         </>
       )}
 
+      {onWeb && (
+        <input
+          className="location-input"
+          placeholder={t("cart.name")}
+          value={customerName}
+          onChange={(e) => setCustomerName(e.target.value)}
+        />
+      )}
       <input
         className="location-input"
         placeholder={t("cart.phone")}
@@ -363,7 +407,7 @@ export default function Cart({ onOrderPlaced }) {
         <button
           className="btn-primary"
           onClick={handleConfirm}
-          disabled={submitting || !meetsMinimum || closed || soldOut.length > 0}
+          disabled={submitting || !meetsMinimum || closed || soldOut.length > 0 || missingContact}
         >
           {closed
             ? t("cart.closedBtn")

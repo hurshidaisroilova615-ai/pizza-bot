@@ -11,6 +11,7 @@ const { calculateEarnedPoints, earnPoints, redeemPoints } = require("../lib/loya
 const { notifyOrderCreated, notifyOrderStatusChanged, notifyAdmins } = require("../bot");
 const { orderTypeLabel, paymentLabel } = require("../lib/orderLabels");
 const { effectiveLanguage } = require("../lib/botMessages");
+const { isWebCustomer, phoneKey } = require("../lib/webCustomer");
 
 const router = express.Router();
 
@@ -32,6 +33,9 @@ const createOrderSchema = z.object({
   orderType: z.enum(["DELIVERY", "PICKUP"]).optional().default("DELIVERY"),
   paymentMethod: z.enum(["CASH", "CARD"]).optional().default("CASH"),
   phone: z.string().trim().min(5).max(30).optional(),
+  // Only the website asks for this: Telegram already told us who is
+  // ordering, a browser never can.
+  customerName: z.string().trim().min(2).max(60).optional(),
   deliveryAddress: z.string().trim().max(300).optional(),
   comment: z.string().trim().max(500).optional(),
   promoCode: z.string().trim().max(40).optional(),
@@ -57,6 +61,56 @@ function serializeOrder(order) {
       lineTotal: i.lineTotal,
       imageUrl: i.product?.imageUrl || null,
     })),
+  };
+}
+
+// Anyone: look up one order by its number and the phone it was placed with.
+//
+// A customer who ordered from the website may come back on a different
+// phone, or after clearing their browser, and the order they are waiting on
+// has to be findable — but an order carries a name, an address and a phone
+// number, so the number alone can never be enough. Both halves are required
+// and neither is guessable from the other: the order number is useless
+// without the phone, and the phone is useless without the number.
+router.post(
+  "/track",
+  asyncHandler(async (req, res) => {
+    const id = Number(req.body?.orderId);
+    const key = phoneKey(req.body?.phone);
+    const notFound = { status: 404, publicMessage: "Bunday buyurtma topilmadi. Raqamlarni tekshiring." };
+
+    if (!Number.isInteger(id) || id <= 0 || !key) {
+      throw Object.assign(new Error("Bad lookup"), notFound);
+    }
+
+    const order = await prisma.order.findUnique({ where: { id }, include: ORDER_INCLUDE });
+    // The same answer either way, so a wrong phone cannot be told apart
+    // from a number that does not exist — otherwise the endpoint would
+    // confirm which order numbers are real.
+    if (!order || phoneKey(order.phone || order.user?.phone) !== key) {
+      throw Object.assign(new Error("No match"), notFound);
+    }
+
+    res.json(publicOrder(order));
+  })
+);
+
+// What a tracking page is allowed to see: enough to recognise the order and
+// follow it, and nothing that belongs to the account behind it.
+function publicOrder(order) {
+  const full = serializeOrder(order);
+  return {
+    id: full.id,
+    status: full.status,
+    orderType: full.orderType,
+    paymentMethod: full.paymentMethod,
+    totalPrice: full.totalPrice,
+    deliveryFee: full.deliveryFee,
+    createdAt: full.createdAt,
+    customerName: order.user?.firstName || null,
+    deliveryAddress: full.deliveryAddress,
+    items: full.items,
+    statusHistory: full.statusHistory,
   };
 }
 
@@ -211,12 +265,31 @@ router.post(
         publicMessage: "Karta orqali to'lov mavjud emas",
       });
     }
-    const { telegramId, firstName, lastName, username, languageCode } = req.telegramUser;
+    const { telegramId, lastName, username, languageCode } = req.telegramUser;
+    const viaWeb = isWebCustomer(telegramId);
+
+    // A Telegram order carries a name and a chat to answer on. A web order
+    // carries neither, so the kitchen has no way to reach the customer
+    // unless these are asked for — and an order nobody can deliver is
+    // worse than one that was never placed.
+    if (viaWeb) {
+      const named = data.customerName || req.telegramUser.firstName;
+      if (!named) {
+        throw Object.assign(new Error("No name"), { status: 400, publicMessage: "Ismingizni yozing" });
+      }
+      if (!data.phone) {
+        throw Object.assign(new Error("No phone"), { status: 400, publicMessage: "Telefon raqamingizni yozing" });
+      }
+      if (data.orderType === "DELIVERY" && !data.deliveryAddress) {
+        throw Object.assign(new Error("No address"), { status: 400, publicMessage: "Yetkazib berish manzilini yozing" });
+      }
+    }
+    const firstName = data.customerName || req.telegramUser.firstName;
 
     const user = await prisma.user.upsert({
       where: { telegramId },
       update: {
-        firstName,
+        ...(firstName && { firstName }),
         lastName,
         username,
         languageCode,

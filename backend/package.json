@@ -13,8 +13,9 @@
     "postinstall": "prisma generate",
     "test:e2e": "node tests/e2e.js",
     "test:bot": "node tests/bot-language.js",
-    "test": "npm run test:e2e && npm run test:bot && npm run test:commands",
-    "test:commands": "node tests/bot-commands.js"
+    "test": "npm run test:e2e && npm run test:bot && npm run test:commands && npm run test:web",
+    "test:commands": "node tests/bot-commands.js",
+    "test:web": "node tests/web-orders.js"
   },
   "dependencies": {
     "@prisma/client": "^5.20.0",

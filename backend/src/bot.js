@@ -160,6 +160,7 @@ const {
   LANGUAGE_CHOICES,
   SUPPORTED,
 } = require("./lib/botMessages");
+const { isTelegramChat } = require("./lib/webCustomer");
 
 function orderButton(languageCode) {
   return {
@@ -354,6 +355,13 @@ bot.onText(/\/orders/, async (msg) => {
 // logs have to show whether the send was attempted at all, and to whom.
 async function notifySafe(chatId, text, opts) {
   const preview = text.split("\n")[0].slice(0, 60);
+  // A customer who ordered from the website has no Telegram chat to write
+  // to. That is not a failure worth an error line — it is simply a customer
+  // the bot cannot reach, and the website tells them their status itself.
+  if (!isTelegramChat(chatId)) {
+    console.log(`🌐 Telegramsiz mijoz (${chatId}) — xabar o'rniga saytda ko'rsatiladi: ${preview}`);
+    return false;
+  }
   try {
     await bot.sendMessage(chatId, text, opts);
     console.log(`📤 Telegram xabar yuborildi → ${chatId}: ${preview}`);

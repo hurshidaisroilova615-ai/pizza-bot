@@ -20,7 +20,11 @@ router.post(
     const user = await prisma.user.upsert({
       where: { telegramId },
       update: {
-        firstName,
+        // A web customer's name arrives with their first order and not on
+        // every app open, so an empty one means "unchanged", never "erase
+        // the name they already gave". Same reasoning as the two fields
+        // below it.
+        ...(firstName && { firstName }),
         lastName,
         username,
         // Telegram's own setting is refreshed when the request actually
