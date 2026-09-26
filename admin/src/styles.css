@@ -1251,3 +1251,10 @@ td.row-actions .btn + .btn {
     border-color: #bbb;
   }
 }
+
+/* The shared code is the one most cafes will use, and the one the owner
+   prints many copies of, so it is marked out from the numbered ones. */
+.qr-card-shared {
+  border-style: solid;
+  border-color: #d64b3a;
+}

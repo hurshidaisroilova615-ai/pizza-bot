@@ -144,6 +144,8 @@ export const messages = {
     "profile.guest": "Mehmon",
     "site.hours": "Ish vaqti: {hours}",
 
+    "cart.dineIn": "Zalda",
+    "cart.tableInput": "Stol raqami",
     "cart.atTable": "Stol {table}",
     "cart.tableNote": "Buyurtma shu stolga olib kelinadi",
     "cart.notAtTable": "Men zalda emasman",
@@ -299,6 +301,8 @@ export const messages = {
     "profile.guest": "Гость",
     "site.hours": "Часы работы: {hours}",
 
+    "cart.dineIn": "В зале",
+    "cart.tableInput": "Номер столика",
     "cart.atTable": "Столик {table}",
     "cart.tableNote": "Заказ принесут за этот столик",
     "cart.notAtTable": "Я не в зале",
@@ -453,6 +457,8 @@ export const messages = {
     "profile.guest": "Guest",
     "site.hours": "Open: {hours}",
 
+    "cart.dineIn": "Dine in",
+    "cart.tableInput": "Table number",
     "cart.atTable": "Table {table}",
     "cart.tableNote": "Your order comes to this table",
     "cart.notAtTable": "I am not at a table",

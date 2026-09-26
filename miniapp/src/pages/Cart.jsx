@@ -29,11 +29,22 @@ export default function Cart({ onOrderPlaced, onBrowseMenu }) {
   const [table, setTable] = useState(() => currentTable());
   const atTable = Boolean(table) && settings.dineInEnabled;
 
-  // Collection and card payment only appear when the business offers them,
-  // so a shop that only delivers shows no choice at all.
-  const [orderType, setOrderType] = useState(
-    atTable ? "DINE_IN" : settings.deliveryEnabled === false ? "PICKUP" : "DELIVERY"
-  );
+  // Collection, eating in and card payment only appear when the business
+  // offers them, so a shop that only delivers shows no choice at all.
+  const [orderType, setOrderType] = useState(() => {
+    if (atTable) return "DINE_IN";
+    if (settings.deliveryEnabled !== false) return "DELIVERY";
+    if (settings.pickupEnabled) return "PICKUP";
+    return settings.dineInEnabled ? "DINE_IN" : "PICKUP";
+  });
+
+  // A cafe can print one code for the whole room instead of one per table,
+  // and hang the numbers on the tables themselves — cheaper to print, and
+  // nothing to reprint when the room is rearranged. Then the customer says
+  // which table they are at, so the field has to exist.
+  const [typedTable, setTypedTable] = useState("");
+  const tableNumber = atTable ? table : typedTable.trim();
+  const dineIn = orderType === "DINE_IN";
   const [paymentMethod, setPaymentMethod] = useState("CASH");
   // Telegram already knows who is ordering. A browser does not, so the name
   // is asked for here — and, like the phone and address, kept for next time,
@@ -101,7 +112,7 @@ export default function Cart({ onOrderPlaced, onBrowseMenu }) {
         items: items.map((i) => ({ productId: i.productId, quantity: i.qty })),
         orderType,
         paymentMethod,
-        tableNumber: atTable ? table : undefined,
+        tableNumber: dineIn ? tableNumber : undefined,
         customerName: customerName.trim() || undefined,
         phone: phone || undefined,
         deliveryAddress: location || undefined,
@@ -161,7 +172,13 @@ export default function Cart({ onOrderPlaced, onBrowseMenu }) {
 
   const loyaltyBalance = quote?.loyaltyBalance || 0;
   // Only worth asking how the order goes out when the business does both.
-  const bothWaysOffered = settings.deliveryEnabled !== false && settings.pickupEnabled === true;
+  const ways = [
+    settings.deliveryEnabled !== false && "DELIVERY",
+    settings.pickupEnabled === true && "PICKUP",
+    settings.dineInEnabled === true && "DINE_IN",
+  ].filter(Boolean);
+  // One way of getting the order is not a choice, so it is not shown.
+  const waysOffered = ways.length > 1;
   const closed = settings.opening?.isOpen === false;
   const meetsMinimum = quote ? quote.meetsMinimum : true;
   // Sold out while the cart sat open — say which dish, and offer to drop it
@@ -175,11 +192,12 @@ export default function Cart({ onOrderPlaced, onBrowseMenu }) {
   // act on, so the button stays down rather than letting the customer send
   // it and read a rejection.
   const missingContact =
-    onWeb &&
-    !atTable &&
-    (customerName.trim().length < 2 ||
-      phone.trim().length < 5 ||
-      (orderType === "DELIVERY" && !location.trim()));
+    dineIn
+      ? !tableNumber
+      : onWeb &&
+        (customerName.trim().length < 2 ||
+          phone.trim().length < 5 ||
+          (orderType === "DELIVERY" && !location.trim()));
 
   return (
     <div>
@@ -279,28 +297,55 @@ export default function Cart({ onOrderPlaced, onBrowseMenu }) {
         </div>
       )}
 
-      {!atTable && bothWaysOffered && (
+      {!atTable && waysOffered && (
         <>
           <p className="field-label">{t("cart.howLabel")}</p>
           <div className="choice-row" role="group" aria-label={t("cart.howLabel")}>
-            <button
-              type="button"
-              className={`choice ${orderType === "DELIVERY" ? "active" : ""}`}
-              onClick={() => setOrderType("DELIVERY")}
-            >
-              <Icon name="truck" size={17} strokeWidth={2} />
-              {t("cart.delivery")}
-            </button>
-            <button
-              type="button"
-              className={`choice ${orderType === "PICKUP" ? "active" : ""}`}
-              onClick={() => setOrderType("PICKUP")}
-            >
-              <Icon name="walk" size={17} strokeWidth={2} />
-              {t("cart.pickup")}
-            </button>
+            {ways.includes("DELIVERY") && (
+              <button
+                type="button"
+                className={`choice ${orderType === "DELIVERY" ? "active" : ""}`}
+                onClick={() => setOrderType("DELIVERY")}
+              >
+                <Icon name="truck" size={17} strokeWidth={2} />
+                {t("cart.delivery")}
+              </button>
+            )}
+            {ways.includes("PICKUP") && (
+              <button
+                type="button"
+                className={`choice ${orderType === "PICKUP" ? "active" : ""}`}
+                onClick={() => setOrderType("PICKUP")}
+              >
+                <Icon name="walk" size={17} strokeWidth={2} />
+                {t("cart.pickup")}
+              </button>
+            )}
+            {ways.includes("DINE_IN") && (
+              <button
+                type="button"
+                className={`choice ${orderType === "DINE_IN" ? "active" : ""}`}
+                onClick={() => setOrderType("DINE_IN")}
+              >
+                <Icon name="table" size={17} strokeWidth={2} />
+                {t("cart.dineIn")}
+              </button>
+            )}
           </div>
         </>
+      )}
+
+      {/* Eating in, but the code that was scanned did not say which table —
+          it is one code for the whole room, and the number is on the table
+          in front of them. */}
+      {!atTable && dineIn && (
+        <input
+          className="location-input"
+          inputMode="numeric"
+          placeholder={t("cart.tableInput")}
+          value={typedTable}
+          onChange={(e) => setTypedTable(e.target.value)}
+        />
       )}
 
       {cardOffered && (
@@ -327,7 +372,7 @@ export default function Cart({ onOrderPlaced, onBrowseMenu }) {
         </>
       )}
 
-      {onWeb && !atTable && (
+      {onWeb && !dineIn && (
         <input
           className="location-input"
           placeholder={t("cart.name")}
@@ -335,7 +380,7 @@ export default function Cart({ onOrderPlaced, onBrowseMenu }) {
           onChange={(e) => setCustomerName(e.target.value)}
         />
       )}
-      {!atTable && (
+      {!dineIn && (
         <input
           className="location-input"
           placeholder={t("cart.phone")}

@@ -250,6 +250,15 @@ async function clearWebCustomers() {
     String(seated.body.user?.firstName)
   );
 
+  // The other way round a room can be fitted out: one code for everybody,
+  // and the customer types the number that is on their table.
+  const typed = await web(ALIYA, "/orders", {
+    method: "POST",
+    body: JSON.stringify({ items: [item], orderType: "DINE_IN", tableNumber: "A3" }),
+  });
+  check("a typed table is accepted too", typed.status === 201, JSON.stringify(typed.body));
+  check("however the cafe names its tables", typed.body.tableNumber === "A3", String(typed.body.tableNumber));
+
   const noTable = await web(BEKZAT, "/orders", {
     method: "POST",
     body: JSON.stringify({ items: [item], orderType: "DINE_IN" }),

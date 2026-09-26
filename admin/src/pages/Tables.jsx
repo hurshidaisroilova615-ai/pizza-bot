@@ -44,21 +44,29 @@ export default function Tables() {
     [count]
   );
 
+  function siteBase() {
+    return siteUrl.trim().replace(/[?#].*$/, "").replace(/\/+$/, "");
+  }
+
+  // Without a table, the code is one the whole room can share: the customer
+  // says which table they are at. With one, the code says it for them.
   function linkFor(table) {
-    const base = siteUrl.trim().replace(/[?#].*$/, "").replace(/\/+$/, "");
-    return `${base}/?table=${encodeURIComponent(table)}`;
+    return table ? `${siteBase()}/?table=${encodeURIComponent(table)}` : `${siteBase()}/`;
   }
 
   // Drawn as SVG rather than a picture: these get printed, and a QR code
   // that has been through a bitmap does not always scan off paper.
   useEffect(() => {
     let active = true;
-    if (!siteUrl.trim() || tables.length === 0) {
+    if (!siteUrl.trim()) {
       setCodes([]);
       return undefined;
     }
+    // The shared code is always offered: it is the cheaper way to fit out a
+    // room, and the only one that survives the tables being moved around.
+    const wanted = [null, ...tables];
     Promise.all(
-      tables.map((table) =>
+      wanted.map((table) =>
         QRCode.toString(linkFor(table), { type: "svg", margin: 0, errorCorrectionLevel: "M" }).then(
           (svg) => ({ table, svg })
         )
@@ -97,10 +105,21 @@ export default function Tables() {
         </button>
       </div>
 
-      <p className="muted no-print" style={{ marginTop: -12, marginBottom: 24 }}>
-        Har bir stolga o'z kodi yopishtiriladi. Mijoz kodni skanerlaydi, menyu ochiladi,
-        buyurtma beradi — stol raqami o'zi qo'shiladi. Hech narsa o'rnatish kerak emas.
-      </p>
+      <div className="muted no-print" style={{ marginTop: -12, marginBottom: 24 }}>
+        <p style={{ margin: "0 0 8px" }}>
+          Mijoz stoldagi kodni skanerlaydi, menyu ochiladi, buyurtma beradi. Hech narsa
+          o'rnatish kerak emas. Ikki usuldan birini tanlang:
+        </p>
+        <p style={{ margin: "0 0 4px" }}>
+          <b>1. Umumiy kod</b> — bitta kodni ko'paytirib har stolga yopishtirasiz. Stol
+          raqamlarini alohida qo'yasiz, mijoz o'zi yozadi. Arzon, va stollar joyi
+          o'zgarsa qayta chop etish shart emas.
+        </p>
+        <p style={{ margin: 0 }}>
+          <b>2. Har stolga o'z kodi</b> — stol raqami kodning ichida bo'ladi, mijoz hech
+          narsa yozmaydi va adashmaydi. Stollar soni kiritilsa, pastda chiqadi.
+        </p>
+      </div>
 
       <div className="settings-section no-print">
         <h3>Sozlash</h3>
@@ -148,16 +167,20 @@ export default function Tables() {
 
       {codes.length === 0 ? (
         <p className="empty-note no-print">
-          Sayt manzilini va stollar sonini kiriting — kodlar shu yerda chiqadi.
+          Sayt manzilini kiriting — kodlar shu yerda chiqadi.
         </p>
       ) : (
         <div className="qr-sheet">
           {codes.map(({ table, svg }) => (
-            <div className="qr-card" key={table}>
+            <div className={`qr-card ${table ? "" : "qr-card-shared"}`} key={table || "shared"}>
               <p className="qr-shop">{settings.businessName}</p>
               <div className="qr-image" dangerouslySetInnerHTML={{ __html: svg }} />
-              <p className="qr-table">Stol {table}</p>
-              <p className="qr-hint">Kodni skanerlang va buyurtma bering</p>
+              <p className="qr-table">{table ? `Stol ${table}` : "Umumiy kod"}</p>
+              <p className="qr-hint">
+                {table
+                  ? "Kodni skanerlang va buyurtma bering"
+                  : "Kodni skanerlang, buyurtma bering va stol raqamini yozing"}
+              </p>
             </div>
           ))}
         </div>
