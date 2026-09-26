@@ -60,12 +60,12 @@ export default function Products() {
       setProducts((prev) =>
         prev.map((p) => (p.id === product.id ? { ...p, isAvailable: product.isAvailable } : p))
       );
-      alert(`O'zgartirib bo'lmadi: ${err.message}`);
+      alert(t("O'zgartirib bo'lmadi: {message}", { message: err.message }));
     }
   }
 
   async function handleDelete(product) {
-    if (!confirm(`"${product.name}" mahsulotini o'chirmoqchimisiz?`)) return;
+    if (!confirm(t("«{name}» mahsulotini o'chirmoqchimisiz?", { name: product.name }))) return;
     await api.deleteProduct(product.id);
     load();
   }

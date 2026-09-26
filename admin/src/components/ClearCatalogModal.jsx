@@ -27,14 +27,15 @@ export default function ClearCatalogModal({ productCount, categoryCount, onClose
   return (
     <Modal title={t("Katalogni tozalash")} onClose={onClose}>
       <p style={{ marginTop: 0 }}>
-        <strong>{productCount} ta mahsulot</strong> va bo'sh qolgan kategoriyalar o'chiriladi
-        {categoryCount > 0 ? ` (hozir ${categoryCount} ta kategoriya bor)` : ""}. Buni qaytarib
-        bo'lmaydi.
+        <strong>{t("{n} ta mahsulot", { n: productCount })}</strong>{" "}
+        {t("va bo'sh qolgan kategoriyalar o'chiriladi")}
+        {categoryCount > 0 ? t(" (hozir {n} ta kategoriya bor)", { n: categoryCount }) : ""}
+        {t(". Buni qaytarib bo'lmaydi.")}
       </p>
       <p className="muted">{t("Eski buyurtmalar joyida qoladi — har bir buyurtmada mahsulot nomi va narxi alohida saqlangan.")}</p>
       <p className="muted">
-        Shundan keyin yangi menyuni <strong>«Menyuni ro'yxat bilan qo'shish»</strong> orqali
-        qo'yasiz.
+        {t("Shundan keyin yangi menyuni")}{" "}
+        <strong>{t("«Menyuni ro'yxat bilan qo'shish»")}</strong> {t("orqali qo'yasiz.")}
       </p>
 
       {error && <p className="form-error">{error}</p>}
@@ -44,7 +45,7 @@ export default function ClearCatalogModal({ productCount, categoryCount, onClose
           {t("Bekor qilish")}
         </button>
         <button type="button" className="btn btn-danger" onClick={handleClear} disabled={working}>
-          {working ? t("O'chirilmoqda...") : `${productCount} ta mahsulotni o'chirish`}
+          {working ? t("O'chirilmoqda...") : t("{n} ta mahsulotni o'chirish", { n: productCount })}
         </button>
       </div>
     </Modal>

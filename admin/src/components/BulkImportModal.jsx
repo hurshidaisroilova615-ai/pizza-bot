@@ -27,7 +27,7 @@ export default function BulkImportModal({ onClose, onImported }) {
       setResult(response);
       onImported();
     } catch (err) {
-      alert(err.message);
+      alert(t(err.message));
     } finally {
       setSaving(false);
     }
@@ -107,7 +107,7 @@ export default function BulkImportModal({ onClose, onImported }) {
           onClick={handleImport}
           disabled={saving || rows.length === 0}
         >
-          {saving ? t("Qo'shilmoqda...") : `${rows.length} ta mahsulotni qo'shish`}
+          {saving ? t("Qo'shilmoqda...") : t("{n} ta mahsulotni qo'shish", { n: rows.length })}
         </button>
       </div>
     </Modal>

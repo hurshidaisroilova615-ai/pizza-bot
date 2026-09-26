@@ -25,7 +25,7 @@ export default function Categories() {
   }
 
   async function handleDelete(category) {
-    if (!confirm(`"${category.name}" kategoriyasini o'chirmoqchimisiz?`)) return;
+    if (!confirm(t("«{name}» kategoriyasini o'chirmoqchimisiz?", { name: category.name }))) return;
     await api.deleteCategory(category.id);
     load();
   }

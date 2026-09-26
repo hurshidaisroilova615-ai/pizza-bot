@@ -40,22 +40,22 @@ export default function Offers() {
   }
 
   async function handleDelete(offer) {
-    if (!confirm(`"${offer.title}" taklifini o'chirmoqchimisiz?`)) return;
+    if (!confirm(t("«{title}» taklifini o'chirmoqchimisiz?", { title: offer.title }))) return;
     await api.deleteOffer(offer.id);
     load();
   }
 
   async function handleSend(offer) {
-    if (!confirm(`"${offer.title}" — ${t(SEGMENT_LABELS[offer.segment])}?`)) return;
+    if (!confirm(t("«{title}» — {segment}?", { title: offer.title, segment: t(SEGMENT_LABELS[offer.segment]) }))) return;
     setSendingId(offer.id);
     try {
       const result = await api.sendOffer(offer.id);
-      alert(`Yuborildi: ${result.sent}/${result.total} mijozga`);
+      alert(t("Yuborildi: {sent}/{total} mijozga", { sent: result.sent, total: result.total }));
       load();
     } catch (err) {
       // A campaign that silently fails to send is worse than one that
       // fails loudly: the owner waits for orders that are never coming.
-      alert(`Yuborib bo'lmadi: ${err.message}`);
+      alert(t("Yuborib bo'lmadi: {message}", { message: err.message }));
     } finally {
       setSendingId(null);
     }

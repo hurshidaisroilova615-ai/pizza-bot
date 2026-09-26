@@ -40,9 +40,9 @@ export default function Dashboard() {
       </div>
 
       <div className="stat-grid">
-        <StatCard label={t("Bugungi tushum")} value={summary.today.revenue.toLocaleString()} sub={`${summary.today.orders} ta buyurtma`} />
-        <StatCard label={t("Haftalik tushum")} value={summary.week.revenue.toLocaleString()} sub={`${summary.week.orders} ta buyurtma`} />
-        <StatCard label={t("Oylik tushum")} value={summary.month.revenue.toLocaleString()} sub={`${summary.month.orders} ta buyurtma`} />
+        <StatCard label={t("Bugungi tushum")} value={summary.today.revenue.toLocaleString()} sub={t("{n} ta buyurtma", { n: summary.today.orders })} />
+        <StatCard label={t("Haftalik tushum")} value={summary.week.revenue.toLocaleString()} sub={t("{n} ta buyurtma", { n: summary.week.orders })} />
+        <StatCard label={t("Oylik tushum")} value={summary.month.revenue.toLocaleString()} sub={t("{n} ta buyurtma", { n: summary.month.orders })} />
         <StatCard label={t("O'rtacha buyurtma")} value={summary.avgOrderValue.toLocaleString()} />
         <StatCard label={t("Yangi mijozlar (bugun)")} value={summary.newCustomers.today} accent="#1a9d5b" />
         <StatCard label={t("Yangi mijozlar (hafta)")} value={summary.newCustomers.week} accent="#1a9d5b" />

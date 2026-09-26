@@ -25,7 +25,7 @@ export default function PromoCodes() {
   }
 
   async function handleDelete(promo) {
-    if (!confirm(`"${promo.code}" promo kodini o'chirmoqchimisiz?`)) return;
+    if (!confirm(t("«{code}» promo kodini o'chirmoqchimisiz?", { code: promo.code }))) return;
     await api.deletePromoCode(promo.id);
     load();
   }

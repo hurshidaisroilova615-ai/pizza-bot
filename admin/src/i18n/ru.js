@@ -303,6 +303,36 @@ export const RU = {
     "Чтобы узнать свой Telegram ID, напишите боту",
   "deb yozing — u raqamingizni qaytaradi. Bir nechta bo'lsa vergul bilan ajrating.":
     "— он пришлёт ваш номер. Если получателей несколько, разделите запятыми.",
+
+  // --- Counted and interpolated -----------------------------------------
+  // Three forms, because Russian picks one by the number in front of it.
+  "{n} ta buyurtma": ["{n} заказ", "{n} заказа", "{n} заказов"],
+  "{n} ta mahsulot": ["{n} товар", "{n} товара", "{n} товаров"],
+  "{n} ta mahsulotni qo'shish": ["Добавить {n} товар", "Добавить {n} товара", "Добавить {n} товаров"],
+  "{n} ta mahsulotni o'chirish": ["Удалить {n} товар", "Удалить {n} товара", "Удалить {n} товаров"],
+  " (hozir {n} ta kategoriya bor)": [
+    " (сейчас {n} категория)",
+    " (сейчас {n} категории)",
+    " (сейчас {n} категорий)",
+  ],
+
+  "«{name}» mahsulotini o'chirmoqchimisiz?": "Удалить товар «{name}»?",
+  "«{name}» kategoriyasini o'chirmoqchimisiz?": "Удалить категорию «{name}»?",
+  "«{code}» promo kodini o'chirmoqchimisiz?": "Удалить промокод «{code}»?",
+  "«{title}» taklifini o'chirmoqchimisiz?": "Удалить предложение «{title}»?",
+  "«{title}» — {segment}?": "«{title}» — {segment}?",
+  "Yuborildi: {sent}/{total} mijozga": "Отправлено: {sent}/{total} клиентам",
+  "Yuborib bo'lmadi: {message}": "Не удалось отправить: {message}",
+  "O'zgartirib bo'lmadi: {message}": "Не удалось изменить: {message}",
+  "Holatni o'zgartirib bo'lmadi: {message}": "Не удалось изменить статус: {message}",
+
+  "va bo'sh qolgan kategoriyalar o'chiriladi": "и оставшиеся пустыми категории будут удалены",
+  ". Buni qaytarib bo'lmaydi.": ". Это действие нельзя отменить.",
+  "Shundan keyin yangi menyuni": "После этого новое меню добавляется через",
+  "«Menyuni ro'yxat bilan qo'shish»": "«Добавить меню списком»",
+  "orqali qo'yasiz.": ".",
+  "Parolni o'zgartirsangiz, boshqa qurilmalardagi kirishlar darhol uziladi. Botni birovga sinab ko'rish uchun bergan bo'lsangiz, shu yerdan parolni almashtirib kirishni qaytarib olasiz.":
+    "После смены пароля входы на других устройствах сразу прекратятся. Если вы давали доступ кому-то для пробы, смените пароль здесь и заберите вход обратно.",
 };
 
 export default RU;

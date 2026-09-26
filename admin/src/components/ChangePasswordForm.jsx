@@ -47,8 +47,7 @@ export default function ChangePasswordForm() {
       <div className="settings-section">
         <h3>{t("Admin paroli")}</h3>
         <p className="field-hint" style={{ marginBottom: 16 }}>
-          Parolni o'zgartirsangiz, boshqa qurilmalardagi kirishlar darhol uziladi. Botni birovga sinab
-          ko'rish uchun bergan bo'lsangiz, shu yerdan parolni almashtirib kirishni qaytarib olasiz.
+          {t("Parolni o'zgartirsangiz, boshqa qurilmalardagi kirishlar darhol uziladi. Botni birovga sinab ko'rish uchun bergan bo'lsangiz, shu yerdan parolni almashtirib kirishni qaytarib olasiz.")}
         </p>
         <div className="form-row">
           <div className="form-group">

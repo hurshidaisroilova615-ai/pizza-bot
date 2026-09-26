@@ -47,7 +47,7 @@ export default function Orders() {
     } catch (err) {
       // Without this the dropdown silently snapped back and the customer
       // never got their notification, with nothing on screen to explain it.
-      alert(`Holatni o'zgartirib bo'lmadi: ${err.message}`);
+      alert(t("Holatni o'zgartirib bo'lmadi: {message}", { message: err.message }));
       load();
     }
   }

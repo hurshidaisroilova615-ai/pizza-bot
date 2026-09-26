@@ -9,6 +9,19 @@ import { RU } from "./ru";
 const TABLES = { ru: RU };
 const STORAGE_KEY = "admin_lang";
 
+// Slavic rule: 1, 21, 31… take the first form; 2–4, 22–24… the second;
+// everything else, the teens included, takes the third. Uzbek has one
+// form and simply takes the first.
+function pluralIndex(lang, n) {
+  const count = Math.abs(Number(n) || 0);
+  if (lang !== "ru") return 0;
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  if (mod10 === 1 && mod100 !== 11) return 0;
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return 1;
+  return 2;
+}
+
 const LanguageContext = createContext({ lang: "uz", setLang: () => {}, t: (s) => s });
 
 function stored() {
@@ -40,11 +53,21 @@ export function LanguageProvider({ children, fromSettings }) {
     }
   }, []);
 
+  // Russian picks one of three forms by the number in front of it, so a
+  // translation may be three strings rather than one. Getting "5 заказа"
+  // onto an owner's dashboard is the clearest possible sign that nobody
+  // who reads the language looked at it.
   const t = useCallback(
-    (text) => {
+    (text, vars) => {
       const table = TABLES[lang];
-      if (!table) return text;
-      return table[text] ?? text;
+      const found = table ? table[text] : undefined;
+      let out = found ?? text;
+      if (Array.isArray(out)) out = out[pluralIndex(lang, vars?.n)];
+      if (!vars) return out;
+      for (const [name, value] of Object.entries(vars)) {
+        out = out.split(`{${name}}`).join(String(value));
+      }
+      return out;
     },
     [lang]
   );
