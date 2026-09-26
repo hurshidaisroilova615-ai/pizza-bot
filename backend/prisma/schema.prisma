@@ -85,6 +85,11 @@ model Settings {
   pickupAddress         String?
   // Ordering from the table, by scanning the code printed on it. Off by
   // default: a shop with no tables must not be offered it.
+  // Which language the owner reads. Their customers pick their own in the
+  // app; this is for what the owner is sent — the order alerts — and for
+  // the panel they run the shop from. A Kyrgyz cafe owner cannot work a
+  // shop that only speaks Uzbek at them.
+  ownerLanguage         String   @default("uz")
   dineInEnabled         Boolean  @default(false)
   // How many table codes the admin panel prints. Nothing enforces it — a
   // scanned code carries its own number — it is only what the printing

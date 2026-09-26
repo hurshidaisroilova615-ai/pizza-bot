@@ -57,6 +57,9 @@ const settingsSchema = z.object({
   deliveryEnabled: z.boolean().optional(),
   pickupEnabled: z.boolean().optional(),
   pickupAddress: z.string().trim().max(300).nullable().optional(),
+  // Only the two the alerts are written in. A value the shop cannot speak
+  // would leave the owner with an empty message every morning.
+  ownerLanguage: z.enum(["uz", "ru"]).optional(),
   dineInEnabled: z.boolean().optional(),
   // Only what the printing page counts up to; a scanned code carries its
   // own number, so nothing breaks if the cafe adds a table and forgets.

@@ -1258,3 +1258,39 @@ td.row-actions .btn + .btn {
   border-style: solid;
   border-color: #d64b3a;
 }
+
+/* ── Valyutani o'tkazish: oldin/keyin ───────────────────────────────────
+   Every price in the shop changes at once, so the owner reads the new
+   menu beside the old one before agreeing to it. */
+.convert-preview {
+  margin-top: 14px;
+}
+
+.convert-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.convert-table td {
+  padding: 7px 0;
+  border-bottom: 1px solid #eee7dd;
+}
+
+.convert-table td:first-child {
+  color: #2c2620;
+}
+
+.convert-before {
+  width: 110px;
+  text-align: right;
+  color: #9b9186;
+  text-decoration: line-through;
+}
+
+.convert-after {
+  width: 130px;
+  text-align: right;
+  font-weight: 700;
+  color: #16120f;
+}

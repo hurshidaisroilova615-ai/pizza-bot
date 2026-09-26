@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import ChangePasswordForm from "../components/ChangePasswordForm";
+import CurrencyConverter from "../components/CurrencyConverter";
 import { useSave } from "../lib/useSave";
 
 export default function Settings({ onBusinessNameChange }) {
@@ -32,6 +33,7 @@ export default function Settings({ onBusinessNameChange }) {
       api.updateSettings({
         businessName: form.businessName,
         businessType: form.businessType,
+        ownerLanguage: form.ownerLanguage || "uz",
         currency: form.currency,
         primaryColor: form.primaryColor,
         logoUrl: form.logoUrl || null,
@@ -108,6 +110,18 @@ export default function Settings({ onBusinessNameChange }) {
             <div className="form-group">
               <label>Valyuta</label>
               <input value={form.currency} onChange={(e) => update("currency", e.target.value)} />
+            </div>
+            <div className="form-group">
+              {/* The owner's own language, not the customer's — it decides
+                  what the order alerts are written in. */}
+              <label>Sizning tilingiz (buyurtma xabarlari)</label>
+              <select
+                value={form.ownerLanguage || "uz"}
+                onChange={(e) => update("ownerLanguage", e.target.value)}
+              >
+                <option value="uz">O'zbekcha</option>
+                <option value="ru">Русский</option>
+              </select>
             </div>
             <div className="form-group">
               <label>Asosiy rang</label>
@@ -322,6 +336,13 @@ export default function Settings({ onBusinessNameChange }) {
           </button>
         </div>
       </form>
+
+      {/* Outside the settings form on purpose: this one writes every price
+          in the shop the moment it is confirmed, and must not ride along
+          with an ordinary save. */}
+      <CurrencyConverter
+        onDone={() => api.getSettings().then(setForm).catch(() => window.location.reload())}
+      />
 
       <ChangePasswordForm />
     </div>

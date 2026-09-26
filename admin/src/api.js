@@ -122,4 +122,9 @@ export const api = {
 
   getSettings: () => request("/settings/admin"),
   updateSettings: (data) => request("/settings", { method: "PUT", body: JSON.stringify(data) }),
+
+  // Moving every price in the shop to another currency at once. The
+  // preview is what the owner agrees to before anything is written.
+  previewCurrency: (data) => request("/currency/preview", { method: "POST", body: JSON.stringify(data) }),
+  applyCurrency: (data) => request("/currency/apply", { method: "POST", body: JSON.stringify(data) }),
 };

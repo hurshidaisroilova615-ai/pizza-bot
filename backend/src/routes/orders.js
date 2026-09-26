@@ -9,7 +9,7 @@ const { openingState } = require("../lib/openingHours");
 const { validatePromoCode, markPromoUsed, PromoError } = require("../lib/promo");
 const { calculateEarnedPoints, earnPoints, redeemPoints } = require("../lib/loyalty");
 const { notifyOrderCreated, notifyOrderStatusChanged, notifyAdmins } = require("../bot");
-const { orderTypeLabel, paymentLabel } = require("../lib/orderLabels");
+const { ownerAlert } = require("../lib/ownerAlert");
 const { effectiveLanguage } = require("../lib/botMessages");
 const { isWebCustomer, phoneKey } = require("../lib/webCustomer");
 
@@ -418,23 +418,10 @@ router.post(
     });
 
     notifyOrderCreated(user.telegramId, order, effectiveLanguage(user));
-    // The alert is what the kitchen acts on, so it carries the two things
-    // they would otherwise have to open the panel for: how it goes out, and
-    // how it is paid.
-    const how = orderTypeLabel(order.orderType, order.tableNumber);
-    const paid = paymentLabel(order.paymentMethod);
+    // The alert is what the kitchen acts on, in the language the owner
+    // reads — see lib/ownerAlert.js.
     notifyAdmins(
-      [
-        `🆕 Yangi buyurtma #${order.id}`,
-        `Mijoz: ${user.firstName || user.telegramId}`,
-        `${how} · ${paid}`,
-        order.paymentMethod === "CARD" ? "⚠️ Karta to'lovi — tushganini tekshiring" : null,
-        order.deliveryAddress ? `Manzil: ${order.deliveryAddress}` : null,
-        order.phone ? `Telefon: ${order.phone}` : null,
-        `Jami: ${order.totalPrice.toLocaleString()}`,
-      ]
-        .filter(Boolean)
-        .join("\n")
+      ownerAlert(order, user.firstName || user.telegramId, settings.ownerLanguage)
     );
 
     res.status(201).json(serializeOrder(order));
