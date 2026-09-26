@@ -191,13 +191,20 @@ export default function Cart({ onOrderPlaced, onBrowseMenu }) {
   // A web order with no name, phone or address is one the kitchen cannot
   // act on, so the button stays down rather than letting the customer send
   // it and read a rejection.
-  const missingContact =
-    dineIn
-      ? !tableNumber
-      : onWeb &&
-        (customerName.trim().length < 2 ||
-          phone.trim().length < 5 ||
-          (orderType === "DELIVERY" && !location.trim()));
+  // A confirm button that will not press, with nothing saying why, is the
+  // point where a customer decides the shop is broken and closes the page.
+  // So the first thing still missing is named, in the order it is asked
+  // for on screen.
+  function whatIsMissing() {
+    if (dineIn) return tableNumber ? null : "cart.needTable";
+    if (!onWeb) return null;
+    if (customerName.trim().length < 2) return "cart.needName";
+    if (phone.trim().length < 5) return "cart.needPhone";
+    if (orderType === "DELIVERY" && !location.trim()) return "cart.needAddress";
+    return null;
+  }
+  const missingKey = whatIsMissing();
+  const missingContact = Boolean(missingKey);
 
   return (
     <div>
@@ -482,6 +489,12 @@ export default function Cart({ onOrderPlaced, onBrowseMenu }) {
             amount: quote.minOrderAmount.toLocaleString(),
             currency: settings.currency,
           })}
+        </p>
+      )}
+
+      {missingKey && !closed && meetsMinimum && soldOut.length === 0 && (
+        <p className="form-hint" style={{ padding: "8px 20px 0" }}>
+          {t(missingKey)}
         </p>
       )}
 

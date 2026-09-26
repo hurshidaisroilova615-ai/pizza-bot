@@ -145,6 +145,10 @@ export const messages = {
     "site.hours": "Ish vaqti: {hours}",
 
     "cart.dineIn": "Zalda",
+    "cart.needName": "Ismingizni yozing",
+    "cart.needPhone": "Telefon raqamingizni yozing",
+    "cart.needAddress": "Yetkazib berish manzilini yozing",
+    "cart.needTable": "Stol raqamini yozing",
     "cart.tableInput": "Stol raqami",
     "cart.atTable": "Stol {table}",
     "cart.tableNote": "Buyurtma shu stolga olib kelinadi",
@@ -302,6 +306,10 @@ export const messages = {
     "site.hours": "Часы работы: {hours}",
 
     "cart.dineIn": "В зале",
+    "cart.needName": "Напишите ваше имя",
+    "cart.needPhone": "Напишите номер телефона",
+    "cart.needAddress": "Напишите адрес доставки",
+    "cart.needTable": "Напишите номер столика",
     "cart.tableInput": "Номер столика",
     "cart.atTable": "Столик {table}",
     "cart.tableNote": "Заказ принесут за этот столик",
@@ -458,6 +466,10 @@ export const messages = {
     "site.hours": "Open: {hours}",
 
     "cart.dineIn": "Dine in",
+    "cart.needName": "Please enter your name",
+    "cart.needPhone": "Please enter your phone number",
+    "cart.needAddress": "Please enter the delivery address",
+    "cart.needTable": "Please enter your table number",
     "cart.tableInput": "Table number",
     "cart.atTable": "Table {table}",
     "cart.tableNote": "Your order comes to this table",
