@@ -104,9 +104,15 @@ if (USE_WEBHOOK) {
 
 app.use(express.json({ limit: "1mb" }));
 
+// 120 a minute is far above what a shop's customers generate and low
+// enough to blunt a flood. A test run is not a shop: five suites back to
+// back make thousands of calls in a minute, and a run that dies on the
+// limiter looks exactly like a run that found a bug.
+const API_CALLS_PER_MINUTE = process.env.NODE_ENV === "test" ? 100000 : 120;
+
 const apiLimiter = rateLimit({
   windowMs: 60 * 1000,
-  max: 120,
+  max: API_CALLS_PER_MINUTE,
   standardHeaders: true,
   legacyHeaders: false,
 });

@@ -8,9 +8,16 @@ const { signAdminToken, requireAdmin, invalidateAdminCache } = require("../middl
 
 const router = express.Router();
 
+// Ten attempts a quarter of an hour is what stops somebody guessing the
+// owner's password. It also stops a test suite that signs in once per file
+// from running twice in a row, and a run that fails on the limiter looks
+// exactly like a run that found a bug. The guard is what production needs;
+// the number only has to be small there.
+const LOGIN_ATTEMPTS = process.env.NODE_ENV === "test" ? 1000 : 10;
+
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: LOGIN_ATTEMPTS,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Juda ko'p urinish. Keyinroq qayta urinib ko'ring." },

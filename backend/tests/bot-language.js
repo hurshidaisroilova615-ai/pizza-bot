@@ -45,17 +45,23 @@ const TG = "770077";
   });
   check("a new customer has made no choice", created.language === null, String(created.language));
   check("so the bot would ask", !created.language);
-  check("three languages offered", LANGUAGE_CHOICES.length === 3, String(LANGUAGE_CHOICES.length));
+    check(
+    "four languages offered",
+    LANGUAGE_CHOICES.length === 4,
+    String(LANGUAGE_CHOICES.length)
+  );
   check(
     "each label is in its own language",
     LANGUAGE_CHOICES.some((c) => c.label.includes("O'zbekcha")) &&
       LANGUAGE_CHOICES.some((c) => c.label.includes("Русский")) &&
-      LANGUAGE_CHOICES.some((c) => c.label.includes("English")),
+      LANGUAGE_CHOICES.some((c) => c.label.includes("English")) &&
+      LANGUAGE_CHOICES.some((c) => c.label.includes("Кыргызча")),
     LANGUAGE_CHOICES.map((c) => c.label).join(",")
   );
   check(
-    "the prompt is readable in all three",
+    "the prompt is readable in all four",
     messagesFor("ru").chooseLanguage.includes("Tilni") &&
+      messagesFor("ru").chooseLanguage.includes("Тил тандаңыз") &&
       messagesFor("ru").chooseLanguage.includes("Выберите") &&
       messagesFor("ru").chooseLanguage.includes("Choose"),
     messagesFor("ru").chooseLanguage
@@ -105,9 +111,31 @@ const TG = "770077";
     effectiveLanguage({ language: null, languageCode: "ru-RU" }) === "ru"
   );
   check("junk in the choice is ignored", effectiveLanguage({ language: "klingon", languageCode: "en" }) === "en");
-  check("only three are accepted", SUPPORTED.join(",") === "uz,ru,en", SUPPORTED.join(","));
+  check("only the four are accepted", SUPPORTED.join(",") === "uz,ky,ru,en", SUPPORTED.join(","));
 
-  console.log("\n5) Mini App havolasi to'g'ri do'konni ko'rsatadi");
+  console.log("\n5) Qirg'izcha");
+  // Kyrgyz used to be answered in Russian, which is what a shop in Osh
+  // would have noticed first.
+  check("a Kyrgyz phone gets Kyrgyz", effectiveLanguage({ language: null, languageCode: "ky-KG" }) === "ky");
+  check(
+    "and the bot speaks it",
+    messagesFor("ky").greeting.includes("Саламатсызбы"),
+    messagesFor("ky").greeting
+  );
+  check(
+    "with its own order wording",
+    messagesFor("ky").orderCreated(7, "415").includes("кабыл алынды"),
+    messagesFor("ky").orderCreated(7, "415")
+  );
+  check(
+    "and no Uzbek left in it",
+    !/Buyurtma|qabul|Jami/.test(messagesFor("ky").orderCreated(7, "415")),
+    messagesFor("ky").orderCreated(7, "415")
+  );
+  // Kazakh and Tajik still land on Russian — they have no table of their own.
+  check("Kazakh still reads Russian", effectiveLanguage({ language: null, languageCode: "kk" }) === "ru");
+
+  console.log("\n6) Mini App havolasi to'g'ri do'konni ko'rsatadi");
   // The link the bot opens must name this backend, or a phone that has
   // opened another shop is shown that shop's menu instead.
   const { miniappUrl } = require("../src/bot");

@@ -52,6 +52,15 @@ async function admin(path, opts = {}) {
 }
 
 (async () => {
+  // A run that failed half way leaves its fixtures behind, and the next
+  // one then fails on a unique code rather than on what it was checking.
+  await prisma.promoCode.deleteMany({ where: { code: { startsWith: "KONVERT" } } });
+  const stale = await prisma.category.findUnique({ where: { name: "Konvert test" } });
+  if (stale) {
+    await prisma.product.deleteMany({ where: { categoryId: stale.id } });
+    await prisma.category.delete({ where: { id: stale.id } });
+  }
+
   // A shop priced in so'm, the way one arrives from Uzbekistan.
   const category = await prisma.category.upsert({
     where: { name: "Konvert test" },
@@ -73,6 +82,16 @@ async function admin(path, opts = {}) {
   const fixedPromo = await prisma.promoCode.create({
     data: { code: "KONVERT5K", type: "FIXED", value: 5000, minOrderAmount: 50000 },
   });
+  // What the shop looked like before, so it can be handed back that way.
+  const snapshot = await prisma.settings.findUnique({ where: { id: 1 } });
+  const before = {
+    currency: snapshot.currency,
+    deliveryFee: snapshot.deliveryFee,
+    minOrderAmount: snapshot.minOrderAmount,
+    freeDeliveryThreshold: snapshot.freeDeliveryThreshold,
+    loyaltyPointValue: snapshot.loyaltyPointValue,
+  };
+
   await admin("/settings", {
     method: "PUT",
     body: JSON.stringify({
@@ -184,6 +203,11 @@ async function admin(path, opts = {}) {
   await prisma.product.deleteMany({ where: { categoryId: category.id } });
   await prisma.category.delete({ where: { id: category.id } });
   await prisma.promoCode.deleteMany({ where: { code: { startsWith: "KONVERT" } } });
+  // This suite rewrites every price in the shop, including ones other
+  // suites created and the settings they rely on. Left as it found them,
+  // the next suite fails on arithmetic it never performed.
+  await prisma.product.updateMany({ data: { price: 60000 }, where: { price: { lt: 100 } } });
+  await admin("/settings", { method: "PUT", body: JSON.stringify(before) });
   console.log(`\n${pass} passed, ${fail} failed`);
   await prisma.$disconnect();
   process.exit(fail ? 1 : 0);

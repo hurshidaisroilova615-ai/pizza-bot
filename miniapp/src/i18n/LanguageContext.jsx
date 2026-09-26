@@ -25,9 +25,12 @@ function detect() {
   if (stored) return stored;
   // Outside Telegram there is no account to ask, so the browser answers.
   const code = (getTelegramUser()?.languageCode || navigator.language || "").slice(0, 2).toLowerCase();
-  // Kazakh, Kyrgyz and Tajik customers read Russian far more often than
-  // English, so they land on Russian rather than the fallback.
-  if (["ru", "kk", "ky", "tg", "be", "uk"].includes(code)) return "ru";
+  // Kyrgyz has its own table now, so a phone set to it gets it rather
+  // than the Russian it used to fall back to.
+  if (code === "ky") return "ky";
+  // Kazakh and Tajik customers read Russian far more often than English,
+  // so they land on Russian rather than the fallback.
+  if (["ru", "kk", "tg", "be", "uk"].includes(code)) return "ru";
   if (code === "en") return "en";
   if (code === "uz") return "uz";
   return FALLBACK;

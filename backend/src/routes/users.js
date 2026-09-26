@@ -3,6 +3,7 @@ const prisma = require("../lib/prisma");
 const asyncHandler = require("../middleware/asyncHandler");
 const telegramUser = require("../middleware/telegramUser");
 const { getLoyaltySummary } = require("../lib/loyalty");
+const { SUPPORTED } = require("../lib/botMessages");
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router.post(
     // The language the Mini App is actually showing, which the bot's own
     // messages then follow. Only the three the bot speaks are accepted, so
     // a stale or tampered client can't write anything else onto the record.
-    const chosen = ["uz", "ru", "en"].includes(req.body?.language) ? req.body.language : null;
+    const chosen = SUPPORTED.includes(req.body?.language) ? req.body.language : null;
     const user = await prisma.user.upsert({
       where: { telegramId },
       update: {

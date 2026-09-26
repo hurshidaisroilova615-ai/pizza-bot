@@ -2162,14 +2162,18 @@ button {
   margin-bottom: 9px;
 }
 
+/* Two across rather than one row of four: a fourth language took the row
+   past the edge of a 320px phone, and a menu that scrolls sideways looks
+   broken before anybody reads a word of it. */
 .lang-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
   padding: 0 20px;
 }
 
 .lang-chip {
-  flex: 1;
+  min-width: 0;
   padding: 11px 8px;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);

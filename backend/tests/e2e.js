@@ -202,7 +202,10 @@ async function setSettings(patch) {
   console.log("\n6b) Til (language)");
   const { pickLanguage, statusLabelFor } = require("../src/lib/botMessages");
   check("russian phone -> russian", pickLanguage("ru-RU") === "ru");
-  check("kyrgyz phone -> russian", pickLanguage("ky") === "ru");
+  // Kyrgyz used to be answered in Russian because there was no table for
+  // it. There is now, so a phone set to it gets its own language.
+  check("kyrgyz phone -> kyrgyz", pickLanguage("ky") === "ky", pickLanguage("ky"));
+  check("kazakh phone -> russian", pickLanguage("kk") === "ru", pickLanguage("kk"));
   check("english phone -> english", pickLanguage("en-GB") === "en");
   check("unknown phone -> uzbek", pickLanguage("de") === "uz", pickLanguage("de"));
   check(

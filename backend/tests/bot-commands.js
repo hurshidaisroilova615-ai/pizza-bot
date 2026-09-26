@@ -116,10 +116,10 @@ function isSendable(msg) {
   let problem = isSendable(sent[0]);
   check("the reply is one Telegram would accept", problem === null, problem || "");
   const buttons = (sent[0]?.opts?.reply_markup?.inline_keyboard || []).flat();
-  check("three language buttons", buttons.length === 3, String(buttons.length));
+  check("four language buttons", buttons.length === 4, String(buttons.length));
   check(
     "each carries a language",
-    buttons.every((b) => /^lang:(uz|ru|en)$/.test(b.callback_data || "")),
+    buttons.every((b) => /^lang:(uz|ky|ru|en)$/.test(b.callback_data || "")),
     JSON.stringify(buttons.map((b) => b.callback_data))
   );
 

@@ -1,4 +1,4 @@
-// What the bot says, in the three languages its customers read.
+// What the bot says, in the four languages its customers read.
 //
 // The customer's Telegram language arrives with every message and is stored
 // on the user row, so a Russian-speaking guest is answered in Russian
@@ -14,7 +14,7 @@ const MESSAGES = {
     orderPrompt: "Buyurtma berish uchun pastdagi tugmani bosing.",
     orderButton: "🛍 Buyurtma berish",
     menuButton: "Menyu",
-    chooseLanguage: "Tilni tanlang / Выберите язык / Choose your language",
+    chooseLanguage: "Tilni tanlang / Тил тандаңыз / Выберите язык / Choose your language",
     languageSet: "Til o'zbekchaga o'zgartirildi.",
     languageCommand: "Tilni o'zgartirish uchun /til deb yozing.",
     noOrders: "Sizda hali buyurtmalar yo'q.",
@@ -40,7 +40,7 @@ const MESSAGES = {
     orderPrompt: "Нажмите кнопку ниже, чтобы сделать заказ.",
     orderButton: "🛍 Сделать заказ",
     menuButton: "Меню",
-    chooseLanguage: "Tilni tanlang / Выберите язык / Choose your language",
+    chooseLanguage: "Tilni tanlang / Тил тандаңыз / Выберите язык / Choose your language",
     languageSet: "Язык переключён на русский.",
     languageCommand: "Чтобы сменить язык, отправьте /til.",
     noOrders: "У вас пока нет заказов.",
@@ -60,13 +60,39 @@ const MESSAGES = {
       DELIVERED: "Выдан 🎉",
     },
   },
+  ky: {
+    greeting: "Саламатсызбы! 👋",
+    welcome: (name) => `${name} дүкөнүнө кош келиңиз.`,
+    orderPrompt: "Заказ берүү үчүн төмөнкү баскычты басыңыз.",
+    orderButton: "🛍 Заказ берүү",
+    menuButton: "Меню",
+    chooseLanguage: "Tilni tanlang / Тил тандаңыз / Выберите язык / Choose your language",
+    languageSet: "Тил кыргызчага которулду.",
+    languageCommand: "Тилди өзгөртүү үчүн /til деп жазыңыз.",
+    noOrders: "Сизде азырынча заказдар жок.",
+    orderCreated: (id, total) =>
+      `Заказыңыз #${id} кабыл алынды! ✅\nЖалпы: ${total}\n\nАбалын ушул боттон же тиркемедеги профилиңизден көзөмөлдөй аласыз.`,
+    statusChanged: (id, label) => `Заказыңыздын #${id} абалы жаңырды:\n${label}`,
+    total: "Жалпы",
+    status: {
+      PENDING: "Кабыл алынды ✅",
+      PREPARING: "Даярдалууда 👨‍🍳",
+      ON_DELIVERY: "Курьерде 🚚",
+      DELIVERED: "Жеткирилди 🎉",
+      CANCELLED: "Жокко чыгарылды ❌",
+    },
+    pickupStatus: {
+      ON_DELIVERY: "Даяр, алып кетсеңиз болот 🛍",
+      DELIVERED: "Тапшырылды 🎉",
+    },
+  },
   en: {
     greeting: "Hello! 👋",
     welcome: (name) => `Welcome to ${name}.`,
     orderPrompt: "Tap the button below to order.",
     orderButton: "🛍 Order now",
     menuButton: "Menu",
-    chooseLanguage: "Tilni tanlang / Выберите язык / Choose your language",
+    chooseLanguage: "Tilni tanlang / Тил тандаңыз / Выберите язык / Choose your language",
     languageSet: "Language switched to English.",
     languageCommand: "Send /til to change the language.",
     noOrders: "You have no orders yet.",
@@ -90,11 +116,13 @@ const MESSAGES = {
 
 // Customers in this region who don't read Uzbek overwhelmingly read
 // Russian rather than English, so the neighbouring language codes land
-// there instead of on the fallback.
-const RUSSIAN_SPEAKING = ["ru", "kk", "ky", "tg", "be", "uk"];
+// there instead of on the fallback. Kyrgyz has its own table now, so it
+// is no longer among them.
+const RUSSIAN_SPEAKING = ["ru", "kk", "tg", "be", "uk"];
 
 function pickLanguage(languageCode) {
   const code = String(languageCode || "").slice(0, 2).toLowerCase();
+  if (code === "ky") return "ky";
   if (RUSSIAN_SPEAKING.includes(code)) return "ru";
   if (code === "en") return "en";
   return "uz";
@@ -112,11 +140,11 @@ function statusLabelFor(order, languageCode) {
   return table[order?.status] || order?.status || "";
 }
 
-// The three buttons the bot offers on a first /start. Each label is written
-// in its own language — someone who cannot read the other two still finds
-// theirs.
+// The buttons the bot offers on a first /start. Each label is written in
+// its own language — someone who cannot read the others still finds theirs.
 const LANGUAGE_CHOICES = [
   { code: "uz", label: "🇺🇿 O'zbekcha" },
+  { code: "ky", label: "🇰🇬 Кыргызча" },
   { code: "ru", label: "🇷🇺 Русский" },
   { code: "en", label: "🇬🇧 English" },
 ];
