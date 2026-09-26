@@ -142,6 +142,7 @@ export const messages = {
     "profile.repeat": "Yana shundan buyurtma qilish",
     "profile.language": "Til",
     "profile.guest": "Mehmon",
+    "site.hours": "Ish vaqti: {hours}",
 
     "placed.title": "Buyurtmangiz qabul qilindi",
     "placed.number": "Buyurtma raqami: #{id}",
@@ -291,6 +292,7 @@ export const messages = {
     "profile.repeat": "Повторить заказ",
     "profile.language": "Язык",
     "profile.guest": "Гость",
+    "site.hours": "Часы работы: {hours}",
 
     "placed.title": "Заказ принят",
     "placed.number": "Номер заказа: #{id}",
@@ -439,6 +441,7 @@ export const messages = {
     "profile.repeat": "Order this again",
     "profile.language": "Language",
     "profile.guest": "Guest",
+    "site.hours": "Open: {hours}",
 
     "placed.title": "Order received",
     "placed.number": "Order number: #{id}",

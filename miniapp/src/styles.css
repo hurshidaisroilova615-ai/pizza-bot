@@ -2443,3 +2443,45 @@ button {
   font-weight: 700;
   color: var(--text);
 }
+
+/* ── Sayt pastki qismi ──────────────────────────────────────────────────
+   Only on the shop's own web address. In Telegram the chat behind the app
+   carries the shop's name and contact already; on a website nothing does. */
+.site-footer {
+  margin: 28px 20px 24px;
+  padding: 20px;
+  border-radius: 18px;
+  background: var(--surface-2);
+  display: grid;
+  gap: 10px;
+}
+
+.site-footer-name {
+  margin: 0 0 2px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.site-footer-row {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14.5px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.site-footer-row .icon {
+  flex: none;
+  color: var(--accent);
+}
+
+/* The number is the one thing here anybody taps. */
+.site-footer-call {
+  font-weight: 600;
+  color: var(--text);
+}

@@ -23,6 +23,9 @@ const PATHS = {
   cash: "M3 6.5h18v11H3zM12 15a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM6.5 9.5h.01M17.5 14.5h.01",
   pin: "M12 21s6.5-5.7 6.5-10.5a6.5 6.5 0 1 0-13 0C5.5 15.3 12 21 12 21ZM12 13a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z",
   bag: "M6 8h12l1 12.5H5L6 8ZM9 8V6.5a3 3 0 0 1 6 0V8",
+  // A handset: on a shop's own web page this one is tapped more than
+  // anything else, because half these customers still prefer to call.
+  phone: "M6.5 3.5h3l1.5 4-2 1.4a12 12 0 0 0 6.1 6.1l1.4-2 4 1.5v3a2 2 0 0 1-2.2 2A17.5 17.5 0 0 1 4.5 5.7a2 2 0 0 1 2-2.2Z",
 };
 
 export default function Icon({ name, size = 22, strokeWidth = 1.7, className = "", filled = false }) {

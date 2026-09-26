@@ -66,5 +66,29 @@ export function resolveApiBase() {
     // storage blocked; there was nothing to remove anyway
   }
 
-  return import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+  const configured = import.meta.env.VITE_API_URL;
+  if (configured) return configured.replace(/\/+$/, "");
+
+  const sibling = siblingBackend();
+  if (sibling) return sibling;
+
+  return "http://localhost:4000/api";
+}
+
+// The shop opened at its own plain web address, with nothing on the link.
+//
+// Inside Telegram this never happens: the bot stamps ?api= onto the link it
+// opens. On a website there is no bot, and a customer types or taps a bare
+// address — so if the deployment never had VITE_API_URL filled in, the page
+// would fall back to localhost and show an empty shop to a real customer.
+//
+// The two services are deployed together and named together (see
+// render.yaml: smartorder-miniapp beside smartorder-backend), so the page
+// can find its own backend by that naming rather than by configuration
+// somebody has to remember.
+function siblingBackend() {
+  const { protocol, hostname } = window.location;
+  if (protocol !== "https:" || !hostname.endsWith(".onrender.com")) return null;
+  if (!hostname.includes("-miniapp")) return null;
+  return `https://${hostname.replace("-miniapp", "-backend")}/api`;
 }

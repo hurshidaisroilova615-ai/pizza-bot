@@ -10,9 +10,10 @@ import { LanguageProvider } from "./i18n/LanguageContext";
 import { SettingsProvider, useSettings, useSettingsStatus } from "./context/SettingsContext";
 import WakeScreen from "./components/WakeScreen";
 import ClosedBanner from "./components/ClosedBanner";
+import SiteFooter from "./components/SiteFooter";
 import { api } from "./api";
 import { initTelegram, watchColorScheme } from "./telegram";
-import { currentCustomer } from "./identity";
+import { currentCustomer, isTelegram } from "./identity";
 
 function AppContent({ customer }) {
   const [tab, setTab] = useState("home");
@@ -57,6 +58,11 @@ function AppContent({ customer }) {
       {tab === "profile" && (
         <Profile customer={customer} onNavigateCatalog={() => setTab("catalog")} refreshKey={ordersRefreshKey} />
       )}
+
+      {/* Only on the shop's own web page, and only on the front page:
+          inside Telegram the chat behind the app already carries all of
+          this, and on the other tabs it would sit under a form. */}
+      {tab === "home" && !isTelegram() && <SiteFooter />}
 
       <BottomNav active={tab} onChange={setTab} cartCount={totalCount} />
     </div>
