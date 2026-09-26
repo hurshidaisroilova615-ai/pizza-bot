@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSave } from "../lib/useSave";
 import Modal from "./Modal";
+import { useT } from "../i18n";
 
 const SEGMENTS = [
   { value: "ALL", label: "Barcha mijozlar" },
@@ -10,6 +11,7 @@ const SEGMENTS = [
 ];
 
 export default function OfferModal({ offer, promoCodes, onClose, onSave }) {
+  const { t } = useT();
   const [form, setForm] = useState({
     title: offer?.title || "",
     message: offer?.message || "",
@@ -34,35 +36,35 @@ export default function OfferModal({ offer, promoCodes, onClose, onSave }) {
   }
 
   return (
-    <Modal title={offer ? "Taklifni tahrirlash" : "Yangi maxsus taklif"} onClose={onClose}>
+    <Modal title={offer ? t("Taklifni tahrirlash") : t("Yangi maxsus taklif")} onClose={onClose}>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Sarlavha</label>
+          <label>{t("Sarlavha")}</label>
           <input value={form.title} onChange={(e) => update("title", e.target.value)} required />
         </div>
         <div className="form-group">
-          <label>Xabar matni</label>
+          <label>{t("Xabar matni")}</label>
           <textarea rows={3} value={form.message} onChange={(e) => update("message", e.target.value)} required />
         </div>
         <div className="form-group">
-          <label>Rasm URL (ixtiyoriy)</label>
+          <label>{t("Rasm URL (ixtiyoriy)")}</label>
           <input value={form.imageUrl} onChange={(e) => update("imageUrl", e.target.value)} />
         </div>
         <div className="form-row">
           <div className="form-group">
-            <label>Maqsadli auditoriya</label>
+            <label>{t("Maqsadli auditoriya")}</label>
             <select value={form.segment} onChange={(e) => update("segment", e.target.value)}>
               {SEGMENTS.map((s) => (
                 <option key={s.value} value={s.value}>
-                  {s.label}
+                  {t(s.label)}
                 </option>
               ))}
             </select>
           </div>
           <div className="form-group">
-            <label>Bog'liq promo kod (ixtiyoriy)</label>
+            <label>{t("Bog'liq promo kod (ixtiyoriy)")}</label>
             <select value={form.promoCodeId} onChange={(e) => update("promoCodeId", e.target.value)}>
-              <option value="">Yo'q</option>
+              <option value="">{t("Yo'q")}</option>
               {promoCodes.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.code}
@@ -73,16 +75,16 @@ export default function OfferModal({ offer, promoCodes, onClose, onSave }) {
         </div>
         <label className="checkbox-row">
           <input type="checkbox" checked={form.isActive} onChange={(e) => update("isActive", e.target.checked)} />
-          Faol
+          {t("Faol")}
         </label>
         {error && <p className="form-error save-error">{error}</p>}
 
         <div className="modal-actions">
           <button type="button" className="btn btn-outline" onClick={onClose}>
-            Bekor qilish
+            {t("Bekor qilish")}
           </button>
           <button type="submit" className="btn btn-accent" disabled={saving}>
-            {saving ? "Saqlanmoqda..." : "Saqlash"}
+            {saving ? t("Saqlanmoqda...") : t("Saqlash")}
           </button>
         </div>
       </form>

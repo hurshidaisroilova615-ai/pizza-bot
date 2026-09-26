@@ -2,8 +2,10 @@ import { useState } from "react";
 import { useSave } from "../lib/useSave";
 import Modal from "./Modal";
 import ImageField from "./ImageField";
+import { useT } from "../i18n";
 
 export default function ProductModal({ product, categories, allProducts, onClose, onSave }) {
+  const { t } = useT();
   const [form, setForm] = useState({
     name: product?.name || "",
     description: product?.description || "",
@@ -49,22 +51,22 @@ export default function ProductModal({ product, categories, allProducts, onClose
   const otherProducts = (allProducts || []).filter((p) => p.id !== product?.id);
 
   return (
-    <Modal title={product ? "Mahsulotni tahrirlash" : "Yangi mahsulot qo'shish"} onClose={onClose} wide>
+    <Modal title={product ? t("Mahsulotni tahrirlash") : t("Yangi mahsulot qo'shish")} onClose={onClose} wide>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Nomi</label>
+          <label>{t("Nomi")}</label>
           <input value={form.name} onChange={(e) => update("name", e.target.value)} required />
         </div>
         <div className="form-group">
-          <label>Tarkibi / tavsif (vergul bilan ajrating)</label>
+          <label>{t("Tarkibi / tavsif (vergul bilan ajrating)")}</label>
           <textarea rows={2} value={form.description} onChange={(e) => update("description", e.target.value)} />
         </div>
         <ImageField value={form.imageUrl} onChange={(url) => update("imageUrl", url)} />
         <div className="form-row">
           <div className="form-group">
-            <label>Kategoriya</label>
+            <label>{t("Kategoriya")}</label>
             <select value={form.categoryId} onChange={(e) => update("categoryId", e.target.value)}>
-              <option value="">Tanlanmagan</option>
+              <option value="">{t("Tanlanmagan")}</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.icon} {c.name}
@@ -73,11 +75,11 @@ export default function ProductModal({ product, categories, allProducts, onClose
             </select>
           </div>
           <div className="form-group">
-            <label>Eski narx</label>
+            <label>{t("Eski narx")}</label>
             <input type="number" value={form.oldPrice} onChange={(e) => update("oldPrice", e.target.value)} />
           </div>
           <div className="form-group">
-            <label>Narx</label>
+            <label>{t("Narx")}</label>
             <input type="number" value={form.price} onChange={(e) => update("price", e.target.value)} required />
           </div>
         </div>
@@ -85,7 +87,7 @@ export default function ProductModal({ product, categories, allProducts, onClose
         <div className="form-row">
           <label className="checkbox-row">
             <input type="checkbox" checked={form.isAvailable} onChange={(e) => update("isAvailable", e.target.checked)} />
-            Mavjud
+            {t("Mavjud")}
           </label>
           <label className="checkbox-row">
             <input
@@ -93,12 +95,12 @@ export default function ProductModal({ product, categories, allProducts, onClose
               checked={form.isRecommended}
               onChange={(e) => update("isRecommended", e.target.checked)}
             />
-            Tavsiya etilgan qo'shimcha (upsell)
+            {t("Tavsiya etilgan qo'shimcha (upsell)")}
           </label>
         </div>
 
         <div className="form-group">
-          <label>Bunga mos qo'shimchalar (cross-sell)</label>
+          <label>{t("Bunga mos qo'shimchalar (cross-sell)")}</label>
           <div className="chip-select">
             {otherProducts.map((p) => (
               <button
@@ -117,10 +119,10 @@ export default function ProductModal({ product, categories, allProducts, onClose
 
         <div className="modal-actions">
           <button type="button" className="btn btn-outline" onClick={onClose}>
-            Bekor qilish
+            {t("Bekor qilish")}
           </button>
           <button type="submit" className="btn btn-accent" disabled={saving}>
-            {saving ? "Saqlanmoqda..." : "Saqlash"}
+            {saving ? t("Saqlanmoqda...") : t("Saqlash")}
           </button>
         </div>
       </form>

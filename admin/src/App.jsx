@@ -14,15 +14,20 @@ import Tables from "./pages/Tables";
 import Settings from "./pages/Settings";
 import { api, BASE_URL } from "./api";
 import { nameBase } from "./apiBase";
+import { LanguageProvider } from "./i18n";
 
 function Layout() {
   const [businessName, setBusinessName] = useState("");
+  // Which language the shop was set up in. It only decides the first
+  // visit — after that the panel keeps whatever was picked in it.
+  const [ownerLanguage, setOwnerLanguage] = useState(null);
 
   useEffect(() => {
     api
       .getSettings()
       .then((s) => {
         setBusinessName(s.businessName);
+        setOwnerLanguage(s.ownerLanguage || null);
         // Lets the switcher list this backend by the shop's name rather
         // than by its hostname next time.
         nameBase(BASE_URL, s.businessName);
@@ -31,6 +36,7 @@ function Layout() {
   }, []);
 
   return (
+    <LanguageProvider fromSettings={ownerLanguage}>
     <div className="layout">
       <Sidebar businessName={businessName} />
       <main className="main">
@@ -48,6 +54,7 @@ function Layout() {
         </Routes>
       </main>
     </div>
+    </LanguageProvider>
   );
 }
 
@@ -55,7 +62,12 @@ function Gate() {
   const { admin, loading } = useAuth();
 
   if (loading) return <div className="loading-screen">Yuklanmoqda...</div>;
-  if (!admin) return <Login />;
+  if (!admin)
+    return (
+      <LanguageProvider>
+        <Login />
+      </LanguageProvider>
+    );
   return <Layout />;
 }
 

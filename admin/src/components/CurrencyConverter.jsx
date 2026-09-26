@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../api";
 import { useSave } from "../lib/useSave";
+import { useT } from "../i18n";
 
 // Moving every price in the shop to another currency at once.
 //
@@ -15,6 +16,7 @@ const PRESETS = [
 ];
 
 export default function CurrencyConverter({ onDone }) {
+  const { t } = useT();
   const [rate, setRate] = useState("145");
   const [roundTo, setRoundTo] = useState("5");
   const [currency, setCurrency] = useState("сом");
@@ -50,16 +52,12 @@ export default function CurrencyConverter({ onDone }) {
 
   return (
     <div className="settings-section">
-      <h3>Narxlarni boshqa valyutaga o'tkazish</h3>
-      <p className="muted" style={{ marginTop: -6 }}>
-        Menyudagi barcha narxlar, yetkazib berish narxi, minimal summa va belgilangan
-        summali promo kodlar birdan o'zgaradi. Avval natijani ko'rsatadi — rozi bo'lsangiz
-        saqlaysiz.
-      </p>
+      <h3>{t("Narxlarni boshqa valyutaga o'tkazish")}</h3>
+      <p className="muted" style={{ marginTop: -6 }}>{t("Menyudagi barcha narxlar, yetkazib berish narxi, minimal summa va belgilangan summali promo kodlar birdan o'zgaradi. Avval natijani ko'rsatadi — rozi bo'lsangiz saqlaysiz.")}</p>
 
       <div className="form-row">
         {PRESETS.map((preset) => (
-          <button key={preset.label} type="button" className="btn btn-outline" onClick={() => usePreset(preset)}>
+          <button key={t(preset.label)} type="button" className="btn btn-outline" onClick={() => usePreset(preset)}>
             {preset.label}
           </button>
         ))}
@@ -67,26 +65,26 @@ export default function CurrencyConverter({ onDone }) {
 
       <div className="form-row">
         <div className="form-group">
-          <label>Kurs (1 yangi valyuta necha eskiga teng)</label>
+          <label>{t("Kurs (1 yangi valyuta necha eskiga teng)")}</label>
           <input value={rate} onChange={(e) => setRate(e.target.value)} placeholder="145" />
         </div>
         <div className="form-group">
-          <label>Yaxlitlash</label>
+          <label>{t("Yaxlitlash")}</label>
           <input value={roundTo} onChange={(e) => setRoundTo(e.target.value)} placeholder="5" />
         </div>
         <div className="form-group">
-          <label>Yangi valyuta belgisi</label>
+          <label>{t("Yangi valyuta belgisi")}</label>
           <input value={currency} onChange={(e) => setCurrency(e.target.value)} placeholder="сом" />
         </div>
       </div>
 
       <div className="form-row">
         <button type="button" className="btn btn-outline" onClick={look} disabled={!valid || saving}>
-          {saving && !preview ? "Hisoblanmoqda..." : "Natijani ko'rish"}
+          {saving && !preview ? t("Hisoblanmoqda...") : t("Natijani ko'rish")}
         </button>
         {preview && (
           <button type="button" className="btn btn-primary" onClick={apply} disabled={saving}>
-            {saving ? "Saqlanmoqda..." : "Saqlash"}
+            {saving ? t("Saqlanmoqda...") : t("Saqlash")}
           </button>
         )}
       </div>
@@ -105,7 +103,7 @@ export default function CurrencyConverter({ onDone }) {
                 </tr>
               ))}
               <tr>
-                <td>Yetkazib berish</td>
+                <td>{t("Yetkazib berish")}</td>
                 <td className="convert-before">{preview.settings.deliveryFee.before.toLocaleString()}</td>
                 <td className="convert-after">
                   {preview.settings.deliveryFee.after.toLocaleString()} {currency}

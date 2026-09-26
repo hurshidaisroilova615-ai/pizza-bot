@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api";
 import OrderDetailDrawer from "../components/OrderDetailDrawer";
 import { STATUS_LABELS, statusLabel, orderTypeLabel, paymentLabel } from "../lib/orderLabels";
+import { useT } from "../i18n";
 
 const STATUS_FILTERS = ["", "PENDING", "PREPARING", "ON_DELIVERY", "DELIVERED", "CANCELLED"];
 
@@ -15,6 +16,7 @@ const NEXT_STATUS = {
 };
 
 export default function Orders() {
+  const { t } = useT();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("");
@@ -53,14 +55,14 @@ export default function Orders() {
   return (
     <div>
       <div className="page-header">
-        <h1>Buyurtmalar</h1>
+        <h1>{t("Buyurtmalar")}</h1>
         <button className="btn btn-outline" onClick={load}>
-          Yangilash
+          {t("Yangilash")}
         </button>
       </div>
 
       <div className="filter-bar">
-        <span className="filter-label">Saralash</span>
+        <span className="filter-label">{t("Saralash")}</span>
         <div className="tag-row-admin">
           {STATUS_FILTERS.map((s) => (
             <button
@@ -68,14 +70,14 @@ export default function Orders() {
               className={`tag-admin ${statusFilter === s ? "active" : ""}`}
               onClick={() => setStatusFilter(s)}
             >
-              {s ? STATUS_LABELS[s] : "Barchasi"}
+              {s ? t(STATUS_LABELS[s]) : t("Barchasi")}
             </button>
           ))}
         </div>
       </div>
 
-      {loading && <p className="empty-note">Yuklanmoqda...</p>}
-      {!loading && orders.length === 0 && <p className="empty-note">Hozircha buyurtmalar yo'q</p>}
+      {loading && <p className="empty-note">{t("Yuklanmoqda...")}</p>}
+      {!loading && orders.length === 0 && <p className="empty-note">{t("Hozircha buyurtmalar yo'q")}</p>}
 
       {orders.length > 0 && (
         <div className="table-wrap">
@@ -83,38 +85,38 @@ export default function Orders() {
             <thead>
               <tr>
                 <th>#</th>
-                <th>Mijoz</th>
-                <th>Telefon</th>
-                <th>Turi</th>
-                <th>Mahsulotlar</th>
-                <th>Jami</th>
-                <th>Sana</th>
-                <th>Holati</th>
-                <th>Keyingi qadam</th>
+                <th>{t("Mijoz")}</th>
+                <th>{t("Telefon")}</th>
+                <th>{t("Turi")}</th>
+                <th>{t("Mahsulotlar")}</th>
+                <th>{t("Jami")}</th>
+                <th>{t("Sana")}</th>
+                <th>{t("Holati")}</th>
+                <th>{t("Keyingi qadam")}</th>
               </tr>
             </thead>
             <tbody>
               {orders.map((order) => (
                 <tr key={order.id} className="clickable-row" onClick={() => setSelected(order)}>
                   <td data-label="#">#{order.id}</td>
-                  <td data-label="Mijoz">{order.user?.firstName || "—"}</td>
-                  <td data-label="Telefon">{order.phone || order.user?.phone || "—"}</td>
-                  <td data-label="Turi" className="nowrap-cell">
+                  <td data-label={t("Mijoz")}>{order.user?.firstName || "—"}</td>
+                  <td data-label={t("Telefon")}>{order.phone || order.user?.phone || "—"}</td>
+                  <td data-label={t("Turi")} className="nowrap-cell">
                     {orderTypeLabel(order.orderType, order.tableNumber)}
                     <br />
                     <span className="muted">{paymentLabel(order.paymentMethod)}</span>
                   </td>
-                  <td data-label="Mahsulotlar" className="truncate-cell">
+                  <td data-label={t("Mahsulotlar")} className="truncate-cell">
                     {order.items.map((i) => `${i.name} x${i.quantity}`).join(", ")}
                   </td>
-                  <td data-label="Jami">{order.totalPrice.toLocaleString()}</td>
-                  <td data-label="Sana">{new Date(order.createdAt).toLocaleString("uz-UZ")}</td>
-                  <td data-label="Holati">
+                  <td data-label={t("Jami")}>{order.totalPrice.toLocaleString()}</td>
+                  <td data-label={t("Sana")}>{new Date(order.createdAt).toLocaleString("uz-UZ")}</td>
+                  <td data-label={t("Holati")}>
                     <span className={`status-pill status-${order.status.toLowerCase()}`}>
                       {statusLabel(order.status, order.orderType)}
                     </span>
                   </td>
-                  <td data-label="Keyingi qadam" className="row-actions">
+                  <td data-label={t("Keyingi qadam")} className="row-actions">
                     {NEXT_STATUS[order.status] ? (
                       <button
                         className="btn btn-accent advance-btn"

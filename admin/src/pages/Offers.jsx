@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import OfferModal from "../components/OfferModal";
+import { useT } from "../i18n";
 
 const SEGMENT_LABELS = {
   ALL: "Barchasi",
@@ -10,6 +11,7 @@ const SEGMENT_LABELS = {
 };
 
 export default function Offers() {
+  const { t } = useT();
   const [offers, setOffers] = useState([]);
   const [promoCodes, setPromoCodes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -44,7 +46,7 @@ export default function Offers() {
   }
 
   async function handleSend(offer) {
-    if (!confirm(`"${offer.title}" ni ${SEGMENT_LABELS[offer.segment]} guruhiga yubormoqchimisiz?`)) return;
+    if (!confirm(`"${offer.title}" — ${t(SEGMENT_LABELS[offer.segment])}?`)) return;
     setSendingId(offer.id);
     try {
       const result = await api.sendOffer(offer.id);
@@ -62,7 +64,7 @@ export default function Offers() {
   return (
     <div>
       <div className="page-header">
-        <h1>Maxsus takliflar</h1>
+        <h1>{t("Maxsus takliflar")}</h1>
         <button
           className="btn btn-accent"
           onClick={() => {
@@ -70,12 +72,12 @@ export default function Offers() {
             setModalOpen(true);
           }}
         >
-          + Yangi taklif
+          {t("+ Yangi taklif")}
         </button>
       </div>
 
-      {loading && <p className="empty-note">Yuklanmoqda...</p>}
-      {!loading && offers.length === 0 && <p className="empty-note">Hozircha takliflar yo'q</p>}
+      {loading && <p className="empty-note">{t("Yuklanmoqda...")}</p>}
+      {!loading && offers.length === 0 && <p className="empty-note">{t("Hozircha takliflar yo'q")}</p>}
 
       <div className="offer-grid">
         {offers.map((offer) => (
@@ -83,11 +85,11 @@ export default function Offers() {
             <div className="offer-card-header">
               <h3>{offer.title}</h3>
               <span className={`status-pill ${offer.isActive ? "done" : ""}`}>
-                {offer.isActive ? "Faol" : "Nofaol"}
+                {offer.isActive ? t("Faol") : t("Nofaol")}
               </span>
             </div>
             <p className="muted">{offer.message}</p>
-            <p className="offer-segment">🎯 {SEGMENT_LABELS[offer.segment]}</p>
+            <p className="offer-segment">🎯 {t(SEGMENT_LABELS[offer.segment])}</p>
             {offer.promoCode && <p className="mono">Promo: {offer.promoCode.code}</p>}
             {offer.sentAt && (
               <p className="muted">
@@ -96,13 +98,13 @@ export default function Offers() {
             )}
             <div className="offer-card-actions">
               <button className="btn btn-outline" onClick={() => { setEditing(offer); setModalOpen(true); }}>
-                Tahrirlash
+                {t("Tahrirlash")}
               </button>
               <button className="btn btn-outline" onClick={() => handleDelete(offer)}>
-                O'chirish
+                {t("O'chirish")}
               </button>
               <button className="btn btn-accent" onClick={() => handleSend(offer)} disabled={sendingId === offer.id}>
-                {sendingId === offer.id ? "Yuborilmoqda..." : "Yuborish"}
+                {sendingId === offer.id ? t("Yuborilmoqda...") : t("Yuborish")}
               </button>
             </div>
           </div>

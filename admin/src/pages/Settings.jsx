@@ -3,8 +3,10 @@ import { api } from "../api";
 import ChangePasswordForm from "../components/ChangePasswordForm";
 import CurrencyConverter from "../components/CurrencyConverter";
 import { useSave } from "../lib/useSave";
+import { useT } from "../i18n";
 
 export default function Settings({ onBusinessNameChange }) {
+  const { t } = useT();
   const [form, setForm] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
@@ -15,9 +17,9 @@ export default function Settings({ onBusinessNameChange }) {
     api
       .getSettings()
       .then(setForm)
-      // Without this the page sat on "Yuklanmoqda..." for ever and never
+      // Without this the page sat on t("Yuklanmoqda...") for ever and never
       // said why, which looks identical to a slow connection.
-      .catch((err) => setLoadError(err?.message || "Sozlamalarni yuklab bo'lmadi."))
+      .catch((err) => setLoadError(err?.message || t("Sozlamalarni yuklab bo'lmadi.")))
       .finally(() => setLoading(false));
   }, []);
 
@@ -65,18 +67,18 @@ export default function Settings({ onBusinessNameChange }) {
     setSaved(true);
   }
 
-  if (loading) return <p className="empty-note">Yuklanmoqda...</p>;
+  if (loading) return <p className="empty-note">{t("Yuklanmoqda...")}</p>;
   if (loadError || !form) {
     return (
       <div>
         <div className="page-header">
-          <h1>Biznes sozlamalari</h1>
+          <h1>{t("Biznes sozlamalari")}</h1>
         </div>
         <p className="form-error save-error">
-          {loadError || "Sozlamalarni yuklab bo'lmadi."}
+          {loadError || t("Sozlamalarni yuklab bo'lmadi.")}
         </p>
         <button className="btn btn-outline" onClick={() => window.location.reload()}>
-          Qayta urinish
+          {t("Qayta urinish")}
         </button>
       </div>
     );
@@ -85,64 +87,60 @@ export default function Settings({ onBusinessNameChange }) {
   return (
     <div>
       <div className="page-header">
-        <h1>Biznes sozlamalari</h1>
+        <h1>{t("Biznes sozlamalari")}</h1>
       </div>
-      <p className="muted" style={{ marginTop: -12, marginBottom: 24 }}>
-        Bu yerdagi sozlamalar Mini App va botga darhol ta'sir qiladi. Shu forma orqali platformani istalgan
-        biznes turiga (pizza, burger, sushi, kiyim, kosmetika va h.k.) moslashtirishingiz mumkin — kodni
-        o'zgartirish shart emas.
-      </p>
+      <p className="muted" style={{ marginTop: -12, marginBottom: 24 }}>{t("Bu yerdagi sozlamalar Mini App va botga darhol ta'sir qiladi. Shu forma orqali platformani istalgan biznes turiga (pizza, burger, sushi, kiyim, kosmetika va h.k.) moslashtirishingiz mumkin — kodni o'zgartirish shart emas.")}</p>
 
       <form className="settings-form" onSubmit={handleSubmit}>
         <div className="settings-section">
-          <h3>Brend</h3>
+          <h3>{t("Brend")}</h3>
           <div className="form-row">
             <div className="form-group">
-              <label>Biznes nomi</label>
+              <label>{t("Biznes nomi")}</label>
               <input value={form.businessName} onChange={(e) => update("businessName", e.target.value)} required />
             </div>
             <div className="form-group">
-              <label>Biznes turi</label>
+              <label>{t("Biznes turi")}</label>
               <input value={form.businessType} onChange={(e) => update("businessType", e.target.value)} placeholder="food, fashion, cosmetics..." />
             </div>
           </div>
           <div className="form-row">
             <div className="form-group">
-              <label>Valyuta</label>
+              <label>{t("Valyuta")}</label>
               <input value={form.currency} onChange={(e) => update("currency", e.target.value)} />
             </div>
             <div className="form-group">
               {/* The owner's own language, not the customer's — it decides
                   what the order alerts are written in. */}
-              <label>Sizning tilingiz (buyurtma xabarlari)</label>
+              <label>{t("Sizning tilingiz (buyurtma xabarlari)")}</label>
               <select
                 value={form.ownerLanguage || "uz"}
                 onChange={(e) => update("ownerLanguage", e.target.value)}
               >
-                <option value="uz">O'zbekcha</option>
-                <option value="ru">Русский</option>
+                <option value="uz">{t("O'zbekcha")}</option>
+                <option value="ru">{t("Русский")}</option>
               </select>
             </div>
             <div className="form-group">
-              <label>Asosiy rang</label>
+              <label>{t("Asosiy rang")}</label>
               <input type="color" value={form.primaryColor} onChange={(e) => update("primaryColor", e.target.value)} />
             </div>
             <div className="form-group">
-              <label>Logo URL</label>
+              <label>{t("Logo URL")}</label>
               <input value={form.logoUrl || ""} onChange={(e) => update("logoUrl", e.target.value)} />
             </div>
           </div>
         </div>
 
         <div className="settings-section">
-          <h3>Yetkazib berish va buyurtma</h3>
+          <h3>{t("Yetkazib berish va buyurtma")}</h3>
           <div className="form-row">
             <div className="form-group">
-              <label>Yetkazib berish narxi</label>
+              <label>{t("Yetkazib berish narxi")}</label>
               <input type="number" value={form.deliveryFee} onChange={(e) => update("deliveryFee", e.target.value)} />
             </div>
             <div className="form-group">
-              <label>Bepul yetkazish chegarasi (bo'sh = yo'q)</label>
+              <label>{t("Bepul yetkazish chegarasi (bo'sh = yo'q)")}</label>
               <input
                 type="number"
                 value={form.freeDeliveryThreshold ?? ""}
@@ -150,22 +148,18 @@ export default function Settings({ onBusinessNameChange }) {
               />
             </div>
             <div className="form-group">
-              <label>Minimal buyurtma summasi</label>
+              <label>{t("Minimal buyurtma summasi")}</label>
               <input type="number" value={form.minOrderAmount} onChange={(e) => update("minOrderAmount", e.target.value)} />
             </div>
           </div>
         </div>
 
         <div className="settings-section">
-          <h3>Ish vaqti</h3>
-          <p className="field-hint" style={{ marginBottom: 16 }}>
-            Ish vaqtidan tashqarida bot buyurtma qabul qilmaydi va mijozga qachon
-            ochilishini aytadi. Tunda yopiladigan joylar uchun yopilish vaqti ochilishdan
-            kichik bo'lishi mumkin — masalan 07:00 dan 02:00 gacha.
-          </p>
+          <h3>{t("Ish vaqti")}</h3>
+          <p className="field-hint" style={{ marginBottom: 16 }}>{t("Ish vaqtidan tashqarida bot buyurtma qabul qilmaydi va mijozga qachon ochilishini aytadi. Tunda yopiladigan joylar uchun yopilish vaqti ochilishdan kichik bo'lishi mumkin — masalan 07:00 dan 02:00 gacha.")}</p>
           <div className="form-row">
             <div className="form-group">
-              <label>Ochilish vaqti</label>
+              <label>{t("Ochilish vaqti")}</label>
               <input
                 type="time"
                 value={form.openTime || ""}
@@ -173,7 +167,7 @@ export default function Settings({ onBusinessNameChange }) {
               />
             </div>
             <div className="form-group">
-              <label>Yopilish vaqti</label>
+              <label>{t("Yopilish vaqti")}</label>
               <input
                 type="time"
                 value={form.closeTime || ""}
@@ -181,7 +175,7 @@ export default function Settings({ onBusinessNameChange }) {
               />
             </div>
             <div className="form-group">
-              <label>Vaqt mintaqasi (UTC+)</label>
+              <label>{t("Vaqt mintaqasi (UTC+)")}</label>
               <input
                 type="number"
                 min="-12"
@@ -189,23 +183,23 @@ export default function Settings({ onBusinessNameChange }) {
                 value={form.timezoneOffset ?? 5}
                 onChange={(e) => update("timezoneOffset", e.target.value)}
               />
-              <span className="field-hint">O'zbekiston 5, Qirg'iziston 6</span>
+              <span className="field-hint">{t("O'zbekiston 5, Qirg'iziston 6")}</span>
             </div>
           </div>
           <p className="field-hint">
-            Ikkala katak bo'sh bo'lsa, bot doim buyurtma qabul qiladi.
+            {t("Ikkala katak bo'sh bo'lsa, bot doim buyurtma qabul qiladi.")}
           </p>
         </div>
 
         <div className="settings-section">
-          <h3>Buyurtma va to'lov turlari</h3>
+          <h3>{t("Buyurtma va to'lov turlari")}</h3>
           <label className="checkbox-row">
             <input
               type="checkbox"
               checked={form.deliveryEnabled !== false}
               onChange={(e) => update("deliveryEnabled", e.target.checked)}
             />
-            Yetkazib berish
+            {t("Yetkazib berish")}
           </label>
           <label className="checkbox-row">
             <input
@@ -213,15 +207,15 @@ export default function Settings({ onBusinessNameChange }) {
               checked={Boolean(form.pickupEnabled)}
               onChange={(e) => update("pickupEnabled", e.target.checked)}
             />
-            Olib ketish (mijoz o'zi keladi — yetkazish narxi olinmaydi)
+            {t("Olib ketish (mijoz o'zi keladi — yetkazish narxi olinmaydi)")}
           </label>
           {form.pickupEnabled && (
             <div className="form-group">
-              <label>Olib ketish manzili</label>
+              <label>{t("Olib ketish manzili")}</label>
               <input
                 value={form.pickupAddress || ""}
                 onChange={(e) => update("pickupAddress", e.target.value)}
-                placeholder="Mijoz qaerdan oladi"
+                placeholder={t("Mijoz qaerdan oladi")}
               />
             </div>
           )}
@@ -231,13 +225,13 @@ export default function Settings({ onBusinessNameChange }) {
               checked={Boolean(form.cardPaymentEnabled)}
               onChange={(e) => update("cardPaymentEnabled", e.target.checked)}
             />
-            Karta orqali to'lov (mijoz naqd yoki karta tanlaydi)
+            {t("Karta orqali to'lov (mijoz naqd yoki karta tanlaydi)")}
           </label>
           {form.cardPaymentEnabled && (
             <>
               <div className="form-row">
                 <div className="form-group">
-                  <label>Karta raqami</label>
+                  <label>{t("Karta raqami")}</label>
                   <input
                     value={form.cardPaymentDetails || ""}
                     onChange={(e) => update("cardPaymentDetails", e.target.value)}
@@ -245,34 +239,28 @@ export default function Settings({ onBusinessNameChange }) {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Karta egasining ismi</label>
+                  <label>{t("Karta egasining ismi")}</label>
                   <input
                     value={form.cardPaymentHolder || ""}
                     onChange={(e) => update("cardPaymentHolder", e.target.value)}
-                    placeholder="Masalan: Alisher T."
+                    placeholder={t("Masalan: Alisher T.")}
                   />
                 </div>
               </div>
-              <p className="field-hint">
-                Mijoz «Karta» ni tanlaganda shu raqam ko'rsatiladi va u pulni o'tkazib,
-                chekni botga yuboradi. Raqam kiritilmasa, mijozga karta varianti
-                umuman ko'rsatilmaydi. Bu Payme yoki Click orqali avtomatik to'lov
-                emas — pul to'g'ridan-to'g'ri shu kartaga tushadi va tushganini o'zingiz
-                tekshirasiz.
-              </p>
+              <p className="field-hint">{t("Mijoz «Karta» ni tanlaganda shu raqam ko'rsatiladi va u pulni o'tkazib, chekni botga yuboradi. Raqam kiritilmasa, mijozga karta varianti umuman ko'rsatilmaydi. Bu Payme yoki Click orqali avtomatik to'lov emas — pul to'g'ridan-to'g'ri shu kartaga tushadi va tushganini o'zingiz tekshirasiz.")}</p>
             </>
           )}
         </div>
 
         <div className="settings-section">
-          <h3>Loyalty (bonus ball) tizimi</h3>
+          <h3>{t("Loyalty (bonus ball) tizimi")}</h3>
           <label className="checkbox-row">
             <input type="checkbox" checked={form.loyaltyEnabled} onChange={(e) => update("loyaltyEnabled", e.target.checked)} />
-            Loyalty tizimi yoqilgan
+            {t("Loyalty tizimi yoqilgan")}
           </label>
           <div className="form-row">
             <div className="form-group">
-              <label>Ball to'plash foizi (masalan 0.05 = 5%)</label>
+              <label>{t("Ball to'plash foizi (masalan 0.05 = 5%)")}</label>
               <input
                 type="number"
                 step="0.01"
@@ -283,7 +271,7 @@ export default function Settings({ onBusinessNameChange }) {
               />
             </div>
             <div className="form-group">
-              <label>1 ball = necha pul birligi</label>
+              <label>{t("1 ball = necha pul birligi")}</label>
               <input
                 type="number"
                 value={form.loyaltyPointValue}
@@ -294,45 +282,45 @@ export default function Settings({ onBusinessNameChange }) {
         </div>
 
         <div className="settings-section">
-          <h3>Aloqa va xabarlar</h3>
+          <h3>{t("Aloqa va xabarlar")}</h3>
           <div className="form-row">
             <div className="form-group">
-              <label>Qo'llab-quvvatlash telefoni</label>
+              <label>{t("Qo'llab-quvvatlash telefoni")}</label>
               <input value={form.supportPhone || ""} onChange={(e) => update("supportPhone", e.target.value)} />
             </div>
             <div className="form-group">
-              <label>Qo'llab-quvvatlash Telegram username</label>
+              <label>{t("Qo'llab-quvvatlash Telegram username")}</label>
               <input value={form.supportUsername || ""} onChange={(e) => update("supportUsername", e.target.value)} />
             </div>
           </div>
           <div className="form-group">
-            <label>Yangi buyurtma xabari kimga kelsin</label>
+            <label>{t("Yangi buyurtma xabari kimga kelsin")}</label>
             <input
               value={form.orderNotifyChatIds || ""}
               onChange={(e) => update("orderNotifyChatIds", e.target.value)}
               placeholder="masalan: 123456789"
             />
             <span className="field-hint">
-              Telegram ID raqamini bilish uchun botga <strong>/id</strong> deb yozing — u raqamingizni
-              qaytaradi. Bir nechta bo'lsa vergul bilan ajrating.
+              {t("Telegram ID raqamini bilish uchun botga")} <strong>/id</strong>{" "}
+              {t("deb yozing — u raqamingizni qaytaradi. Bir nechta bo'lsa vergul bilan ajrating.")}
             </span>
           </div>
 
           <div className="form-group">
-            <label>Botning /start xabari</label>
+            <label>{t("Botning /start xabari")}</label>
             <textarea rows={2} value={form.welcomeMessage || ""} onChange={(e) => update("welcomeMessage", e.target.value)} />
           </div>
           <div className="form-group">
-            <label>Mini App bosh sahifasidagi tavsif</label>
+            <label>{t("Mini App bosh sahifasidagi tavsif")}</label>
             <textarea rows={2} value={form.aboutText || ""} onChange={(e) => update("aboutText", e.target.value)} />
           </div>
         </div>
 
         <div className="modal-actions">
-          {saved && <span className="form-success">Saqlandi ✓</span>}
+          {saved && <span className="form-success">{t("Saqlandi ✓")}</span>}
           {error && <span className="form-error save-error">{error}</span>}
           <button type="submit" className="btn btn-accent" disabled={saving}>
-            {saving ? "Saqlanmoqda..." : "Sozlamalarni saqlash"}
+            {saving ? t("Saqlanmoqda...") : t("Sozlamalarni saqlash")}
           </button>
         </div>
       </form>

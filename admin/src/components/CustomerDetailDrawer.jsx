@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useSave } from "../lib/useSave";
 import { api } from "../api";
+import { useT } from "../i18n";
 
 export default function CustomerDetailDrawer({ customer, onClose, onAdjusted }) {
+  const { t } = useT();
   const [points, setPoints] = useState("");
   const [note, setNote] = useState("");
   const { saving, error, save } = useSave();
@@ -33,7 +35,7 @@ export default function CustomerDetailDrawer({ customer, onClose, onAdjusted }) 
         </div>
 
         <div className="drawer-section">
-          <h4>Ma'lumotlar</h4>
+          <h4>{t("Ma'lumotlar")}</h4>
           <p className="muted">Telegram ID: {customer.telegramId}</p>
           <p className="muted">Username: {customer.username ? `@${customer.username}` : "—"}</p>
           <p className="muted">Telefon: {customer.phone || "—"}</p>
@@ -42,22 +44,22 @@ export default function CustomerDetailDrawer({ customer, onClose, onAdjusted }) 
 
         <div className="stat-grid stat-grid-3">
           <div className="stat-card">
-            <span className="stat-label">Buyurtmalar</span>
+            <span className="stat-label">{t("Buyurtmalar")}</span>
             <span className="stat-value">{customer.ordersCount}</span>
           </div>
           <div className="stat-card">
-            <span className="stat-label">Jami xarid</span>
+            <span className="stat-label">{t("Jami xarid")}</span>
             <span className="stat-value">{customer.totalSpent.toLocaleString()}</span>
           </div>
           <div className="stat-card">
-            <span className="stat-label">Bonus ball</span>
+            <span className="stat-label">{t("Bonus ball")}</span>
             <span className="stat-value">{customer.loyaltyPoints}</span>
           </div>
         </div>
 
         <div className="drawer-section">
-          <h4>Eng ko'p buyurtma qilingan mahsulotlar</h4>
-          {(customer.favoriteProducts || []).length === 0 && <p className="muted">Ma'lumot yo'q</p>}
+          <h4>{t("Eng ko'p buyurtma qilingan mahsulotlar")}</h4>
+          {(customer.favoriteProducts || []).length === 0 && <p className="muted">{t("Ma'lumot yo'q")}</p>}
           {(customer.favoriteProducts || []).map((p) => (
             <div className="status-timeline-row" key={p.name}>
               <span>{p.name}</span>
@@ -67,24 +69,24 @@ export default function CustomerDetailDrawer({ customer, onClose, onAdjusted }) 
         </div>
 
         <div className="drawer-section">
-          <h4>Bonus balansni to'g'rilash</h4>
+          <h4>{t("Bonus balansni to'g'rilash")}</h4>
           <div className="form-row">
             <input
               type="number"
-              placeholder="+50 yoki -20"
+              placeholder={t("+50 yoki -20")}
               value={points}
               onChange={(e) => setPoints(e.target.value)}
             />
-            <input placeholder="Izoh" value={note} onChange={(e) => setNote(e.target.value)} />
+            <input placeholder={t("Izoh")} value={note} onChange={(e) => setNote(e.target.value)} />
             <button className="btn btn-accent" onClick={handleAdjust} disabled={saving || !points}>
-              {saving ? "Saqlanmoqda..." : "Qo'llash"}
+              {saving ? t("Saqlanmoqda...") : t("Qo'llash")}
             </button>
           </div>
           {error && <p className="form-error save-error">{error}</p>}
         </div>
 
         <div className="drawer-section">
-          <h4>Buyurtmalar tarixi</h4>
+          <h4>{t("Buyurtmalar tarixi")}</h4>
           {customer.orders.map((o) => (
             <div className="status-timeline-row" key={o.id}>
               <span>

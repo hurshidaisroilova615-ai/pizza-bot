@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useSave } from "../lib/useSave";
 import Modal from "./Modal";
+import { useT } from "../i18n";
 
 function toInputDate(value) {
   return value ? new Date(value).toISOString().slice(0, 16) : "";
 }
 
 export default function PromoModal({ promo, onClose, onSave }) {
+  const { t } = useT();
   const [form, setForm] = useState({
     code: promo?.code || "",
     type: promo?.type || "PERCENTAGE",
@@ -39,10 +41,10 @@ export default function PromoModal({ promo, onClose, onSave }) {
   }
 
   return (
-    <Modal title={promo ? "Promo kodni tahrirlash" : "Yangi promo kod"} onClose={onClose}>
+    <Modal title={promo ? t("Promo kodni tahrirlash") : t("Yangi promo kod")} onClose={onClose}>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Kod</label>
+          <label>{t("Kod")}</label>
           <input
             value={form.code}
             onChange={(e) => update("code", e.target.value.toUpperCase())}
@@ -52,20 +54,20 @@ export default function PromoModal({ promo, onClose, onSave }) {
         </div>
         <div className="form-row">
           <div className="form-group">
-            <label>Turi</label>
+            <label>{t("Turi")}</label>
             <select value={form.type} onChange={(e) => update("type", e.target.value)}>
-              <option value="PERCENTAGE">Foizli (%)</option>
-              <option value="FIXED">Aniq summa</option>
+              <option value="PERCENTAGE">{t("Foizli (%)")}</option>
+              <option value="FIXED">{t("Aniq summa")}</option>
             </select>
           </div>
           <div className="form-group">
-            <label>Qiymati</label>
+            <label>{t("Qiymati")}</label>
             <input type="number" value={form.value} onChange={(e) => update("value", e.target.value)} required />
           </div>
         </div>
         <div className="form-row">
           <div className="form-group">
-            <label>Minimal buyurtma</label>
+            <label>{t("Minimal buyurtma")}</label>
             <input
               type="number"
               value={form.minOrderAmount}
@@ -73,11 +75,11 @@ export default function PromoModal({ promo, onClose, onSave }) {
             />
           </div>
           <div className="form-group">
-            <label>Umumiy limit (bo'sh = cheksiz)</label>
+            <label>{t("Umumiy limit (bo'sh = cheksiz)")}</label>
             <input type="number" value={form.usageLimit} onChange={(e) => update("usageLimit", e.target.value)} />
           </div>
           <div className="form-group">
-            <label>Har mijoz uchun limit</label>
+            <label>{t("Har mijoz uchun limit")}</label>
             <input
               type="number"
               value={form.perUserLimit}
@@ -87,11 +89,11 @@ export default function PromoModal({ promo, onClose, onSave }) {
         </div>
         <div className="form-row">
           <div className="form-group">
-            <label>Boshlanish sanasi</label>
+            <label>{t("Boshlanish sanasi")}</label>
             <input type="datetime-local" value={form.startsAt} onChange={(e) => update("startsAt", e.target.value)} />
           </div>
           <div className="form-group">
-            <label>Tugash sanasi</label>
+            <label>{t("Tugash sanasi")}</label>
             <input
               type="datetime-local"
               value={form.expiresAt}
@@ -106,21 +108,21 @@ export default function PromoModal({ promo, onClose, onSave }) {
               checked={form.newCustomersOnly}
               onChange={(e) => update("newCustomersOnly", e.target.checked)}
             />
-            Faqat yangi mijozlar uchun
+            {t("Faqat yangi mijozlar uchun")}
           </label>
           <label className="checkbox-row">
             <input type="checkbox" checked={form.isActive} onChange={(e) => update("isActive", e.target.checked)} />
-            Faol
+            {t("Faol")}
           </label>
         </div>
         {error && <p className="form-error save-error">{error}</p>}
 
         <div className="modal-actions">
           <button type="button" className="btn btn-outline" onClick={onClose}>
-            Bekor qilish
+            {t("Bekor qilish")}
           </button>
           <button type="submit" className="btn btn-accent" disabled={saving}>
-            {saving ? "Saqlanmoqda..." : "Saqlash"}
+            {saving ? t("Saqlanmoqda...") : t("Saqlash")}
           </button>
         </div>
       </form>

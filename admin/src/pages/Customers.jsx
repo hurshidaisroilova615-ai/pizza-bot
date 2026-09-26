@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import CustomerDetailDrawer from "../components/CustomerDetailDrawer";
+import { useT } from "../i18n";
 
 export default function Customers() {
+  const { t } = useT();
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -31,42 +33,42 @@ export default function Customers() {
   return (
     <div>
       <div className="page-header">
-        <h1>Mijozlar (CRM)</h1>
+        <h1>{t("Mijozlar (CRM)")}</h1>
         <input
           className="search-input"
-          placeholder="Ism, telefon yoki Telegram ID bo'yicha qidirish"
+          placeholder={t("Ism, telefon yoki Telegram ID bo'yicha qidirish")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
-      {loading && <p className="empty-note">Yuklanmoqda...</p>}
-      {!loading && customers.length === 0 && <p className="empty-note">Mijozlar topilmadi</p>}
+      {loading && <p className="empty-note">{t("Yuklanmoqda...")}</p>}
+      {!loading && customers.length === 0 && <p className="empty-note">{t("Mijozlar topilmadi")}</p>}
 
       {customers.length > 0 && (
         <div className="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Ism</th>
-                <th>Telefon</th>
-                <th>Buyurtmalar</th>
-                <th>Jami xarid</th>
-                <th>Oxirgi buyurtma</th>
-                <th>Bonus ball</th>
+                <th>{t("Ism")}</th>
+                <th>{t("Telefon")}</th>
+                <th>{t("Buyurtmalar")}</th>
+                <th>{t("Jami xarid")}</th>
+                <th>{t("Oxirgi buyurtma")}</th>
+                <th>{t("Bonus ball")}</th>
               </tr>
             </thead>
             <tbody>
               {customers.map((c) => (
                 <tr key={c.id} className="clickable-row" onClick={() => setSelectedId(c.id)}>
-                  <td data-label="Ism">{c.firstName || "—"} {c.lastName || ""}</td>
-                  <td data-label="Telefon">{c.phone || "—"}</td>
-                  <td data-label="Buyurtmalar">{c.ordersCount}</td>
-                  <td data-label="Jami xarid">{c.totalSpent.toLocaleString()}</td>
-                  <td data-label="Oxirgi buyurtma">
+                  <td data-label={t("Ism")}>{c.firstName || "—"} {c.lastName || ""}</td>
+                  <td data-label={t("Telefon")}>{c.phone || "—"}</td>
+                  <td data-label={t("Buyurtmalar")}>{c.ordersCount}</td>
+                  <td data-label={t("Jami xarid")}>{c.totalSpent.toLocaleString()}</td>
+                  <td data-label={t("Oxirgi buyurtma")}>
                     {c.lastOrderAt ? new Date(c.lastOrderAt).toLocaleDateString("uz-UZ") : "—"}
                   </td>
-                  <td data-label="Bonus ball">{c.loyaltyPoints}</td>
+                  <td data-label={t("Bonus ball")}>{c.loyaltyPoints}</td>
                 </tr>
               ))}
             </tbody>

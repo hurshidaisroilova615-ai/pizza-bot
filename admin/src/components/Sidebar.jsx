@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
+import { useT } from "../i18n";
 
 const LINKS = [
   { to: "/", label: "Statistika", icon: "📊", end: true },
@@ -15,6 +16,7 @@ const LINKS = [
 ];
 
 export default function Sidebar({ businessName }) {
+  const { t, lang, setLang } = useT();
   const { logout } = useAuth();
 
   return (
@@ -29,15 +31,31 @@ export default function Sidebar({ businessName }) {
             className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
           >
             <span className="sidebar-icon">{link.icon}</span>
-            {link.label}
+            {t(link.label)}
           </NavLink>
         ))}
       </nav>
+      <div className="sidebar-lang" role="group" aria-label="Til / Язык">
+        {[
+          { code: "uz", label: t("O'zbekcha") },
+          { code: "ru", label: t("Русский") },
+        ].map((option) => (
+          <button
+            key={option.code}
+            type="button"
+            className={`sidebar-lang-btn ${lang === option.code ? "active" : ""}`}
+            onClick={() => setLang(option.code)}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+
       <button className="sidebar-logout" onClick={logout}>
-        Chiqish
+        {t("Chiqish")}
       </button>
-      <p className="sidebar-build" title="Shu nusxa qachon yig'ilgan">
-        Versiya: {__BUILD_TIME__}
+      <p className="sidebar-build" title={t("Shu nusxa qachon yig'ilgan")}>
+        {t("Versiya")}: {__BUILD_TIME__}
       </p>
     </aside>
   );

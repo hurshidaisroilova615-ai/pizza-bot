@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import Modal from "./Modal";
 import { api } from "../api";
 import { parseMenu } from "../lib/parseMenu";
+import { useT } from "../i18n";
 
 const EXAMPLE = `Pitsalar
 Margarita 45 000
@@ -12,6 +13,7 @@ Kola 0.5L 12000
 Choy 5000`;
 
 export default function BulkImportModal({ onClose, onImported }) {
+  const { t } = useT();
   const [text, setText] = useState("");
   const [saving, setSaving] = useState(false);
   const [result, setResult] = useState(null);
@@ -33,7 +35,7 @@ export default function BulkImportModal({ onClose, onImported }) {
 
   if (result) {
     return (
-      <Modal title="Menyu qo'shildi" onClose={onClose}>
+      <Modal title={t("Menyu qo'shildi")} onClose={onClose}>
         <p className="import-result">
           <strong>{result.createdCount} ta</strong> mahsulot qo'shildi.
         </p>
@@ -43,13 +45,10 @@ export default function BulkImportModal({ onClose, onImported }) {
             {result.skipped.join(", ")}
           </p>
         )}
-        <p className="muted">
-          Rasmlar hozircha belgi ko'rinishida. Xohlagan mahsulotni ochib, o'z rasmini yuklashingiz
-          mumkin.
-        </p>
+        <p className="muted">{t("Rasmlar hozircha belgi ko'rinishida. Xohlagan mahsulotni ochib, o'z rasmini yuklashingiz mumkin.")}</p>
         <div className="modal-actions">
           <button className="btn btn-accent" onClick={onClose}>
-            Yopish
+            {t("Yopish")}
           </button>
         </div>
       </Modal>
@@ -57,15 +56,11 @@ export default function BulkImportModal({ onClose, onImported }) {
   }
 
   return (
-    <Modal title="Menyuni ro'yxat bilan qo'shish" onClose={onClose} wide>
-      <p className="muted" style={{ marginTop: 0 }}>
-        Menyuni bor holicha qo'ying — har bir taom alohida qatorda, narxi qator oxirida. Narxsiz
-        qator kategoriya deb olinadi va undan keyingi taomlar shu kategoriyaga tushadi. Yo'q
-        kategoriyalar o'zi yaratiladi.
-      </p>
+    <Modal title={t("Menyuni ro'yxat bilan qo'shish")} onClose={onClose} wide>
+      <p className="muted" style={{ marginTop: 0 }}>{t("Menyuni bor holicha qo'ying — har bir taom alohida qatorda, narxi qator oxirida. Narxsiz qator kategoriya deb olinadi va undan keyingi taomlar shu kategoriyaga tushadi. Yo'q kategoriyalar o'zi yaratiladi.")}</p>
 
       <div className="form-group">
-        <label>Menyu ro'yxati</label>
+        <label>{t("Menyu ro'yxati")}</label>
         <textarea
           rows={10}
           value={text}
@@ -78,7 +73,7 @@ export default function BulkImportModal({ onClose, onImported }) {
       {text.trim() && (
         <div className="import-preview">
           <p className="import-count">
-            Tayyor: <strong>{rows.length} ta</strong> mahsulot
+            {t("Tayyor:")} <strong>{rows.length} ta</strong> mahsulot
             {problems.length > 0 && <span className="import-bad"> · {problems.length} ta qator xato</span>}
           </p>
 
@@ -104,7 +99,7 @@ export default function BulkImportModal({ onClose, onImported }) {
 
       <div className="modal-actions">
         <button type="button" className="btn btn-outline" onClick={onClose}>
-          Bekor qilish
+          {t("Bekor qilish")}
         </button>
         <button
           type="button"
@@ -112,7 +107,7 @@ export default function BulkImportModal({ onClose, onImported }) {
           onClick={handleImport}
           disabled={saving || rows.length === 0}
         >
-          {saving ? "Qo'shilmoqda..." : `${rows.length} ta mahsulotni qo'shish`}
+          {saving ? t("Qo'shilmoqda...") : `${rows.length} ta mahsulotni qo'shish`}
         </button>
       </div>
     </Modal>

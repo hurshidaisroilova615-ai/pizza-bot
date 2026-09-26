@@ -1,8 +1,10 @@
 import { statusLabel, orderTypeLabel, paymentLabel } from "../lib/orderLabels";
+import { useT } from "../i18n";
 
 const STATUS_VALUES = ["PENDING", "PREPARING", "ON_DELIVERY", "DELIVERED", "CANCELLED"];
 
 export default function OrderDetailDrawer({ order, onClose, onStatusChange }) {
+  const { t } = useT();
   if (!order) return null;
 
   return (
@@ -16,27 +18,27 @@ export default function OrderDetailDrawer({ order, onClose, onStatusChange }) {
         </div>
 
         <div className="drawer-section">
-          <h4>Mijoz</h4>
+          <h4>{t("Mijoz")}</h4>
           <p>{order.user?.firstName} {order.user?.lastName || ""}</p>
-          <p className="muted">{order.phone || order.user?.phone || "Telefon ko'rsatilmagan"}</p>
+          <p className="muted">{order.phone || order.user?.phone || t("Telefon ko'rsatilmagan")}</p>
           <p className="muted">Telegram ID: {order.user?.telegramId}</p>
         </div>
 
         <div className="drawer-section">
-          <h4>Buyurtma turi</h4>
+          <h4>{t("Buyurtma turi")}</h4>
           <p>
             {orderTypeLabel(order.orderType, order.tableNumber)} · {paymentLabel(order.paymentMethod)}
           </p>
           {order.orderType === "PICKUP" ? (
-            <p className="muted">Mijoz o'zi olib ketadi</p>
+            <p className="muted">{t("Mijoz o'zi olib ketadi")}</p>
           ) : (
-            <p>{order.deliveryAddress || "Manzil ko'rsatilmagan"}</p>
+            <p>{order.deliveryAddress || t("Manzil ko'rsatilmagan")}</p>
           )}
           {order.comment && <p className="muted">Izoh: {order.comment}</p>}
         </div>
 
         <div className="drawer-section">
-          <h4>Mahsulotlar</h4>
+          <h4>{t("Mahsulotlar")}</h4>
           <table className="drawer-table">
             <tbody>
               {order.items.map((item) => (
@@ -52,30 +54,30 @@ export default function OrderDetailDrawer({ order, onClose, onStatusChange }) {
 
         <div className="drawer-section">
           <div className="summary-line">
-            <span>Mahsulotlar</span>
+            <span>{t("Mahsulotlar")}</span>
             <span>{order.subtotal.toLocaleString()}</span>
           </div>
           {order.discountAmount > 0 && (
             <div className="summary-line">
-              <span>Chegirma</span>
+              <span>{t("Chegirma")}</span>
               <span>-{order.discountAmount.toLocaleString()}</span>
             </div>
           )}
           {order.deliveryFee > 0 && (
             <div className="summary-line">
-              <span>Yetkazib berish</span>
+              <span>{t("Yetkazib berish")}</span>
               <span>{order.deliveryFee.toLocaleString()}</span>
             </div>
           )}
           <div className="summary-line total">
-            <span>Jami</span>
+            <span>{t("Jami")}</span>
             <span>{order.totalPrice.toLocaleString()}</span>
           </div>
           <p className="muted">{new Date(order.createdAt).toLocaleString("uz-UZ")}</p>
         </div>
 
         <div className="drawer-section">
-          <h4>Holatni o'zgartirish</h4>
+          <h4>{t("Holatni o'zgartirish")}</h4>
           <select
             className="status-select"
             value={order.status}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BASE_URL } from "../api";
 import { baseLabel, knownBases, switchBase, forgetBase } from "../apiBase";
+import { useT } from "../i18n";
 
 // Which shop this panel is showing, and a way to move between them.
 //
@@ -10,6 +11,7 @@ import { baseLabel, knownBases, switchBase, forgetBase } from "../apiBase";
 // the name is always on screen, and switching is something you do rather
 // than something that happens to you.
 export default function WorkspaceSwitcher({ businessName }) {
+  const { t } = useT();
   const [open, setOpen] = useState(false);
   const bases = knownBases();
   const others = bases.filter((b) => b.url !== BASE_URL);
@@ -22,7 +24,7 @@ export default function WorkspaceSwitcher({ businessName }) {
         disabled={others.length === 0}
         title={BASE_URL}
       >
-        <span className="workspace-name">{businessName || "Admin"}</span>
+        <span className="workspace-name">{businessName || t("Admin")}</span>
         <span className="workspace-host">{baseLabel(BASE_URL)}</span>
         {others.length > 0 && <span className="workspace-caret">{open ? "▴" : "▾"}</span>}
       </button>
@@ -37,7 +39,7 @@ export default function WorkspaceSwitcher({ businessName }) {
               </button>
               <button
                 className="workspace-forget"
-                title="Ro'yxatdan olib tashlash"
+                title={t("Ro'yxatdan olib tashlash")}
                 onClick={() => {
                   forgetBase(b.url);
                   setOpen(false);

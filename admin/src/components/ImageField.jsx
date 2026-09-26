@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { uploadImage } from "../api";
+import { useT } from "../i18n";
 
 const MAX_DIMENSION = 1000;
 const JPEG_QUALITY = 0.82;
@@ -36,6 +37,7 @@ function compress(file) {
 }
 
 export default function ImageField({ value, onChange }) {
+  const { t } = useT();
   const inputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
@@ -51,7 +53,7 @@ export default function ImageField({ value, onChange }) {
       const { url } = await uploadImage(compressed);
       onChange(url);
     } catch (err) {
-      setError(err.message);
+      setError(t(err.message));
     } finally {
       setUploading(false);
       if (inputRef.current) inputRef.current.value = "";
@@ -60,7 +62,7 @@ export default function ImageField({ value, onChange }) {
 
   return (
     <div className="form-group">
-      <label>Mahsulot rasmi</label>
+      <label>{t("Mahsulot rasmi")}</label>
 
       <div className="image-field">
         {value ? (
@@ -76,11 +78,11 @@ export default function ImageField({ value, onChange }) {
             onClick={() => inputRef.current?.click()}
             disabled={uploading}
           >
-            {uploading ? "Yuklanmoqda..." : value ? "Rasmni almashtirish" : "Rasm yuklash"}
+            {uploading ? t("Yuklanmoqda...") : value ? t("Rasmni almashtirish") : t("Rasm yuklash")}
           </button>
           {value && (
             <button type="button" className="btn btn-outline" onClick={() => onChange("")}>
-              O'chirish
+              {t("O'chirish")}
             </button>
           )}
         </div>
@@ -95,7 +97,7 @@ export default function ImageField({ value, onChange }) {
       />
 
       <input
-        placeholder="yoki rasm havolasini shu yerga qo'ying"
+        placeholder={t("yoki rasm havolasini shu yerga qo'ying")}
         value={value || ""}
         onChange={(e) => onChange(e.target.value)}
       />

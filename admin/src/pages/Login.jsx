@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useT } from "../i18n";
 
 export default function Login() {
+  const { t } = useT();
   const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -24,19 +26,19 @@ export default function Login() {
   return (
     <div className="login-page">
       <form className="login-card" onSubmit={handleSubmit}>
-        <h1>🛍 Admin Panel</h1>
-        <p className="login-subtitle">Boshqaruv paneliga kirish</p>
+        <h1>{t("🛍 Admin Panel")}</h1>
+        <p className="login-subtitle">{t("Boshqaruv paneliga kirish")}</p>
         <div className="form-group">
-          <label>Login</label>
+          <label>{t("Login")}</label>
           <input value={username} onChange={(e) => setUsername(e.target.value)} required autoFocus />
         </div>
         <div className="form-group">
-          <label>Parol</label>
+          <label>{t("Parol")}</label>
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </div>
         {error && <p className="form-error">{error}</p>}
         <button className="btn btn-accent login-btn" type="submit" disabled={loading}>
-          {loading ? "Tekshirilmoqda..." : "Kirish"}
+          {loading ? t("Tekshirilmoqda...") : t("Kirish")}
         </button>
       </form>
     </div>

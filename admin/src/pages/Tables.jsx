@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
 import { api } from "../api";
 import { useSave } from "../lib/useSave";
+import { useT } from "../i18n";
 
 // The codes a cafe prints and sticks on its tables.
 //
@@ -13,6 +14,7 @@ import { useSave } from "../lib/useSave";
 const SITE_KEY = "shop_site_url";
 
 export default function Tables() {
+  const { t } = useT();
   const [settings, setSettings] = useState(null);
   const [loadError, setLoadError] = useState("");
   const [count, setCount] = useState(0);
@@ -27,7 +29,7 @@ export default function Tables() {
         setSettings(s);
         setCount(s.tableCount || 0);
       })
-      .catch((err) => setLoadError(err?.message || "Sozlamalarni yuklab bo'lmadi."));
+      .catch((err) => setLoadError(err?.message || t("Sozlamalarni yuklab bo'lmadi.")));
     // Where the codes point. The admin panel is served from a different
     // address than the shop itself, so this cannot be read off the page —
     // it is the link the owner gives to customers.
@@ -94,35 +96,31 @@ export default function Tables() {
   }
 
   if (loadError) return <p className="form-error save-error">{loadError}</p>;
-  if (!settings) return <p className="empty-note">Yuklanmoqda...</p>;
+  if (!settings) return <p className="empty-note">{t("Yuklanmoqda...")}</p>;
 
   return (
     <div>
       <div className="page-header no-print">
-        <h1>Stol QR kodlari</h1>
+        <h1>{t("Stol QR kodlari")}</h1>
         <button className="btn btn-primary" onClick={() => window.print()} disabled={codes.length === 0}>
-          Chop etish
+          {t("Chop etish")}
         </button>
       </div>
 
       <div className="muted no-print" style={{ marginTop: -12, marginBottom: 24 }}>
-        <p style={{ margin: "0 0 8px" }}>
-          Mijoz stoldagi kodni skanerlaydi, menyu ochiladi, buyurtma beradi. Hech narsa
-          o'rnatish kerak emas. Ikki usuldan birini tanlang:
-        </p>
+        <p style={{ margin: "0 0 8px" }}>{t("Mijoz stoldagi kodni skanerlaydi, menyu ochiladi, buyurtma beradi. Hech narsa o'rnatish kerak emas. Ikki usuldan birini tanlang:")}</p>
         <p style={{ margin: "0 0 4px" }}>
-          <b>1. Umumiy kod</b> — bitta kodni ko'paytirib har stolga yopishtirasiz. Stol
-          raqamlarini alohida qo'yasiz, mijoz o'zi yozadi. Arzon, va stollar joyi
-          o'zgarsa qayta chop etish shart emas.
+          <b>{t("1. Umumiy kod")}</b>{" "}
+          {t("— bitta kodni ko'paytirib har stolga yopishtirasiz. Stol raqamlarini alohida qo'yasiz, mijoz o'zi yozadi. Arzon, va stollar joyi o'zgarsa qayta chop etish shart emas.")}
         </p>
         <p style={{ margin: 0 }}>
-          <b>2. Har stolga o'z kodi</b> — stol raqami kodning ichida bo'ladi, mijoz hech
-          narsa yozmaydi va adashmaydi. Stollar soni kiritilsa, pastda chiqadi.
+          <b>{t("2. Har stolga o'z kodi")}</b>{" "}
+          {t("— stol raqami kodning ichida bo'ladi, mijoz hech narsa yozmaydi va adashmaydi. Stollar soni kiritilsa, pastda chiqadi.")}
         </p>
       </div>
 
       <div className="settings-section no-print">
-        <h3>Sozlash</h3>
+        <h3>{t("Sozlash")}</h3>
 
         <label className="checkbox-row">
           <input
@@ -130,12 +128,12 @@ export default function Tables() {
             checked={Boolean(settings.dineInEnabled)}
             onChange={(e) => persist({ dineInEnabled: e.target.checked })}
           />
-          Zaldan buyurtma (stoldagi QR kod orqali)
+          {t("Zaldan buyurtma (stoldagi QR kod orqali)")}
         </label>
 
         <div className="form-row">
           <div className="form-group">
-            <label>Do'kon sayti manzili</label>
+            <label>{t("Do'kon sayti manzili")}</label>
             <input
               placeholder="https://smartorder-miniapp.onrender.com"
               value={siteUrl}
@@ -143,7 +141,7 @@ export default function Tables() {
             />
           </div>
           <div className="form-group">
-            <label>Stollar soni</label>
+            <label>{t("Stollar soni")}</label>
             <input
               type="number"
               min={0}
@@ -155,19 +153,16 @@ export default function Tables() {
           </div>
         </div>
 
-        {saving && <span className="muted">Saqlanmoqda...</span>}
+        {saving && <span className="muted">{t("Saqlanmoqda...")}</span>}
         {error && <span className="form-error save-error">{error}</span>}
         {!settings.dineInEnabled && (
-          <p className="muted">
-            Zaldan buyurtma o'chirilgan — kod skanerlansa oddiy menyu ochiladi, stol raqami
-            qo'shilmaydi.
-          </p>
+          <p className="muted">{t("Zaldan buyurtma o'chirilgan — kod skanerlansa oddiy menyu ochiladi, stol raqami qo'shilmaydi.")}</p>
         )}
       </div>
 
       {codes.length === 0 ? (
         <p className="empty-note no-print">
-          Sayt manzilini kiriting — kodlar shu yerda chiqadi.
+          {t("Sayt manzilini kiriting — kodlar shu yerda chiqadi.")}
         </p>
       ) : (
         <div className="qr-sheet">
@@ -175,11 +170,11 @@ export default function Tables() {
             <div className={`qr-card ${table ? "" : "qr-card-shared"}`} key={table || "shared"}>
               <p className="qr-shop">{settings.businessName}</p>
               <div className="qr-image" dangerouslySetInnerHTML={{ __html: svg }} />
-              <p className="qr-table">{table ? `Stol ${table}` : "Umumiy kod"}</p>
+              <p className="qr-table">{table ? `Stol ${table}` : t("Umumiy kod")}</p>
               <p className="qr-hint">
                 {table
-                  ? "Kodni skanerlang va buyurtma bering"
-                  : "Kodni skanerlang, buyurtma bering va stol raqamini yozing"}
+                  ? t("Kodni skanerlang va buyurtma bering")
+                  : t("Kodni skanerlang, buyurtma bering va stol raqamini yozing")}
               </p>
             </div>
           ))}

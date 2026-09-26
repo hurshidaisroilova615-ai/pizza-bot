@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import CategoryModal from "../components/CategoryModal";
+import { useT } from "../i18n";
 
 export default function Categories() {
+  const { t } = useT();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -31,7 +33,7 @@ export default function Categories() {
   return (
     <div>
       <div className="page-header">
-        <h1>Kategoriyalar</h1>
+        <h1>{t("Kategoriyalar")}</h1>
         <button
           className="btn btn-accent"
           onClick={() => {
@@ -39,33 +41,33 @@ export default function Categories() {
             setModalOpen(true);
           }}
         >
-          + Yangi kategoriya
+          {t("+ Yangi kategoriya")}
         </button>
       </div>
 
-      {loading && <p className="empty-note">Yuklanmoqda...</p>}
-      {!loading && categories.length === 0 && <p className="empty-note">Hozircha kategoriyalar yo'q</p>}
+      {loading && <p className="empty-note">{t("Yuklanmoqda...")}</p>}
+      {!loading && categories.length === 0 && <p className="empty-note">{t("Hozircha kategoriyalar yo'q")}</p>}
 
       {categories.length > 0 && (
         <div className="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Ikon</th>
-                <th>Nomi</th>
-                <th>Mahsulotlar soni</th>
-                <th>Holati</th>
+                <th>{t("Ikon")}</th>
+                <th>{t("Nomi")}</th>
+                <th>{t("Mahsulotlar soni")}</th>
+                <th>{t("Holati")}</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               {categories.map((c) => (
                 <tr key={c.id}>
-                  <td data-label="Ikon" style={{ fontSize: 20 }}>{c.icon}</td>
-                  <td data-label="Nomi">{c.name}</td>
-                  <td data-label="Mahsulotlar">{c._count?.products ?? 0}</td>
-                  <td data-label="Holati">
-                    <span className={`status-pill ${c.isActive ? "done" : ""}`}>{c.isActive ? "Faol" : "Nofaol"}</span>
+                  <td data-label={t("Ikon")} style={{ fontSize: 20 }}>{c.icon}</td>
+                  <td data-label={t("Nomi")}>{c.name}</td>
+                  <td data-label={t("Mahsulotlar")}>{c._count?.products ?? 0}</td>
+                  <td data-label={t("Holati")}>
+                    <span className={`status-pill ${c.isActive ? "done" : ""}`}>{c.isActive ? t("Faol") : t("Nofaol")}</span>
                   </td>
                   <td className="row-actions">
                     <button
@@ -75,10 +77,10 @@ export default function Categories() {
                         setModalOpen(true);
                       }}
                     >
-                      Tahrirlash
+                      {t("Tahrirlash")}
                     </button>
                     <button className="btn btn-outline" onClick={() => handleDelete(c)}>
-                      O'chirish
+                      {t("O'chirish")}
                     </button>
                   </td>
                 </tr>

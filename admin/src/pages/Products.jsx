@@ -3,8 +3,10 @@ import { api } from "../api";
 import ProductModal from "../components/ProductModal";
 import BulkImportModal from "../components/BulkImportModal";
 import ClearCatalogModal from "../components/ClearCatalogModal";
+import { useT } from "../i18n";
 
 export default function Products() {
+  const { t } = useT();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -71,24 +73,24 @@ export default function Products() {
   return (
     <div>
       <div className="page-header">
-        <h1>Mahsulotlar</h1>
+        <h1>{t("Mahsulotlar")}</h1>
         <div className="header-actions">
           {products.length > 0 && (
             <button className="btn btn-outline btn-danger" onClick={() => setClearOpen(true)}>
-              Katalogni tozalash
+              {t("Katalogni tozalash")}
             </button>
           )}
           <button className="btn btn-outline" onClick={() => setBulkOpen(true)}>
-            📋 Menyuni ro'yxat bilan qo'shish
+            {t("📋 Menyuni ro'yxat bilan qo'shish")}
           </button>
           <button className="btn btn-accent" onClick={openCreate}>
-            + Yangi mahsulot
+            {t("+ Yangi mahsulot")}
           </button>
         </div>
       </div>
 
-      {loading && <p className="empty-note">Yuklanmoqda...</p>}
-      {!loading && products.length === 0 && <p className="empty-note">Hozircha mahsulotlar yo'q</p>}
+      {loading && <p className="empty-note">{t("Yuklanmoqda...")}</p>}
+      {!loading && products.length === 0 && <p className="empty-note">{t("Hozircha mahsulotlar yo'q")}</p>}
 
       {products.length > 0 && (
         <div className="table-wrap">
@@ -96,43 +98,43 @@ export default function Products() {
             <thead>
               <tr>
                 <th></th>
-                <th>Nomi</th>
-                <th>Kategoriya</th>
-                <th>Eski narx</th>
-                <th>Narx</th>
-                <th>Holati</th>
+                <th>{t("Nomi")}</th>
+                <th>{t("Kategoriya")}</th>
+                <th>{t("Eski narx")}</th>
+                <th>{t("Narx")}</th>
+                <th>{t("Holati")}</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               {products.map((product) => (
                 <tr key={product.id} className={product.isAvailable ? "" : "row-muted"}>
-                  <td data-label="Rasm">
+                  <td data-label={t("Rasm")}>
                     <img className="thumb" src={product.imageUrl} alt={product.name} />
                   </td>
-                  <td data-label="Nomi">{product.name}</td>
-                  <td data-label="Kategoriya">{product.category?.name || "—"}</td>
-                  <td data-label="Eski narx">{product.oldPrice ? product.oldPrice.toLocaleString() : "—"}</td>
-                  <td data-label="Narx">{product.price.toLocaleString()}</td>
-                  <td data-label="Holati">
+                  <td data-label={t("Nomi")}>{product.name}</td>
+                  <td data-label={t("Kategoriya")}>{product.category?.name || "—"}</td>
+                  <td data-label={t("Eski narx")}>{product.oldPrice ? product.oldPrice.toLocaleString() : "—"}</td>
+                  <td data-label={t("Narx")}>{product.price.toLocaleString()}</td>
+                  <td data-label={t("Holati")}>
                     <button
                       className={`stock-toggle ${product.isAvailable ? "in-stock" : "out-of-stock"}`}
                       onClick={() => toggleAvailability(product)}
                       title={
                         product.isAvailable
-                          ? "Bosing — «Tugadi» qilib qo'yiladi"
-                          : "Bosing — yana sotuvga qaytadi"
+                          ? t("Bosing — «Tugadi» qilib qo'yiladi")
+                          : t("Bosing — yana sotuvga qaytadi")
                       }
                     >
-                      {product.isAvailable ? "✅ Bor" : "🚫 Tugadi"}
+                      {product.isAvailable ? t("✅ Bor") : t("🚫 Tugadi")}
                     </button>
                   </td>
                   <td className="row-actions">
                     <button className="btn btn-outline" onClick={() => openEdit(product)}>
-                      Tahrirlash
+                      {t("Tahrirlash")}
                     </button>
                     <button className="btn btn-outline" onClick={() => handleDelete(product)}>
-                      O'chirish
+                      {t("O'chirish")}
                     </button>
                   </td>
                 </tr>
