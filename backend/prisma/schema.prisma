@@ -12,6 +12,10 @@ datasource db {
 enum OrderType {
   DELIVERY
   PICKUP
+  // Eating in. The customer is already sitting at a table and scanned the
+  // code on it, so there is no address and nothing to deliver — only which
+  // table the food goes to.
+  DINE_IN
 }
 
 enum PaymentMethod {
@@ -79,6 +83,13 @@ model Settings {
   deliveryEnabled       Boolean  @default(true)
   pickupEnabled         Boolean  @default(false)
   pickupAddress         String?
+  // Ordering from the table, by scanning the code printed on it. Off by
+  // default: a shop with no tables must not be offered it.
+  dineInEnabled         Boolean  @default(false)
+  // How many table codes the admin panel prints. Nothing enforces it — a
+  // scanned code carries its own number — it is only what the printing
+  // page counts up to.
+  tableCount            Int      @default(0)
   cardPaymentEnabled    Boolean  @default(false)
   // Where a card payment actually goes. Shops of this size take card by
   // transfer to the owner's own Humo/Uzcard number, so the Mini App has to
@@ -200,6 +211,9 @@ model Order {
   totalPrice          Int
   phone               String?
   deliveryAddress     String?
+  // Which table, for an order placed from one. Kept as text because a
+  // table is called whatever the cafe calls it — "5", "A3", "terrasa 2".
+  tableNumber         String?
   comment             String?
   status              OrderStatus   @default(PENDING)
   orderType           OrderType     @default(DELIVERY)

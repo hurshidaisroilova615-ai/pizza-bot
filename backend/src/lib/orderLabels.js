@@ -16,17 +16,42 @@ const PICKUP_STATUS_LABELS = {
   DELIVERED: "Topshirildi 🎉",
 };
 
+// Eating in: the customer is sitting a few metres from the kitchen, so
+// nothing is on its way anywhere — it is either being cooked or on the
+// table in front of them.
+const DINE_IN_STATUS_LABELS = {
+  ...STATUS_LABELS,
+  ON_DELIVERY: "Tayyor, olib kelinmoqda 🍽",
+  DELIVERED: "Yoqimli ishtaha 🎉",
+};
+
+const BY_TYPE = {
+  PICKUP: PICKUP_STATUS_LABELS,
+  DINE_IN: DINE_IN_STATUS_LABELS,
+};
+
 function statusLabel(order) {
-  const table = order?.orderType === "PICKUP" ? PICKUP_STATUS_LABELS : STATUS_LABELS;
+  const table = BY_TYPE[order?.orderType] || STATUS_LABELS;
   return table[order?.status] || order?.status || "";
 }
 
-function orderTypeLabel(orderType) {
-  return orderType === "PICKUP" ? "🚶 Olib ketadi" : "🛵 Yetkazib berish";
+function orderTypeLabel(orderType, tableNumber) {
+  if (orderType === "PICKUP") return "🚶 Olib ketadi";
+  if (orderType === "DINE_IN") {
+    return tableNumber ? `🍽 Zalda · Stol ${tableNumber}` : "🍽 Zalda";
+  }
+  return "🛵 Yetkazib berish";
 }
 
 function paymentLabel(paymentMethod) {
   return paymentMethod === "CARD" ? "💳 Karta" : "💵 Naqd";
 }
 
-module.exports = { STATUS_LABELS, PICKUP_STATUS_LABELS, statusLabel, orderTypeLabel, paymentLabel };
+module.exports = {
+  STATUS_LABELS,
+  PICKUP_STATUS_LABELS,
+  DINE_IN_STATUS_LABELS,
+  statusLabel,
+  orderTypeLabel,
+  paymentLabel,
+};

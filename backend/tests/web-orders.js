@@ -44,20 +44,32 @@ async function web(guestId, path, opts = {}) {
   return { status: res.status, body: await res.json().catch(() => ({})) };
 }
 
+// Logging in once and keeping the token: the server rate-limits repeated
+// login attempts, as it should, and a suite that signs in for every call
+// eventually locks itself out and fails for a reason that has nothing to
+// do with what it was checking.
+let adminToken = null;
+
 async function admin(path, opts = {}) {
-  const login = await fetch(`${BASE}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username: process.env.ADMIN_USERNAME,
-      password: process.env.ADMIN_PASSWORD,
-    }),
-  }).then((r) => r.json());
+  if (!adminToken) {
+    const login = await fetch(`${BASE}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: process.env.ADMIN_USERNAME,
+        password: process.env.ADMIN_PASSWORD,
+      }),
+    });
+    if (login.status !== 200) {
+      throw new Error(`admin login failed (${login.status}): ${await login.text()}`);
+    }
+    adminToken = (await login.json()).token;
+  }
   const res = await fetch(BASE + path, {
     ...opts,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${login.token}`,
+      Authorization: `Bearer ${adminToken}`,
       ...(opts.headers || {}),
     },
   });
@@ -218,7 +230,54 @@ async function clearWebCustomers() {
   check("a collection order needs no address", pickup.status === 201, JSON.stringify(pickup.body));
   check("and is charged no delivery fee", pickup.body.deliveryFee === 0, String(pickup.body.deliveryFee));
 
-  console.log("\n8) Telegramsiz mijozga xabar yuborilmaydi");
+  console.log("\n8) Zaldan buyurtma — stoldagi QR kod orqali");
+  // A customer sitting at a table scanned the code on it. They are in the
+  // room, so nothing about delivery applies: no address, no fee, and the
+  // name and phone a delivery needs would only be a form in the way.
+  await admin("/settings", { method: "PUT", body: JSON.stringify({ dineInEnabled: true }) });
+
+  const seated = await web(BEKZAT, "/orders", {
+    method: "POST",
+    body: JSON.stringify({ items: [item], orderType: "DINE_IN", tableNumber: "7" }),
+  });
+  check("no name, phone or address is asked for", seated.status === 201, JSON.stringify(seated.body));
+  check("the table is on the order", seated.body.tableNumber === "7", String(seated.body.tableNumber));
+  check("nothing is charged for delivery", seated.body.deliveryFee === 0, String(seated.body.deliveryFee));
+  check("and no address is stored", seated.body.deliveryAddress === null, String(seated.body.deliveryAddress));
+  check(
+    "the kitchen sees the table as the customer",
+    seated.body.user?.firstName === "Stol 7",
+    String(seated.body.user?.firstName)
+  );
+
+  const noTable = await web(BEKZAT, "/orders", {
+    method: "POST",
+    body: JSON.stringify({ items: [item], orderType: "DINE_IN" }),
+  });
+  check("an order with no table is refused", noTable.status === 400, JSON.stringify(noTable.body));
+
+  await admin("/settings", { method: "PUT", body: JSON.stringify({ dineInEnabled: false }) });
+  const off = await web(BEKZAT, "/orders", {
+    method: "POST",
+    body: JSON.stringify({ items: [item], orderType: "DINE_IN", tableNumber: "7" }),
+  });
+  check("a shop that does not seat people refuses it", off.status === 400, String(off.status));
+  await admin("/settings", { method: "PUT", body: JSON.stringify({ dineInEnabled: true }) });
+
+  // The words a seated customer reads must not be a courier's.
+  const { statusLabel, orderTypeLabel } = require("../src/lib/orderLabels");
+  check(
+    "the status reads for a room, not a road",
+    statusLabel({ orderType: "DINE_IN", status: "ON_DELIVERY" }) === "Tayyor, olib kelinmoqda 🍽",
+    statusLabel({ orderType: "DINE_IN", status: "ON_DELIVERY" })
+  );
+  check(
+    "the alert names the table",
+    orderTypeLabel("DINE_IN", "7").includes("Stol 7"),
+    orderTypeLabel("DINE_IN", "7")
+  );
+
+  console.log("\n9) Telegramsiz mijozga xabar yuborilmaydi");
   // notifySafe skips non-numeric chat ids; if it did not, the order above
   // would have thrown on its way out to Telegram, which is unreachable here.
   check("placing an order did not try to message Telegram", pickup.status === 201);

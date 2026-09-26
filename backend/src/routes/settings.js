@@ -57,6 +57,10 @@ const settingsSchema = z.object({
   deliveryEnabled: z.boolean().optional(),
   pickupEnabled: z.boolean().optional(),
   pickupAddress: z.string().trim().max(300).nullable().optional(),
+  dineInEnabled: z.boolean().optional(),
+  // Only what the printing page counts up to; a scanned code carries its
+  // own number, so nothing breaks if the cafe adds a table and forgets.
+  tableCount: z.number().int().min(0).max(300).optional(),
   cardPaymentEnabled: z.boolean().optional(),
   cardPaymentDetails: z.string().trim().max(120).nullable().optional(),
   cardPaymentHolder: z.string().trim().max(120).nullable().optional(),

@@ -23,14 +23,18 @@ const orderItemSchema = z.object({
 // Collection costs nothing to deliver, and a large enough order may carry
 // no charge either.
 function feeFor(orderType, afterDiscount, settings) {
-  if (orderType === "PICKUP") return 0;
+  if (orderType === "PICKUP" || orderType === "DINE_IN") return 0;
   if (settings.freeDeliveryThreshold && afterDiscount >= settings.freeDeliveryThreshold) return 0;
   return settings.deliveryFee;
 }
 
 const createOrderSchema = z.object({
   items: z.array(orderItemSchema).min(1),
-  orderType: z.enum(["DELIVERY", "PICKUP"]).optional().default("DELIVERY"),
+  orderType: z.enum(["DELIVERY", "PICKUP", "DINE_IN"]).optional().default("DELIVERY"),
+  // Which table the customer is sitting at, read from the code they
+  // scanned. Free text because a table is called whatever the cafe calls
+  // it — "5", "A3", "terrasa 2".
+  tableNumber: z.string().trim().min(1).max(20).optional(),
   paymentMethod: z.enum(["CASH", "CARD"]).optional().default("CASH"),
   phone: z.string().trim().min(5).max(30).optional(),
   // Only the website asks for this: Telegram already told us who is
@@ -109,6 +113,7 @@ function publicOrder(order) {
     createdAt: full.createdAt,
     customerName: order.user?.firstName || null,
     deliveryAddress: full.deliveryAddress,
+    tableNumber: full.tableNumber,
     items: full.items,
     statusHistory: full.statusHistory,
   };
@@ -245,6 +250,20 @@ router.post(
         publicMessage: "Olib ketish xizmati mavjud emas",
       });
     }
+    if (data.orderType === "DINE_IN" && !settings.dineInEnabled) {
+      throw Object.assign(new Error("Dine-in off"), {
+        status: 400,
+        publicMessage: "Zaldan buyurtma berish mavjud emas",
+      });
+    }
+    // A table order with no table is one the waiter cannot deliver: the
+    // food is ready and nobody knows where to put it.
+    if (data.orderType === "DINE_IN" && !data.tableNumber) {
+      throw Object.assign(new Error("No table"), {
+        status: 400,
+        publicMessage: "Stol raqamini kiriting",
+      });
+    }
     if (data.orderType === "DELIVERY" && !settings.deliveryEnabled) {
       throw Object.assign(new Error("Delivery off"), {
         status: 400,
@@ -272,7 +291,11 @@ router.post(
     // carries neither, so the kitchen has no way to reach the customer
     // unless these are asked for — and an order nobody can deliver is
     // worse than one that was never placed.
-    if (viaWeb) {
+    // Eating in is the one case that needs no contact details at all: the
+    // table says where the food goes, and the customer is sitting in the
+    // room. Asking a seated customer for their address and phone is how a
+    // two-tap order turns into a form nobody finishes.
+    if (viaWeb && data.orderType !== "DINE_IN") {
       const named = data.customerName || req.telegramUser.firstName;
       if (!named) {
         throw Object.assign(new Error("No name"), { status: 400, publicMessage: "Ismingizni yozing" });
@@ -284,7 +307,12 @@ router.post(
         throw Object.assign(new Error("No address"), { status: 400, publicMessage: "Yetkazib berish manzilini yozing" });
       }
     }
-    const firstName = data.customerName || req.telegramUser.firstName;
+    // The kitchen's list has to show something in the customer column, and
+    // for a table order the table is the most useful thing it could say.
+    const firstName =
+      data.customerName ||
+      req.telegramUser.firstName ||
+      (data.orderType === "DINE_IN" ? `Stol ${data.tableNumber}` : "");
 
     const user = await prisma.user.upsert({
       where: { telegramId },
@@ -356,7 +384,9 @@ router.post(
           orderType: data.orderType,
           paymentMethod: data.paymentMethod,
           phone: data.phone || user.phone || null,
-          deliveryAddress: data.orderType === "PICKUP" ? null : data.deliveryAddress || null,
+          deliveryAddress:
+            data.orderType === "DELIVERY" ? data.deliveryAddress || null : null,
+          tableNumber: data.orderType === "DINE_IN" ? data.tableNumber : null,
           comment: data.comment || null,
           promoCodeId: promo?.id || null,
           items: {
@@ -391,7 +421,7 @@ router.post(
     // The alert is what the kitchen acts on, so it carries the two things
     // they would otherwise have to open the panel for: how it goes out, and
     // how it is paid.
-    const how = orderTypeLabel(order.orderType);
+    const how = orderTypeLabel(order.orderType, order.tableNumber);
     const paid = paymentLabel(order.paymentMethod);
     notifyAdmins(
       [

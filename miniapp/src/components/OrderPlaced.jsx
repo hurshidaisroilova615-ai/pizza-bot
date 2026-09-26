@@ -27,12 +27,20 @@ export default function OrderPlaced({ order, onBackToMenu }) {
       </div>
 
       <div className="placed-notes">
-        <p>{t("placed.callSoon")}</p>
+        {/* At a table nobody is going to phone them — the food is coming
+            across the room, and which table is the one thing that matters. */}
+        {order.orderType === "DINE_IN" && order.tableNumber ? (
+          <p className="placed-keep">{t("placed.table", { table: order.tableNumber })}</p>
+        ) : (
+          <p>{t("placed.callSoon")}</p>
+        )}
         {order.orderType === "PICKUP" && settings.pickupAddress && (
           <p>{t("placed.pickupWhere", { address: settings.pickupAddress })}</p>
         )}
         {order.paymentMethod === "CARD" && <p>{t("placed.cardNote")}</p>}
-        <p className="placed-keep">{t("placed.saveNumber")}</p>
+        {order.orderType !== "DINE_IN" && (
+          <p className="placed-keep">{t("placed.saveNumber")}</p>
+        )}
       </div>
 
       <button type="button" className="btn-primary placed-back" onClick={onBackToMenu}>

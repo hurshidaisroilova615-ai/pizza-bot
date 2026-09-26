@@ -100,7 +100,7 @@ export default function Orders() {
                   <td data-label="Mijoz">{order.user?.firstName || "—"}</td>
                   <td data-label="Telefon">{order.phone || order.user?.phone || "—"}</td>
                   <td data-label="Turi" className="nowrap-cell">
-                    {orderTypeLabel(order.orderType)}
+                    {orderTypeLabel(order.orderType, order.tableNumber)}
                     <br />
                     <span className="muted">{paymentLabel(order.paymentMethod)}</span>
                   </td>

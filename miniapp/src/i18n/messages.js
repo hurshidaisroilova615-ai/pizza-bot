@@ -144,6 +144,11 @@ export const messages = {
     "profile.guest": "Mehmon",
     "site.hours": "Ish vaqti: {hours}",
 
+    "cart.atTable": "Stol {table}",
+    "cart.tableNote": "Buyurtma shu stolga olib kelinadi",
+    "cart.notAtTable": "Men zalda emasman",
+    "placed.table": "Buyurtma {table}-stolga olib kelinadi.",
+
     "placed.title": "Buyurtmangiz qabul qilindi",
     "placed.number": "Buyurtma raqami: #{id}",
     "placed.callSoon": "Tez orada siz bilan telefon orqali bog'lanamiz.",
@@ -294,6 +299,11 @@ export const messages = {
     "profile.guest": "Гость",
     "site.hours": "Часы работы: {hours}",
 
+    "cart.atTable": "Столик {table}",
+    "cart.tableNote": "Заказ принесут за этот столик",
+    "cart.notAtTable": "Я не в зале",
+    "placed.table": "Заказ принесут за столик {table}.",
+
     "placed.title": "Заказ принят",
     "placed.number": "Номер заказа: #{id}",
     "placed.callSoon": "Мы скоро свяжемся с вами по телефону.",
@@ -442,6 +452,11 @@ export const messages = {
     "profile.language": "Language",
     "profile.guest": "Guest",
     "site.hours": "Open: {hours}",
+
+    "cart.atTable": "Table {table}",
+    "cart.tableNote": "Your order comes to this table",
+    "cart.notAtTable": "I am not at a table",
+    "placed.table": "Your order is coming to table {table}.",
 
     "placed.title": "Order received",
     "placed.number": "Order number: #{id}",

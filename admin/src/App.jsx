@@ -10,6 +10,7 @@ import Categories from "./pages/Categories";
 import Customers from "./pages/Customers";
 import PromoCodes from "./pages/PromoCodes";
 import Offers from "./pages/Offers";
+import Tables from "./pages/Tables";
 import Settings from "./pages/Settings";
 import { api, BASE_URL } from "./api";
 import { nameBase } from "./apiBase";
@@ -41,6 +42,7 @@ function Layout() {
           <Route path="/customers" element={<Customers />} />
           <Route path="/promo-codes" element={<PromoCodes />} />
           <Route path="/offers" element={<Offers />} />
+          <Route path="/tables" element={<Tables />} />
           <Route path="/settings" element={<Settings onBusinessNameChange={setBusinessName} />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

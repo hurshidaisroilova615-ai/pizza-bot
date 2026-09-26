@@ -10,6 +10,7 @@ const LINKS = [
   { to: "/customers", label: "Mijozlar (CRM)", icon: "👥" },
   { to: "/promo-codes", label: "Promo kodlar", icon: "🏷" },
   { to: "/offers", label: "Maxsus takliflar", icon: "🎁" },
+  { to: "/tables", label: "Stol QR kodlari", icon: "🍽" },
   { to: "/settings", label: "Sozlamalar", icon: "⚙️" },
 ];
 

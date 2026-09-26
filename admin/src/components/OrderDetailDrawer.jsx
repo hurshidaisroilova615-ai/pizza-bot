@@ -25,7 +25,7 @@ export default function OrderDetailDrawer({ order, onClose, onStatusChange }) {
         <div className="drawer-section">
           <h4>Buyurtma turi</h4>
           <p>
-            {orderTypeLabel(order.orderType)} · {paymentLabel(order.paymentMethod)}
+            {orderTypeLabel(order.orderType, order.tableNumber)} · {paymentLabel(order.paymentMethod)}
           </p>
           {order.orderType === "PICKUP" ? (
             <p className="muted">Mijoz o'zi olib ketadi</p>

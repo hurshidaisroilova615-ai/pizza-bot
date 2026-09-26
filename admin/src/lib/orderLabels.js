@@ -14,15 +14,32 @@ const PICKUP_STATUS_LABELS = {
   DELIVERED: "Topshirildi",
 };
 
-// A pickup order never sees a courier, so the same status reads differently
-// depending on how the order leaves the kitchen.
+// Eating in: nothing is on its way anywhere. The food is either being
+// cooked or already on the table.
+const DINE_IN_STATUS_LABELS = {
+  ...STATUS_LABELS,
+  ON_DELIVERY: "Stolga olib borilmoqda",
+  DELIVERED: "Berildi",
+};
+
+const BY_TYPE = {
+  PICKUP: PICKUP_STATUS_LABELS,
+  DINE_IN: DINE_IN_STATUS_LABELS,
+};
+
+// The same status reads differently depending on how the order leaves the
+// kitchen — with a courier, in the customer's hand, or onto a table.
 export function statusLabel(status, orderType) {
-  const table = orderType === "PICKUP" ? PICKUP_STATUS_LABELS : STATUS_LABELS;
+  const table = BY_TYPE[orderType] || STATUS_LABELS;
   return table[status] || status;
 }
 
-export function orderTypeLabel(orderType) {
-  return orderType === "PICKUP" ? "🚶 Olib ketadi" : "🛵 Yetkazish";
+export function orderTypeLabel(orderType, tableNumber) {
+  if (orderType === "PICKUP") return "🚶 Olib ketadi";
+  if (orderType === "DINE_IN") {
+    return tableNumber ? `🍽 Zalda · Stol ${tableNumber}` : "🍽 Zalda";
+  }
+  return "🛵 Yetkazish";
 }
 
 export function paymentLabel(paymentMethod) {

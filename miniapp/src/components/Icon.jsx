@@ -25,6 +25,9 @@ const PATHS = {
   bag: "M6 8h12l1 12.5H5L6 8ZM9 8V6.5a3 3 0 0 1 6 0V8",
   // A handset: on a shop's own web page this one is tapped more than
   // anything else, because half these customers still prefer to call.
+  // A table seen from the side: the top and one leg. Anything more
+  // detailed turns to mud at 18px.
+  table: "M3 9h18M5.5 9v10M18.5 9v10M12 9v4M6.5 5.5h11a1.5 1.5 0 0 1 1.5 1.5v2H5V7a1.5 1.5 0 0 1 1.5-1.5Z",
   phone: "M6.5 3.5h3l1.5 4-2 1.4a12 12 0 0 0 6.1 6.1l1.4-2 4 1.5v3a2 2 0 0 1-2.2 2A17.5 17.5 0 0 1 4.5 5.7a2 2 0 0 1 2-2.2Z",
 };
 

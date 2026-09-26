@@ -6,6 +6,7 @@ import { closeMiniApp, hapticFeedback, notificationHaptic } from "../telegram";
 import Icon from "../components/Icon";
 import OrderPlaced from "../components/OrderPlaced";
 import { isTelegram, savedContact, rememberContact } from "../identity";
+import { currentTable, forgetTable } from "../table";
 import { useI18n } from "../i18n/LanguageContext";
 
 export default function Cart({ onOrderPlaced, onBrowseMenu }) {
@@ -23,9 +24,16 @@ export default function Cart({ onOrderPlaced, onBrowseMenu }) {
   const settings = useSettings();
   const { t } = useI18n();
 
+  // A table code was scanned, and the shop takes orders from its tables.
+  // Then there is nothing to choose: the customer is sitting in the room.
+  const [table, setTable] = useState(() => currentTable());
+  const atTable = Boolean(table) && settings.dineInEnabled;
+
   // Collection and card payment only appear when the business offers them,
   // so a shop that only delivers shows no choice at all.
-  const [orderType, setOrderType] = useState(settings.deliveryEnabled === false ? "PICKUP" : "DELIVERY");
+  const [orderType, setOrderType] = useState(
+    atTable ? "DINE_IN" : settings.deliveryEnabled === false ? "PICKUP" : "DELIVERY"
+  );
   const [paymentMethod, setPaymentMethod] = useState("CASH");
   // Telegram already knows who is ordering. A browser does not, so the name
   // is asked for here — and, like the phone and address, kept for next time,
@@ -93,6 +101,7 @@ export default function Cart({ onOrderPlaced, onBrowseMenu }) {
         items: items.map((i) => ({ productId: i.productId, quantity: i.qty })),
         orderType,
         paymentMethod,
+        tableNumber: atTable ? table : undefined,
         customerName: customerName.trim() || undefined,
         phone: phone || undefined,
         deliveryAddress: location || undefined,
@@ -107,6 +116,8 @@ export default function Cart({ onOrderPlaced, onBrowseMenu }) {
       }
       clearCart();
       onOrderPlaced();
+      // The next order is a fresh decision — they may have left by then.
+      if (atTable) forgetTable();
       // Inside Telegram the app closes and the chat behind it carries the
       // confirmation. On the website nothing is behind the page, so the
       // confirmation has to be the page.
@@ -165,6 +176,7 @@ export default function Cart({ onOrderPlaced, onBrowseMenu }) {
   // it and read a rejection.
   const missingContact =
     onWeb &&
+    !atTable &&
     (customerName.trim().length < 2 ||
       phone.trim().length < 5 ||
       (orderType === "DELIVERY" && !location.trim()));
@@ -246,7 +258,28 @@ export default function Cart({ onOrderPlaced, onBrowseMenu }) {
         />
       )}
 
-      {bothWaysOffered && (
+      {atTable && (
+        <div className="table-note">
+          <Icon name="table" size={18} strokeWidth={2} />
+          <div>
+            <p className="table-note-number">{t("cart.atTable", { table })}</p>
+            <p className="table-note-text">{t("cart.tableNote")}</p>
+          </div>
+          <button
+            type="button"
+            className="table-note-leave"
+            onClick={() => {
+              forgetTable();
+              setTable(null);
+              setOrderType(settings.deliveryEnabled === false ? "PICKUP" : "DELIVERY");
+            }}
+          >
+            {t("cart.notAtTable")}
+          </button>
+        </div>
+      )}
+
+      {!atTable && bothWaysOffered && (
         <>
           <p className="field-label">{t("cart.howLabel")}</p>
           <div className="choice-row" role="group" aria-label={t("cart.howLabel")}>
@@ -294,7 +327,7 @@ export default function Cart({ onOrderPlaced, onBrowseMenu }) {
         </>
       )}
 
-      {onWeb && (
+      {onWeb && !atTable && (
         <input
           className="location-input"
           placeholder={t("cart.name")}
@@ -302,27 +335,31 @@ export default function Cart({ onOrderPlaced, onBrowseMenu }) {
           onChange={(e) => setCustomerName(e.target.value)}
         />
       )}
-      <input
-        className="location-input"
-        placeholder={t("cart.phone")}
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-      />
-      {orderType === "DELIVERY" ? (
+      {!atTable && (
+        <input
+          className="location-input"
+          placeholder={t("cart.phone")}
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+        />
+      )}
+      {orderType === "DELIVERY" && (
         <input
           className="location-input"
           placeholder={t("cart.address")}
           value={location}
           onChange={(e) => setLocation(e.target.value)}
         />
-      ) : (
+      )}
+      {/* Where to come and collect — which means nothing to somebody
+          already sitting at one of the tables inside. */}
+      {orderType === "PICKUP" &&
         settings.pickupAddress && (
           <p className="pickup-note">
             <Icon name="pin" size={16} strokeWidth={2} />
             {t("cart.pickupAddress", { address: settings.pickupAddress })}
           </p>
-        )
-      )}
+        )}
       {cardOffered && paymentMethod === "CARD" && (
         <div className="card-details">
           <p className="card-details-label">{t("cart.cardLabel")}</p>

@@ -2485,3 +2485,53 @@ button {
   font-weight: 600;
   color: var(--text);
 }
+
+/* ── Zalda: stol raqami ─────────────────────────────────────────────────
+   Shown when a table's code was scanned. It replaces the delivery choice
+   and the address, so it has to say plainly where the food is going —
+   a customer who reads the wrong number here waits at the wrong table. */
+.table-note {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 20px 4px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--surface-2);
+}
+
+.table-note .icon {
+  flex: none;
+  color: var(--accent);
+}
+
+.table-note-number {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.table-note-text {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Deliberately quiet: leaving the table is the rare case, and a customer
+   who taps it by mistake has to fill in a delivery address instead. */
+.table-note-leave {
+  margin-left: auto;
+  flex: none;
+  max-width: 96px;
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 12.5px;
+  line-height: 1.3;
+  text-align: right;
+  color: var(--text-muted);
+  text-decoration: underline;
+  cursor: pointer;
+}
