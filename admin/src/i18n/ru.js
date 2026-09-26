@@ -343,6 +343,10 @@ export const RU = {
   "Yetkazish": "Доставка",
   "Karta": "Карта",
   "Naqd": "Наличные",
+
+  // --- Payment received -------------------------------------------------
+  "To'landi": "Оплачено",
+  "Hali to'lanmagan": "Ещё не оплачено",
 };
 
 export default RU;

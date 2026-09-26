@@ -9,7 +9,7 @@ import { isTelegram, savedContact, rememberContact } from "../identity";
 import { currentTable, forgetTable } from "../table";
 import { useI18n } from "../i18n/LanguageContext";
 
-export default function Cart({ onOrderPlaced, onBrowseMenu }) {
+export default function Cart({ onOrderPlaced, onBrowseMenu, onSeeOrders }) {
   const {
     items,
     changeQty,
@@ -147,6 +147,10 @@ export default function Cart({ onOrderPlaced, onBrowseMenu }) {
         onBackToMenu={() => {
           setPlacedOrder(null);
           onBrowseMenu();
+        }}
+        onSeeOrders={() => {
+          setPlacedOrder(null);
+          onSeeOrders();
         }}
       />
     );

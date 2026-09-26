@@ -3,7 +3,7 @@ import { useT } from "../i18n";
 
 const STATUS_VALUES = ["PENDING", "PREPARING", "ON_DELIVERY", "DELIVERED", "CANCELLED"];
 
-export default function OrderDetailDrawer({ order, onClose, onStatusChange }) {
+export default function OrderDetailDrawer({ order, onClose, onStatusChange, onTogglePaid }) {
   const { t } = useT();
   if (!order) return null;
 
@@ -34,7 +34,26 @@ export default function OrderDetailDrawer({ order, onClose, onStatusChange }) {
           ) : (
             <p>{order.deliveryAddress || t("Manzil ko'rsatilmagan")}</p>
           )}
-          {order.comment && <p className="muted">Izoh: {order.comment}</p>}
+          {order.comment && (
+            <p className="muted">
+              {t("Izoh")}: {order.comment}
+            </p>
+          )}
+
+          {/* The one thing the order itself could not tell anybody: whether
+              the money actually arrived. A waiter takes cash at the table,
+              a customer says they transferred it — somebody has to be able
+              to look at the order later and know. */}
+          <label className="paid-toggle">
+            <input
+              type="checkbox"
+              checked={Boolean(order.isPaid)}
+              onChange={(e) => onTogglePaid?.(order, e.target.checked)}
+            />
+            <span className={order.isPaid ? "paid-yes" : ""}>
+              {order.isPaid ? t("To'landi") : t("Hali to'lanmagan")}
+            </span>
+          </label>
         </div>
 
         <div className="drawer-section">

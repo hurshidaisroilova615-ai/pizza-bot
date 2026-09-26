@@ -219,6 +219,13 @@ model Order {
   // Which table, for an order placed from one. Kept as text because a
   // table is called whatever the cafe calls it — "5", "A3", "terrasa 2".
   tableNumber         String?
+  // Whether the money actually arrived. The payment method says how it was
+  // meant to be paid, which is not the same thing: a card transfer can
+  // fail, a waiter collects cash at the table and the kitchen never hears,
+  // and a courier comes back with notes in their pocket. Somebody has to
+  // be able to look at an order and know.
+  isPaid              Boolean     @default(false)
+  paidAt              DateTime?
   comment             String?
   status              OrderStatus   @default(PENDING)
   orderType           OrderType     @default(DELIVERY)

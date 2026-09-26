@@ -108,6 +108,7 @@ function publicOrder(order) {
     status: full.status,
     orderType: full.orderType,
     paymentMethod: full.paymentMethod,
+    isPaid: full.isPaid,
     totalPrice: full.totalPrice,
     deliveryFee: full.deliveryFee,
     createdAt: full.createdAt,
@@ -425,6 +426,23 @@ router.post(
     );
 
     res.status(201).json(serializeOrder(order));
+  })
+);
+
+// Marking the money as arrived. Separate from the status on purpose: an
+// order can be handed over before it is paid and paid before it is
+// handed over, and collapsing the two loses whichever happened first.
+router.put(
+  "/:id/paid",
+  requireAdmin,
+  asyncHandler(async (req, res) => {
+    const isPaid = Boolean(req.body?.isPaid);
+    const order = await prisma.order.update({
+      where: { id: Number(req.params.id) },
+      data: { isPaid, paidAt: isPaid ? new Date() : null },
+      include: ORDER_INCLUDE,
+    });
+    res.json(serializeOrder(order));
   })
 );
 

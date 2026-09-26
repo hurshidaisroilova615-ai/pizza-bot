@@ -85,6 +85,11 @@ export const api = {
   getOrder: (id) => request(`/orders/${id}`),
   updateOrderStatus: (id, status, note) =>
     request(`/orders/${id}/status`, { method: "PUT", body: JSON.stringify({ status, note }) }),
+  // Whether the money arrived — kept apart from the status, because an
+  // order can be handed over before it is paid and paid before it is
+  // handed over.
+  markOrderPaid: (id, isPaid) =>
+    request(`/orders/${id}/paid`, { method: "PUT", body: JSON.stringify({ isPaid }) }),
 
   getProducts: () => request("/products?all=1"),
   createProduct: (data) => request("/products", { method: "POST", body: JSON.stringify(data) }),

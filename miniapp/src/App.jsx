@@ -53,6 +53,7 @@ function AppContent({ customer }) {
         <Cart
           onOrderPlaced={() => setOrdersRefreshKey((k) => k + 1)}
           onBrowseMenu={() => setTab("catalog")}
+          onSeeOrders={() => setTab("profile")}
         />
       )}
       {tab === "profile" && (

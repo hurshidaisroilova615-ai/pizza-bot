@@ -163,6 +163,8 @@ export const messages = {
     "placed.pickupWhere": "Olib ketish manzili: {address}",
     "placed.cardNote": "To'lovni kartaga o'tkazishni unutmang.",
     "placed.backToMenu": "Menyuga qaytish",
+    "placed.myOrders": "Buyurtmalarim",
+    "placed.watching": "Holati shu yerda o'zgarib turadi.",
 
     "track.title": "Buyurtmani kuzatish",
     "track.hint": "Buyurtma raqami va buyurtma bergan telefon raqamingizni kiriting.",
@@ -324,6 +326,8 @@ export const messages = {
     "placed.pickupWhere": "Адрес самовывоза: {address}",
     "placed.cardNote": "Не забудьте перевести оплату на карту.",
     "placed.backToMenu": "Вернуться в меню",
+    "placed.myOrders": "Мои заказы",
+    "placed.watching": "Статус будет меняться прямо здесь.",
 
     "track.title": "Отслеживание заказа",
     "track.hint": "Введите номер заказа и телефон, с которого он был сделан.",
@@ -484,6 +488,8 @@ export const messages = {
     "placed.pickupWhere": "Pickup address: {address}",
     "placed.cardNote": "Please remember to transfer the payment to the card.",
     "placed.backToMenu": "Back to the menu",
+    "placed.myOrders": "My orders",
+    "placed.watching": "The status updates right here.",
 
     "track.title": "Track an order",
     "track.hint": "Enter the order number and the phone it was placed with.",
@@ -643,6 +649,8 @@ export const messages = {
     "placed.pickupWhere": "Алып кетүү дареги: {address}",
     "placed.cardNote": "Төлөмдү картага которууну унутпаңыз.",
     "placed.backToMenu": "Менюга кайтуу",
+    "placed.myOrders": "Менин заказдарым",
+    "placed.watching": "Абалы ушул жерде өзгөрүп турат.",
 
     "track.title": "Заказды көзөмөлдөө",
     "track.hint": "Заказ номерин жана заказ берген телефон номериңизди киргизиңиз.",

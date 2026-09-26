@@ -52,6 +52,17 @@ export default function Orders() {
     }
   }
 
+  async function handleTogglePaid(order, isPaid) {
+    try {
+      const updated = await api.markOrderPaid(order.id, isPaid);
+      setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
+      setSelected((current) => (current && current.id === updated.id ? updated : current));
+    } catch (err) {
+      alert(t("O'zgartirib bo'lmadi: {message}", { message: err.message }));
+      load();
+    }
+  }
+
   return (
     <div>
       <div className="page-header">
@@ -109,7 +120,20 @@ export default function Orders() {
                   <td data-label={t("Mahsulotlar")} className="truncate-cell">
                     {order.items.map((i) => `${i.name} x${i.quantity}`).join(", ")}
                   </td>
-                  <td data-label={t("Jami")}>{order.totalPrice.toLocaleString()}</td>
+                  <td data-label={t("Jami")}>
+                    {order.totalPrice.toLocaleString()}
+                    {/* An unpaid order looks exactly like a paid one on a
+                        list, which is how money goes missing. */}
+                    {order.isPaid ? (
+                      <span className="paid-mark" title={t("To'landi")}>
+                        ✓
+                      </span>
+                    ) : (
+                      <span className="unpaid-mark" title={t("Hali to'lanmagan")}>
+                        •
+                      </span>
+                    )}
+                  </td>
                   <td data-label={t("Sana")}>{new Date(order.createdAt).toLocaleString("uz-UZ")}</td>
                   <td data-label={t("Holati")}>
                     <span className={`status-pill status-${order.status.toLowerCase()}`}>
@@ -138,7 +162,12 @@ export default function Orders() {
         </div>
       )}
 
-      <OrderDetailDrawer order={selected} onClose={() => setSelected(null)} onStatusChange={handleStatusChange} />
+      <OrderDetailDrawer
+          order={selected}
+          onClose={() => setSelected(null)}
+          onStatusChange={handleStatusChange}
+          onTogglePaid={handleTogglePaid}
+        />
     </div>
   );
 }

@@ -286,7 +286,42 @@ async function clearWebCustomers() {
     orderTypeLabel("DINE_IN", "7")
   );
 
-  console.log("\n9) Telegramsiz mijozga xabar yuborilmaydi");
+  console.log("\n9) To'lov olindimi");
+  // The payment method says how it was meant to be paid, which is not the
+  // same as whether the money arrived: a waiter takes cash at the table, a
+  // transfer fails, a courier comes back with notes in their pocket.
+  check("a new order is not paid yet", placed.body.isPaid === false, String(placed.body.isPaid));
+
+  const marked = await admin(`/orders/${placed.body.id}/paid`, {
+    method: "PUT",
+    body: JSON.stringify({ isPaid: true }),
+  });
+  check("the owner can mark it paid", marked.status === 200 && marked.body.isPaid === true, JSON.stringify(marked.body).slice(0, 120));
+  check("and when it happened is recorded", Boolean(marked.body.paidAt), String(marked.body.paidAt));
+
+  const unmarked = await admin(`/orders/${placed.body.id}/paid`, {
+    method: "PUT",
+    body: JSON.stringify({ isPaid: false }),
+  });
+  check("a mistake can be undone", unmarked.body.isPaid === false, String(unmarked.body.isPaid));
+  check("and the time is cleared with it", unmarked.body.paidAt === null, String(unmarked.body.paidAt));
+
+  // Paying is not the same as delivering, so neither may move the other.
+  await admin(`/orders/${placed.body.id}/paid`, { method: "PUT", body: JSON.stringify({ isPaid: true }) });
+  const advanced = await admin(`/orders/${placed.body.id}/status`, {
+    method: "PUT",
+    body: JSON.stringify({ status: "PREPARING" }),
+  });
+  check("changing the status keeps it paid", advanced.body.isPaid === true, String(advanced.body.isPaid));
+
+  const tracked = await fetch(`${BASE}/orders/track`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ orderId: placed.body.id, phone: "0555123456" }),
+  }).then((r) => r.json());
+  check("the customer's own page says so too", tracked.isPaid === true, String(tracked.isPaid));
+
+  console.log("\n10) Telegramsiz mijozga xabar yuborilmaydi");
   // notifySafe skips non-numeric chat ids; if it did not, the order above
   // would have thrown on its way out to Telegram, which is unreachable here.
   check("placing an order did not try to message Telegram", pickup.status === 201);
