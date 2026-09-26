@@ -135,6 +135,49 @@ const TG = "770077";
   // Kazakh and Tajik still land on Russian — they have no table of their own.
   check("Kazakh still reads Russian", effectiveLanguage({ language: null, languageCode: "kk" }) === "ru");
 
+  console.log("\n6) Egasining salomlashuvi");
+  // A shop owner writes their welcome once, in their own language. Sending
+  // it untranslated to a customer who just picked a different one is worse
+  // than sending the plain built-in greeting in theirs.
+  const { sendWelcome } = require("../src/bot");
+  const { getSettings, invalidateSettingsCache } = require("../src/lib/settings");
+  const bot = require("../src/bot").bot;
+  const outbox = [];
+  bot.sendMessage = async (chatId, text, opts) => {
+    outbox.push({ text, opts });
+    return { message_id: 1 };
+  };
+
+  await prisma.settings.update({
+    where: { id: 1 },
+    data: { ownerLanguage: "uz", welcomeMessage: "Dom Pizza'ga xush kelibsiz, do'stlar!" },
+  });
+  invalidateSettingsCache();
+
+  outbox.length = 0;
+  await sendWelcome(1, { language: "uz", languageCode: "uz" }, "Xurshida");
+  check(
+    "an Uzbek customer gets the owner's own words",
+    outbox[0]?.text.includes("do'stlar"),
+    outbox[0]?.text
+  );
+
+  outbox.length = 0;
+  await sendWelcome(1, { language: "ky", languageCode: "ky" }, "Aliya");
+  check(
+    "a Kyrgyz one is not sent a paragraph of Uzbek",
+    !outbox[0]?.text.includes("do'stlar"),
+    outbox[0]?.text
+  );
+  check(
+    "they get the built-in greeting in their own language",
+    outbox[0]?.text.includes("Саламатсызбы"),
+    outbox[0]?.text
+  );
+
+  await prisma.settings.update({ where: { id: 1 }, data: { welcomeMessage: null } });
+  invalidateSettingsCache();
+
   console.log("\n6) Mini App havolasi to'g'ri do'konni ko'rsatadi");
   // The link the bot opens must name this backend, or a phone that has
   // opened another shop is shown that shop's menu instead.

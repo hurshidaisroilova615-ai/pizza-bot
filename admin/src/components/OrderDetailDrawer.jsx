@@ -27,7 +27,7 @@ export default function OrderDetailDrawer({ order, onClose, onStatusChange }) {
         <div className="drawer-section">
           <h4>{t("Buyurtma turi")}</h4>
           <p>
-            {orderTypeLabel(order.orderType, order.tableNumber)} · {paymentLabel(order.paymentMethod)}
+            {orderTypeLabel(order.orderType, order.tableNumber, t)} · {paymentLabel(order.paymentMethod, t)}
           </p>
           {order.orderType === "PICKUP" ? (
             <p className="muted">{t("Mijoz o'zi olib ketadi")}</p>
@@ -85,7 +85,7 @@ export default function OrderDetailDrawer({ order, onClose, onStatusChange }) {
           >
             {STATUS_VALUES.map((value) => (
               <option key={value} value={value}>
-                {statusLabel(value, order.orderType)}
+                {statusLabel(value, order.orderType, t)}
               </option>
             ))}
           </select>
@@ -93,7 +93,7 @@ export default function OrderDetailDrawer({ order, onClose, onStatusChange }) {
           <div className="status-timeline">
             {order.statusHistory?.map((h) => (
               <div className="status-timeline-row" key={h.id}>
-                <span>{statusLabel(h.status, order.orderType)}</span>
+                <span>{statusLabel(h.status, order.orderType, t)}</span>
                 <span className="muted">{new Date(h.createdAt).toLocaleString("uz-UZ")}</span>
               </div>
             ))}

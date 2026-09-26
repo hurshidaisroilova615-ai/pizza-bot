@@ -20,7 +20,33 @@ function storedLocally() {
   }
 }
 
+function remember(code) {
+  try {
+    localStorage.setItem(STORE_KEY, code);
+  } catch {
+    // storage blocked; the choice holds for this visit
+  }
+}
+
+// The bot puts ?lang= on the link it opens, naming the language the
+// customer is already being spoken to in. It wins over everything else:
+// somebody who just chose Kyrgyz in the chat and then reads an Uzbek menu
+// has no way of knowing there is a picker at the top of it.
+function fromLink() {
+  try {
+    const value = new URLSearchParams(window.location.search).get("lang");
+    return LANGUAGES.some((l) => l.code === value) ? value : null;
+  } catch {
+    return null;
+  }
+}
+
 function detect() {
+  const chosen = fromLink();
+  if (chosen) {
+    remember(chosen);
+    return chosen;
+  }
   const stored = storedLocally();
   if (stored) return stored;
   // Outside Telegram there is no account to ask, so the browser answers.

@@ -158,7 +158,37 @@ function isSendable(msg) {
     "no Mini App button"
   );
 
-  console.log("\n4) Boshqa buyruqlar");
+  console.log("\n4) Havola tanlangan tilni olib boradi");
+  // A customer who chose Kyrgyz in the chat and then opened a menu in
+  // whatever their phone was set to had no way of knowing there was a
+  // picker at the top of a screen they could not read.
+  sent.length = 0;
+  tapButton("lang:ky");
+  await settle();
+  const kyButton = (sent[0]?.opts?.reply_markup?.inline_keyboard || []).flat().find((b) => b.web_app);
+  check("the menu button is there", Boolean(kyButton), JSON.stringify(sent[0]?.opts));
+  check(
+    "and its link names the language",
+    new URL(kyButton.web_app.url).searchParams.get("lang") === "ky",
+    kyButton?.web_app?.url
+  );
+  check(
+    "the backend is still on it too",
+    new URL(kyButton.web_app.url).searchParams.get("api")?.includes("/api"),
+    kyButton?.web_app?.url
+  );
+
+  sent.length = 0;
+  tapButton("lang:uz");
+  await settle();
+  const uzButton = (sent[0]?.opts?.reply_markup?.inline_keyboard || []).flat().find((b) => b.web_app);
+  check(
+    "switching back changes the link",
+    new URL(uzButton.web_app.url).searchParams.get("lang") === "uz",
+    uzButton?.web_app?.url
+  );
+
+  console.log("\n5) Boshqa buyruqlar");
   for (const cmd of ["/til", "/help", "/id", "/orders"]) {
     sent.length = 0;
     send(cmd);
@@ -167,7 +197,7 @@ function isSendable(msg) {
     check(`${cmd} replies and is sendable`, sent.length > 0 && p === null, p || "no reply");
   }
 
-  console.log("\n5) Kechikkan xabarlar");
+  console.log("\n6) Kechikkan xabarlar");
   // Telegram holds what it could not deliver and floods it back when the
   // service answers again. Four taps of /start twenty minutes ago must not
   // produce four welcomes now.
@@ -184,7 +214,7 @@ function isSendable(msg) {
   check("a button tap carries its age too", !isFresh({ callback_query: { message: { date: now - 1200 } } }));
   check("an update with no date is still answered", isFresh({ message: { text: "/start" } }));
 
-  console.log("\n6) Hech narsa jimgina yiqilmadi");
+  console.log("\n7) Hech narsa jimgina yiqilmadi");
   check("no unhandled errors", thrown.length === 0, thrown.join(" | "));
 
   await prisma.user.deleteMany({ where: { telegramId: String(TG) } });

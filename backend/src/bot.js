@@ -162,11 +162,30 @@ const {
 } = require("./lib/botMessages");
 const { isTelegramChat } = require("./lib/webCustomer");
 
+// The link carries the language the customer is being spoken to in, so the
+// menu opens in it. Without this a customer who chose Kyrgyz in the chat
+// opened a menu in whatever their phone happens to be set to, and the only
+// way out was a picker at the top of a screen they could not read.
+function miniappUrlFor(languageCode) {
+  try {
+    const url = new URL(MINIAPP_URL);
+    url.searchParams.set("lang", languageCode);
+    return url.toString();
+  } catch {
+    return MINIAPP_URL;
+  }
+}
+
 function orderButton(languageCode) {
   return {
     reply_markup: {
       inline_keyboard: [
-        [{ text: messagesFor(languageCode).orderButton, web_app: { url: MINIAPP_URL } }],
+        [
+          {
+            text: messagesFor(languageCode).orderButton,
+            web_app: { url: miniappUrlFor(languageCode) },
+          },
+        ],
       ],
     },
   };
@@ -220,9 +239,13 @@ async function sendWelcome(chatId, user, firstName) {
   const lang = effectiveLanguage(user);
   const m = messagesFor(lang);
   // An owner who has written their own welcome gets it sent as they wrote
-  // it. Translating someone's own words into a language they never checked
-  // is worse than showing them in one language.
-  const welcome = settings?.welcomeMessage
+  // it — but only to customers who read that language. Machine translating
+  // someone's own words into a language they never checked is worse than
+  // showing them in one language; sending a Kyrgyz customer a paragraph of
+  // Uzbek right after they chose Kyrgyz is worse than both.
+  const ownerLanguage = settings?.ownerLanguage || "uz";
+  const ownWords = settings?.welcomeMessage && ownerLanguage === lang;
+  const welcome = ownWords
     ? settings.welcomeMessage
     : `${m.greeting.replace("!", `, ${firstName}!`)}\n\n${m.welcome(businessName)} ${m.orderPrompt}`;
 
@@ -408,6 +431,7 @@ async function notifyAdmins(text) {
 
 module.exports = {
   bot,
+  sendWelcome,
   USE_WEBHOOK,
   WEBHOOK_PATH,
   notifyOrderCreated,

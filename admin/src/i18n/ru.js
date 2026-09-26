@@ -333,6 +333,16 @@ export const RU = {
   "orqali qo'yasiz.": ".",
   "Parolni o'zgartirsangiz, boshqa qurilmalardagi kirishlar darhol uziladi. Botni birovga sinab ko'rish uchun bergan bo'lsangiz, shu yerdan parolni almashtirib kirishni qaytarib olasiz.":
     "После смены пароля входы на других устройствах сразу прекратятся. Если вы давали доступ кому-то для пробы, смените пароль здесь и заберите вход обратно.",
+
+  // --- Order list wording ----------------------------------------------
+  // Assembled at render time from a table and a table number, so these are
+  // looked up piece by piece rather than as finished sentences.
+  "Olib ketadi": "Самовывоз",
+  "Zalda": "В зале",
+  "Stol": "Столик",
+  "Yetkazish": "Доставка",
+  "Karta": "Карта",
+  "Naqd": "Наличные",
 };
 
 export default RU;

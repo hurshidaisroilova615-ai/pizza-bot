@@ -102,9 +102,9 @@ export default function Orders() {
                   <td data-label={t("Mijoz")}>{order.user?.firstName || "—"}</td>
                   <td data-label={t("Telefon")}>{order.phone || order.user?.phone || "—"}</td>
                   <td data-label={t("Turi")} className="nowrap-cell">
-                    {orderTypeLabel(order.orderType, order.tableNumber)}
+                    {orderTypeLabel(order.orderType, order.tableNumber, t)}
                     <br />
-                    <span className="muted">{paymentLabel(order.paymentMethod)}</span>
+                    <span className="muted">{paymentLabel(order.paymentMethod, t)}</span>
                   </td>
                   <td data-label={t("Mahsulotlar")} className="truncate-cell">
                     {order.items.map((i) => `${i.name} x${i.quantity}`).join(", ")}
@@ -113,7 +113,7 @@ export default function Orders() {
                   <td data-label={t("Sana")}>{new Date(order.createdAt).toLocaleString("uz-UZ")}</td>
                   <td data-label={t("Holati")}>
                     <span className={`status-pill status-${order.status.toLowerCase()}`}>
-                      {statusLabel(order.status, order.orderType)}
+                      {statusLabel(order.status, order.orderType, t)}
                     </span>
                   </td>
                   <td data-label={t("Keyingi qadam")} className="row-actions">
@@ -125,7 +125,7 @@ export default function Orders() {
                           handleStatusChange(order, NEXT_STATUS[order.status]);
                         }}
                       >
-                        {statusLabel(NEXT_STATUS[order.status], order.orderType)} →
+                        {statusLabel(NEXT_STATUS[order.status], order.orderType, t)} →
                       </button>
                     ) : (
                       <span className="muted">—</span>
