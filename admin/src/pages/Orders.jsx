@@ -41,6 +41,13 @@ export default function Orders() {
     try {
       const updated = await api.updateOrderStatus(order.id, status);
       setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
+
+      // Handing the food over is the moment the cash changes hands, and it
+      // is the only moment anybody remembers it. Asked here it is one tap;
+      // asked later it is an order nobody can account for.
+      if (status === "DELIVERED" && !updated.isPaid && updated.paymentMethod === "CASH") {
+        if (confirm(t("Pul olindimi?"))) await handleTogglePaid(updated, true);
+      }
       // Refresh the detail panel only when it is already showing this order;
       // advancing from the list shouldn't pop a panel open over the list.
       setSelected((current) => (current && current.id === updated.id ? updated : current));

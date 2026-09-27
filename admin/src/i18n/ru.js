@@ -348,6 +348,7 @@ export const RU = {
   "To'landi": "Оплачено",
   "Hali to'lanmagan": "Ещё не оплачено",
   "To'lanmagan": "Не оплачено",
+  "Pul olindimi?": "Деньги получены?",
 };
 
 export default RU;
