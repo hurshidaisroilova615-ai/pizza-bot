@@ -1327,16 +1327,28 @@ td.row-actions .btn + .btn {
 /* ── To'langanmi ────────────────────────────────────────────────────────
    An unpaid order looks exactly like a paid one on a list, which is how
    money goes missing between a waiter's pocket and the till. */
-.paid-mark {
-  margin-left: 6px;
-  color: #1a9d5b;
+/* A dot was too quiet: on a phone it reads as a speck of dust on the
+   screen, which is worse than nothing because it looks like a defect
+   rather than information. */
+.pay-chip {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11.5px;
   font-weight: 700;
+  white-space: nowrap;
+  vertical-align: middle;
 }
 
-.unpaid-mark {
-  margin-left: 6px;
-  color: #c9c2b8;
-  font-weight: 700;
+.pay-chip.paid {
+  background: #e6f6ec;
+  color: #14804a;
+}
+
+.pay-chip.unpaid {
+  background: #fdeeec;
+  color: #b93c2c;
 }
 
 .paid-toggle {

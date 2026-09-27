@@ -347,6 +347,7 @@ export const RU = {
   // --- Payment received -------------------------------------------------
   "To'landi": "Оплачено",
   "Hali to'lanmagan": "Ещё не оплачено",
+  "To'lanmagan": "Не оплачено",
 };
 
 export default RU;

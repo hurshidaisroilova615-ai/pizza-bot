@@ -123,16 +123,12 @@ export default function Orders() {
                   <td data-label={t("Jami")}>
                     {order.totalPrice.toLocaleString()}
                     {/* An unpaid order looks exactly like a paid one on a
-                        list, which is how money goes missing. */}
-                    {order.isPaid ? (
-                      <span className="paid-mark" title={t("To'landi")}>
-                        ✓
-                      </span>
-                    ) : (
-                      <span className="unpaid-mark" title={t("Hali to'lanmagan")}>
-                        •
-                      </span>
-                    )}
+                        list, which is how money goes missing. It was a dot
+                        at first, which on a phone reads as a speck of dust
+                        — it has to say what it means. */}
+                    <span className={`pay-chip ${order.isPaid ? "paid" : "unpaid"}`}>
+                      {order.isPaid ? t("To'landi") : t("To'lanmagan")}
+                    </span>
                   </td>
                   <td data-label={t("Sana")}>{new Date(order.createdAt).toLocaleString("uz-UZ")}</td>
                   <td data-label={t("Holati")}>
