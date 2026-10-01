@@ -2335,6 +2335,31 @@ button {
   background: var(--surface-2);
 }
 
+/* The number a customer reads out at the counter. Large enough to be read
+   off a phone held at arm's length by somebody standing behind a till. */
+.placed-code {
+  margin-top: 14px;
+  padding: 12px 24px;
+  border-radius: 16px;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  background: var(--surface-2);
+  border: 1px dashed var(--border);
+}
+
+.placed-code-label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.placed-code-value {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: var(--text);
+}
+
 .placed-notes {
   margin-top: 24px;
   max-width: 330px;

@@ -102,6 +102,8 @@ export const RU = {
   "Manzil ko'rsatilmagan": "Адрес не указан",
   "Telefon ko'rsatilmagan": "Телефон не указан",
   "Mijoz o'zi olib ketadi": "Клиент забирает сам",
+  "Mijoz o'zi olib ketadi. Kelganda #{id} raqamini aytadi.":
+    "Клиент забирает сам. При получении назовёт номер #{id}.",
 
   // --- Products --------------------------------------------------------
   "+ Yangi mahsulot": "+ Новый товар",

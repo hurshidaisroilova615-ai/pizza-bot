@@ -58,6 +58,17 @@ export default function OrderPlaced({ order, onBackToMenu, onSeeOrders }) {
         {order.totalPrice.toLocaleString()} {settings.currency}
       </div>
 
+      {/* A customer collecting the food in person walks up to a counter
+          where nobody knows their face. The order number is the only thing
+          that connects them to what is waiting, so it cannot be a grey line
+          under the title — it has to be the thing they see and read out. */}
+      {order.orderType === "PICKUP" && (
+        <div className="placed-code">
+          <span className="placed-code-label">{t("placed.codeLabel")}</span>
+          <span className="placed-code-value">#{order.id}</span>
+        </div>
+      )}
+
       <div className="placed-status">
         <OrderStatusBadge status={status} orderType={order.orderType} />
         <p className="placed-watching">{t("placed.watching")}</p>
@@ -68,6 +79,8 @@ export default function OrderPlaced({ order, onBackToMenu, onSeeOrders }) {
             across the room, and which table is the one thing that matters. */}
         {order.orderType === "DINE_IN" && order.tableNumber ? (
           <p className="placed-keep">{t("placed.table", { table: order.tableNumber })}</p>
+        ) : order.orderType === "PICKUP" ? (
+          <p className="placed-keep">{t("placed.pickupCode")}</p>
         ) : (
           <p>{t("placed.callSoon")}</p>
         )}

@@ -30,7 +30,12 @@ export default function OrderDetailDrawer({ order, onClose, onStatusChange, onTo
             {orderTypeLabel(order.orderType, order.tableNumber, t)} · {paymentLabel(order.paymentMethod, t)}
           </p>
           {order.orderType === "PICKUP" ? (
-            <p className="muted">{t("Mijoz o'zi olib ketadi")}</p>
+            /* Nobody at the counter knows this customer by sight. The number
+               they will read out is the only way to match them to this order,
+               so say it here rather than leaving it in the header. */
+            <p className="muted">
+              {t("Mijoz o'zi olib ketadi. Kelganda #{id} raqamini aytadi.", { id: order.id })}
+            </p>
           ) : (
             <p>{order.deliveryAddress || t("Manzil ko'rsatilmagan")}</p>
           )}
