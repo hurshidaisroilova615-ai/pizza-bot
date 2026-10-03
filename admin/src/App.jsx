@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Sidebar from "./components/Sidebar";
+import NewOrderWatch from "./components/NewOrderWatch";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Orders from "./pages/Orders";
@@ -39,6 +40,8 @@ function Layout() {
     <LanguageProvider fromSettings={ownerLanguage}>
     <div className="layout">
       <Sidebar businessName={businessName} />
+      {/* Rings on whichever page the shop left open, not only the list. */}
+      <NewOrderWatch />
       <main className="main">
         <Routes>
           <Route path="/" element={<Dashboard />} />

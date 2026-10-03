@@ -1371,3 +1371,62 @@ td.row-actions .btn + .btn {
   font-weight: 600;
   text-decoration: underline;
 }
+
+/* ── Yangi buyurtma qo'ng'irog'i ──────────────────────────────────────── */
+/* Sits above everything, because a shop with no Telegram has nothing else
+   to tell it an order has come in. */
+.order-bell {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 18px;
+  border: none;
+  border-radius: 999px;
+  background: #c0392b;
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.26);
+  animation: bell-in 0.25s ease-out;
+}
+
+@keyframes bell-in {
+  from { transform: translateY(14px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.order-bell-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: white;
+  animation: bell-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes bell-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.25; }
+}
+
+.order-bell-mute {
+  margin-left: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .order-bell {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    justify-content: center;
+  }
+}
