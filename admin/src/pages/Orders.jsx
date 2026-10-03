@@ -95,14 +95,22 @@ export default function Orders() {
       <div className="filter-bar">
         <div className="tag-row-admin type-tabs">
           {TYPE_TABS.map((tab) => {
-            const count = orders.filter((o) => !tab.value || o.orderType === tab.value).length;
+            const mine = orders.filter((o) => !tab.value || o.orderType === tab.value);
+            // Nobody has started on a PENDING order yet, so that is the
+            // number worth shouting about: it says which part of the shop
+            // is being waited on right now, and it clears itself the
+            // moment somebody takes the order on.
+            const waiting = mine.filter((o) => o.status === "PENDING").length;
             return (
               <button
                 key={tab.value || "all"}
-                className={`tag-admin ${typeFilter === tab.value ? "active" : ""}`}
+                className={`tag-admin ${typeFilter === tab.value ? "active" : ""} ${
+                  waiting > 0 ? "has-waiting" : ""
+                }`}
                 onClick={() => setTypeFilter(tab.value)}
               >
-                {t(tab.label)} <span className="tab-count">{count}</span>
+                {t(tab.label)} <span className="tab-count">{mine.length}</span>
+                {waiting > 0 && <span className="tab-waiting">{waiting}</span>}
               </button>
             );
           })}
@@ -145,7 +153,11 @@ export default function Orders() {
             </thead>
             <tbody>
               {shown.map((order) => (
-                <tr key={order.id} className="clickable-row" onClick={() => setSelected(order)}>
+                <tr
+                  key={order.id}
+                  className={`clickable-row ${order.status === "PENDING" ? "row-waiting" : ""}`}
+                  onClick={() => setSelected(order)}
+                >
                   <td data-label="#">#{order.id}</td>
                   <td data-label={t("Mijoz")}>{order.user?.firstName || "—"}</td>
                   <td data-label={t("Telefon")}>{order.phone || order.user?.phone || "—"}</td>

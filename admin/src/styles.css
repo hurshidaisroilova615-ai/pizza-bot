@@ -1457,3 +1457,47 @@ td.row-actions .btn + .btn {
 .tag-admin.active .tab-count {
   background: rgba(255, 255, 255, 0.24);
 }
+
+/* A tab holding orders nobody has started on. The red is the whole point:
+   from across a counter it has to be obvious which part of the shop is
+   being waited on. It clears itself as soon as the order is taken on. */
+.tag-admin.has-waiting {
+  border-color: #c0392b;
+  color: #c0392b;
+}
+
+.tag-admin.has-waiting.active {
+  background: #c0392b;
+  border-color: #c0392b;
+  color: white;
+}
+
+.tab-waiting {
+  margin-left: 5px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #c0392b;
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  animation: tab-waiting-pulse 1.3s ease-in-out infinite;
+}
+
+.tag-admin.has-waiting.active .tab-waiting {
+  background: white;
+  color: #c0392b;
+}
+
+@keyframes tab-waiting-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.45; }
+}
+
+/* The same order in the list below, so the eye lands on it. */
+.row-waiting td:first-child {
+  box-shadow: inset 3px 0 0 #c0392b;
+}
+
+.row-waiting {
+  background: #fff8f7;
+}
