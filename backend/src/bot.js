@@ -397,7 +397,12 @@ async function notifySafe(chatId, text, opts) {
 
 async function notifyOrderCreated(telegramId, order, languageCode) {
   const m = messagesFor(languageCode);
-  return notifySafe(telegramId, m.orderCreated(order.id, order.totalPrice.toLocaleString()));
+  let text = m.orderCreated(order.id, order.totalPrice.toLocaleString());
+  // Somebody coming to collect walks up to a counter where nobody knows
+  // their face. The number is already in the message; what was missing is
+  // that it is the thing to read out.
+  if (order.orderType === "PICKUP") text += `\n\n${m.pickupCollect(order.id)}`;
+  return notifySafe(telegramId, text);
 }
 
 async function notifyOrderStatusChanged(telegramId, order, languageCode) {

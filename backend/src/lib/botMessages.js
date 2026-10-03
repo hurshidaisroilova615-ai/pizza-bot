@@ -20,6 +20,7 @@ const MESSAGES = {
     noOrders: "Sizda hali buyurtmalar yo'q.",
     orderCreated: (id, total) =>
       `Buyurtmangiz #${id} qabul qilindi! ✅\nJami: ${total}\n\nHolatini shu botdan yoki Mini App profilingizdan kuzatib borishingiz mumkin.`,
+    pickupCollect: (id) => `Kelganingizda kassada #${id} raqamini ayting.`,
     statusChanged: (id, label) => `Buyurtmangiz #${id} holati yangilandi:\n${label}`,
     total: "Jami",
     status: {
@@ -46,6 +47,7 @@ const MESSAGES = {
     noOrders: "У вас пока нет заказов.",
     orderCreated: (id, total) =>
       `Заказ #${id} принят! ✅\nИтого: ${total}\n\nСледить за ним можно здесь или в профиле в приложении.`,
+    pickupCollect: (id) => `Назовите номер #${id} на кассе, когда придёте.`,
     statusChanged: (id, label) => `Статус заказа #${id} обновлён:\n${label}`,
     total: "Итого",
     status: {
@@ -62,7 +64,7 @@ const MESSAGES = {
   },
   ky: {
     greeting: "Саламатсызбы! 👋",
-    welcome: (name) => `${name} дүкөнүнө кош келиңиз.`,
+    welcome: (name) => `«${name}» — кош келиңиз!`,
     orderPrompt: "Заказ берүү үчүн төмөнкү баскычты басыңыз.",
     orderButton: "🛍 Заказ берүү",
     menuButton: "Меню",
@@ -72,6 +74,7 @@ const MESSAGES = {
     noOrders: "Сизде азырынча заказдар жок.",
     orderCreated: (id, total) =>
       `Заказыңыз #${id} кабыл алынды! ✅\nЖалпы: ${total}\n\nАбалын ушул боттон же тиркемедеги профилиңизден көзөмөлдөй аласыз.`,
+    pickupCollect: (id) => `Келгениңизде кассада #${id} номерин айтыңыз.`,
     statusChanged: (id, label) => `Заказыңыздын #${id} абалы жаңырды:\n${label}`,
     total: "Жалпы",
     status: {
@@ -98,6 +101,7 @@ const MESSAGES = {
     noOrders: "You have no orders yet.",
     orderCreated: (id, total) =>
       `Order #${id} accepted! ✅\nTotal: ${total}\n\nYou can follow it here or in your profile in the app.`,
+    pickupCollect: (id) => `Give the number #${id} at the counter when you arrive.`,
     statusChanged: (id, label) => `Order #${id} status updated:\n${label}`,
     total: "Total",
     status: {

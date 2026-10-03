@@ -1616,6 +1616,41 @@ button {
   background: var(--accent-soft);
 }
 
+/* Offered next to the typed address, never instead of it. */
+.pin-button {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pin-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.pin-ready {
+  border-style: solid;
+  border-color: var(--success, #2e9e5b);
+  color: var(--success, #2e9e5b);
+}
+
+.pin-failed {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
 .pickup-note {
   display: flex;
   align-items: center;

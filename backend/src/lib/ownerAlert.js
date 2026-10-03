@@ -14,6 +14,7 @@ const WORDS = {
     newOrder: (id) => `🆕 Yangi buyurtma #${id}`,
     customer: "Mijoz",
     address: "Manzil",
+    map: "Xaritada",
     phone: "Telefon",
     total: "Jami",
     comment: "Izoh",
@@ -28,6 +29,7 @@ const WORDS = {
     newOrder: (id) => `🆕 Новый заказ #${id}`,
     customer: "Клиент",
     address: "Адрес",
+    map: "На карте",
     phone: "Телефон",
     total: "Итого",
     comment: "Комментарий",
@@ -63,6 +65,11 @@ function ownerAlert(order, customerName, language) {
     `${howItGoesOut(order, w)} · ${order.paymentMethod === "CARD" ? w.card : w.cash}`,
     order.paymentMethod === "CARD" ? w.cardWarning : null,
     order.deliveryAddress ? `${w.address}: ${order.deliveryAddress}` : null,
+    // The alert is read on a phone, which is where a map link is worth
+    // most: one tap and the courier is already being navigated.
+    order.deliveryLat != null && order.deliveryLng != null
+      ? `${w.map}: https://maps.google.com/?q=${order.deliveryLat},${order.deliveryLng}`
+      : null,
     order.phone ? `${w.phone}: ${order.phone}` : null,
     order.comment ? `${w.comment}: ${order.comment}` : null,
     `${w.total}: ${order.totalPrice.toLocaleString()}`,

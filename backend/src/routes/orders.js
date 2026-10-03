@@ -41,6 +41,10 @@ const createOrderSchema = z.object({
   // ordering, a browser never can.
   customerName: z.string().trim().min(2).max(60).optional(),
   deliveryAddress: z.string().trim().max(300).optional(),
+  // A pin dropped by the customer's own device. Optional, because plenty
+  // of people refuse the browser's location prompt and still want food.
+  deliveryLat: z.number().min(-90).max(90).optional(),
+  deliveryLng: z.number().min(-180).max(180).optional(),
   comment: z.string().trim().max(500).optional(),
   promoCode: z.string().trim().max(40).optional(),
   loyaltyPointsToRedeem: z.number().int().nonnegative().optional().default(0),
@@ -387,6 +391,14 @@ router.post(
           phone: data.phone || user.phone || null,
           deliveryAddress:
             data.orderType === "DELIVERY" ? data.deliveryAddress || null : null,
+          deliveryLat:
+            data.orderType === "DELIVERY" && typeof data.deliveryLat === "number"
+              ? data.deliveryLat
+              : null,
+          deliveryLng:
+            data.orderType === "DELIVERY" && typeof data.deliveryLng === "number"
+              ? data.deliveryLng
+              : null,
           tableNumber: data.orderType === "DINE_IN" ? data.tableNumber : null,
           comment: data.comment || null,
           promoCodeId: promo?.id || null,

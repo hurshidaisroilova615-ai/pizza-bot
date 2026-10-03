@@ -216,6 +216,12 @@ model Order {
   totalPrice          Int
   phone               String?
   deliveryAddress     String?
+  // Where the courier is actually going. The typed address is what the
+  // customer can spell; the pin is where they are standing. Both are kept,
+  // because a pin alone does not say which floor or which gate, and an
+  // address alone sends a courier round a block of unnumbered houses.
+  deliveryLat         Float?
+  deliveryLng         Float?
   // Which table, for an order placed from one. Kept as text because a
   // table is called whatever the cafe calls it — "5", "A3", "terrasa 2".
   tableNumber         String?

@@ -62,6 +62,29 @@ export default function Cart({ onOrderPlaced, onBrowseMenu, onSeeOrders }) {
   const [submitting, setSubmitting] = useState(false);
   const [useLoyalty, setUseLoyalty] = useState(false);
   const [cardCopied, setCardCopied] = useState(false);
+  // A dropped pin, when the customer offers one. A typed address in a
+  // neighbourhood of unnumbered houses sends a courier round in circles;
+  // the phone already knows where its owner is standing.
+  const [pin, setPin] = useState(null);
+  const [pinState, setPinState] = useState("idle");
+
+  function attachPin() {
+    if (!navigator.geolocation) {
+      setPinState("failed");
+      return;
+    }
+    setPinState("asking");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setPin({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setPinState("ready");
+      },
+      // Refusing the prompt is a normal answer, not an error to shout
+      // about: the typed address still works on its own.
+      () => setPinState("failed"),
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
+    );
+  }
 
   // navigator.clipboard is missing in some in-app browsers, so the number
   // stays visible and selectable either way — the copy is a convenience.
@@ -116,6 +139,8 @@ export default function Cart({ onOrderPlaced, onBrowseMenu, onSeeOrders }) {
         customerName: customerName.trim() || undefined,
         phone: phone || undefined,
         deliveryAddress: location || undefined,
+        deliveryLat: orderType === "DELIVERY" && pin ? pin.lat : undefined,
+        deliveryLng: orderType === "DELIVERY" && pin ? pin.lng : undefined,
         comment: comment || undefined,
         promoCode: promoCode || undefined,
         loyaltyPointsToRedeem: useLoyalty ? redeemPoints : 0,
@@ -400,12 +425,28 @@ export default function Cart({ onOrderPlaced, onBrowseMenu, onSeeOrders }) {
         />
       )}
       {orderType === "DELIVERY" && (
-        <input
-          className="location-input"
-          placeholder={t("cart.address")}
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-        />
+        <>
+          <input
+            className="location-input"
+            placeholder={t("cart.address")}
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          />
+          <button
+            type="button"
+            className={`pin-button ${pinState === "ready" ? "pin-ready" : ""}`}
+            onClick={attachPin}
+            disabled={pinState === "asking"}
+          >
+            <Icon name="pin" size={16} strokeWidth={2} />
+            {pinState === "ready"
+              ? t("cart.pinAttached")
+              : pinState === "asking"
+                ? t("cart.pinAsking")
+                : t("cart.pinSend")}
+          </button>
+          {pinState === "failed" && <p className="pin-failed">{t("cart.pinFailed")}</p>}
+        </>
       )}
       {/* Where to come and collect — which means nothing to somebody
           already sitting at one of the tables inside. */}

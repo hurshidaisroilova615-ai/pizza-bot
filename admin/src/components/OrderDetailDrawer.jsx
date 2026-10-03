@@ -37,7 +37,23 @@ export default function OrderDetailDrawer({ order, onClose, onStatusChange, onTo
               {t("Mijoz o'zi olib ketadi. Kelganda #{id} raqamini aytadi.", { id: order.id })}
             </p>
           ) : (
-            <p>{order.deliveryAddress || t("Manzil ko'rsatilmagan")}</p>
+            <>
+              <p>{order.deliveryAddress || t("Manzil ko'rsatilmagan")}</p>
+              {/* Where the customer actually was when they ordered. A courier
+                  with a pin does not ring back to ask which gate. */}
+              {order.deliveryLat != null && order.deliveryLng != null && (
+                <p>
+                  <a
+                    className="map-link"
+                    href={`https://maps.google.com/?q=${order.deliveryLat},${order.deliveryLng}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    📍 {t("Xaritada ochish")}
+                  </a>
+                </p>
+              )}
+            </>
           )}
           {order.comment && (
             <p className="muted">
