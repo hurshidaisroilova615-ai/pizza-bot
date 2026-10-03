@@ -2647,3 +2647,38 @@ button {
   color: var(--accent);
   cursor: pointer;
 }
+
+/* ── Rasmsiz taom ──────────────────────────────────────────────────── */
+/* Stands where a photograph would, carrying the dish's initial, so a menu
+   nobody has photographed yet reads as plain rather than broken. */
+.thumb-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(120% 120% at 30% 20%, var(--surface-2), var(--surface));
+  color: var(--text-muted);
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  user-select: none;
+}
+
+/* The rail card and the category tile stack their picture behind the text;
+   the upsell chip sits it beside the name at a fixed size. */
+.rail-card .thumb-empty,
+.category-tile .thumb-empty {
+  position: absolute;
+  inset: 0;
+}
+
+.upsell-card .thumb-empty {
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  font-size: 22px;
+}
+
+.cart-item-img.thumb-empty {
+  font-size: 20px;
+}

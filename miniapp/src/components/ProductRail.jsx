@@ -1,5 +1,6 @@
 import { useSettings } from "../context/SettingsContext";
 import { useI18n } from "../i18n/LanguageContext";
+import Thumb from "./Thumb";
 
 // A horizontal shelf, built from the same photo-first card as the grid so
 // the two read as one catalogue rather than two widgets.
@@ -18,7 +19,7 @@ export default function ProductRail({ products, onOpen }) {
             className={`rail-card ${soldOut ? "sold-out" : ""}`}
             onClick={() => onOpen(p)}
           >
-            <img src={p.imageUrl} alt="" aria-hidden="true" />
+            <Thumb src={p.imageUrl} label={p.name} />
             <span className="rail-scrim" />
             {soldOut && <span className="sold-out-ribbon">{t("product.soldOutShort")}</span>}
             <span className="rail-body">

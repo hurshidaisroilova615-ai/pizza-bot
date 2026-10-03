@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSettings } from "../context/SettingsContext";
 import { useI18n } from "../i18n/LanguageContext";
+import Thumb from "./Thumb";
 
 // The first thing on the home screen, and the one place a dish is shown at
 // the size the photograph deserves. A grid of thumbnails tells a customer
@@ -26,12 +27,11 @@ export default function FeaturedHero({ products, onOpen, onBrowse }) {
       {/* Every pick stays mounted and cross-fades, so the panel never drops
           to an empty frame while the next photograph decodes. */}
       {picks.map((p, i) => (
-        <img
+        <Thumb
           key={p.id}
           className={`featured-img ${i === index ? "on" : ""}`}
           src={p.imageUrl}
-          alt=""
-          aria-hidden="true"
+          label={p.name}
         />
       ))}
       <div className="featured-scrim" />

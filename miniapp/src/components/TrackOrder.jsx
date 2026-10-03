@@ -30,7 +30,7 @@ export default function TrackOrder() {
     try {
       setOrder(await api.trackOrder(Number(orderId.replace(/\D/g, "")), phone));
     } catch (err) {
-      setError(err.message);
+      setError(t(err.message));
     } finally {
       setSearching(false);
     }

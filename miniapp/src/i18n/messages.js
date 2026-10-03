@@ -108,6 +108,7 @@ export const messages = {
     "cart.comment": "Izoh (ixtiyoriy)",
     "cart.pickupAddress": "Olib ketish manzili: {address}",
     "map.open": "Xaritada ochish",
+    "error.request": "Ulanishda xatolik. Internetni tekshirib, qayta urinib ko'ring.",
     "cart.cardLabel": "Shu kartaga o'tkazing",
     "cart.cardCopied": "Karta raqami nusxalandi",
     "cart.cardHint":
@@ -280,6 +281,7 @@ export const messages = {
     "cart.comment": "Комментарий (необязательно)",
     "cart.pickupAddress": "Адрес самовывоза: {address}",
     "map.open": "Открыть на карте",
+    "error.request": "Ошибка соединения. Проверьте интернет и попробуйте ещё раз.",
     "cart.cardLabel": "Переведите на эту карту",
     "cart.cardCopied": "Номер карты скопирован",
     "cart.cardHint":
@@ -451,6 +453,7 @@ export const messages = {
     "cart.comment": "Note (optional)",
     "cart.pickupAddress": "Collection address: {address}",
     "map.open": "Open on the map",
+    "error.request": "Connection problem. Check your internet and try again.",
     "cart.cardLabel": "Transfer to this card",
     "cart.cardCopied": "Card number copied",
     "cart.cardHint":
@@ -620,6 +623,7 @@ export const messages = {
     "cart.comment": "Эскертүү (милдеттүү эмес)",
     "cart.pickupAddress": "Алып кетүү дареги: {address}",
     "map.open": "Картада көрүү",
+    "error.request": "Байланыш катасы. Интернетти текшерип, кайра аракет кылыңыз.",
     "cart.cardLabel": "Ушул картага которуңуз",
     "cart.cardCopied": "Карта номери көчүрүлдү",
     "cart.cardHint":

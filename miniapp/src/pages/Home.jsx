@@ -9,7 +9,7 @@ import Icon from "../components/Icon";
 import ActiveOrderCard from "../components/ActiveOrderCard";
 import ProductRail from "../components/ProductRail";
 import FeaturedHero from "../components/FeaturedHero";
-import CategoryTiles from "../components/CategoryTiles";
+import CategoryTiles, { categoryTiles } from "../components/CategoryTiles";
 import { useI18n } from "../i18n/LanguageContext";
 import LanguageButton from "../components/LanguageButton";
 
@@ -44,6 +44,11 @@ export default function Home({
   const discounted = useMemo(
     () => products.filter((p) => p.oldPrice && p.oldPrice > p.price),
     [products]
+  );
+
+  const hasCategoryTiles = useMemo(
+    () => categoryTiles(categories, products).length > 0,
+    [categories, products]
   );
 
   const newest = useMemo(
@@ -124,7 +129,7 @@ export default function Home({
         </>
       )}
 
-      {categories.length > 0 && (
+      {hasCategoryTiles && (
         <>
           <p className="eyebrow eyebrow-page">{t("home.menuEyebrow")}</p>
           <h2 className="section-title">{t("home.categories")}</h2>

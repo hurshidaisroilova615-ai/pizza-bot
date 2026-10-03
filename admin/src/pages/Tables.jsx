@@ -170,7 +170,7 @@ export default function Tables() {
             <div className={`qr-card ${table ? "" : "qr-card-shared"}`} key={table || "shared"}>
               <p className="qr-shop">{settings.businessName}</p>
               <div className="qr-image" dangerouslySetInnerHTML={{ __html: svg }} />
-              <p className="qr-table">{table ? `Stol ${table}` : t("Umumiy kod")}</p>
+              <p className="qr-table">{table ? `${t("Stol")} ${table}` : t("Umumiy kod")}</p>
               <p className="qr-hint">
                 {table
                   ? t("Kodni skanerlang va buyurtma bering")

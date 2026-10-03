@@ -3,6 +3,7 @@ import { useSettings } from "../context/SettingsContext";
 import Icon from "./Icon";
 import { hapticFeedback } from "../telegram";
 import { useI18n } from "../i18n/LanguageContext";
+import Thumb from "./Thumb";
 
 export default function ProductCard({ product, onOpen, onQuickAdd }) {
   const settings = useSettings();
@@ -13,7 +14,7 @@ export default function ProductCard({ product, onOpen, onQuickAdd }) {
 
   return (
     <div className={`product-card ${soldOut ? "sold-out" : ""}`} onClick={() => onOpen(product)}>
-      <img className="product-card-img" src={product.imageUrl} alt={product.name} loading="lazy" />
+      <Thumb className="product-card-img" src={product.imageUrl} alt={product.name} label={product.name} />
 
       {/* The card is the photograph. Everything else rides on top of it,
           over a scrim dark enough to carry white text on any picture a

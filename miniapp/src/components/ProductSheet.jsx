@@ -1,5 +1,6 @@
 import { useSettings } from "../context/SettingsContext";
 import { useI18n } from "../i18n/LanguageContext";
+import Thumb from "./Thumb";
 
 export default function ProductSheet({ product, onClose, onAdd }) {
   const settings = useSettings();
@@ -19,7 +20,7 @@ export default function ProductSheet({ product, onClose, onAdd }) {
       <div className="sheet" onClick={(e) => e.stopPropagation()}>
         <div className="sheet-handle" />
         <div className={`sheet-media ${soldOut ? "sold-out" : ""}`}>
-          <img className="sheet-img" src={product.imageUrl} alt={product.name} />
+          <Thumb className="sheet-img" src={product.imageUrl} alt={product.name} label={product.name} />
           {soldOut && <span className="sold-out-ribbon">{t("product.soldOut")}</span>}
         </div>
         <div className="sheet-body">
@@ -41,7 +42,7 @@ export default function ProductSheet({ product, onClose, onAdd }) {
               <div className="upsell-scroll">
                 {recommended.map((rp) => (
                   <button key={rp.id} className="upsell-card" onClick={() => onAdd(rp)}>
-                    <img src={rp.imageUrl} alt={rp.name} />
+                    <Thumb src={rp.imageUrl} alt={rp.name} label={rp.name} />
                     <span className="upsell-card-name">{rp.name}</span>
                     <span className="upsell-card-price">
                       +{rp.price.toLocaleString()} {settings.currency}

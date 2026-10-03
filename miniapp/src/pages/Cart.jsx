@@ -8,6 +8,7 @@ import OrderPlaced from "../components/OrderPlaced";
 import { isTelegram, savedContact, rememberContact } from "../identity";
 import { currentTable, forgetTable } from "../table";
 import { useI18n } from "../i18n/LanguageContext";
+import Thumb from "../components/Thumb";
 
 export default function Cart({ onOrderPlaced, onBrowseMenu, onSeeOrders }) {
   const {
@@ -117,7 +118,7 @@ export default function Cart({ onOrderPlaced, onBrowseMenu, onSeeOrders }) {
         setQuote(data);
         setQuoteError("");
       })
-      .catch((err) => active && setQuoteError(err.message));
+      .catch((err) => active && setQuoteError(t(err.message)));
     return () => {
       active = false;
     };
@@ -159,7 +160,7 @@ export default function Cart({ onOrderPlaced, onBrowseMenu, onSeeOrders }) {
       // confirmation has to be the page.
       if (!closeMiniApp()) setPlacedOrder(order);
     } catch (err) {
-      alert(err.message);
+      alert(t(err.message));
     } finally {
       setSubmitting(false);
     }
@@ -209,7 +210,10 @@ export default function Cart({ onOrderPlaced, onBrowseMenu, onSeeOrders }) {
   // One way of getting the order is not a choice, so it is not shown.
   const waysOffered = ways.length > 1;
   const closed = settings.opening?.isOpen === false;
-  const meetsMinimum = quote ? quote.meetsMinimum : true;
+  // A backend that has not finished deploying answers without this field,
+  // and an undefined read as "below the minimum" took the cart to a white
+  // screen on the line that prints the amount. Nothing here is worth that.
+  const meetsMinimum = quote?.meetsMinimum ?? true;
   // Sold out while the cart sat open — say which dish, and offer to drop it
   // rather than leaving the customer to work out why confirm is dead.
   const soldOut = quote?.unavailableItems || [];
@@ -257,7 +261,7 @@ export default function Cart({ onOrderPlaced, onBrowseMenu, onSeeOrders }) {
           className={`cart-item ${soldOutIds.has(item.productId) ? "sold-out" : ""}`}
           key={item.productId}
         >
-          <img className="cart-item-img" src={item.imageUrl} alt={item.name} />
+          <Thumb className="cart-item-img" src={item.imageUrl} alt={item.name} label={item.name} />
           <div className="cart-item-info">
             <p className="cart-item-name">{item.name}</p>
             {soldOutIds.has(item.productId) ? (
@@ -533,7 +537,7 @@ export default function Cart({ onOrderPlaced, onBrowseMenu, onSeeOrders }) {
         </p>
       )}
 
-      {!meetsMinimum && (
+      {!meetsMinimum && quote?.minOrderAmount != null && (
         <p className="form-error" style={{ padding: "8px 20px 0" }}>
           {t("cart.minOrder", {
             amount: quote.minOrderAmount.toLocaleString(),

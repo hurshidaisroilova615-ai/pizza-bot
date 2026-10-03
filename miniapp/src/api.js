@@ -64,7 +64,10 @@ async function request(path, options = {}) {
         continue;
       }
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || "So'rovda xatolik yuz berdi");
+      // The shop's own refusals come back worded by the backend; what is
+      // thrown here is the one case it never answered at all, so it has to
+      // be a key the page can say in the customer's language.
+      throw new Error(err.error || "error.request");
     }
 
     if (res.status === 204) return null;
