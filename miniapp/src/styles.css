@@ -2682,3 +2682,43 @@ button {
 .cart-item-img.thumb-empty {
   font-size: 20px;
 }
+
+/* ── Stoldan ofitsiantni chaqirish ───────────────────────────────────── */
+.table-call {
+  margin: 14px 20px 4px;
+  display: flex;
+  gap: 10px;
+}
+
+.table-call button {
+  flex: 1;
+  padding: 13px 10px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.table-call button:active {
+  transform: scale(0.98);
+}
+
+.table-call button:disabled {
+  opacity: 0.55;
+}
+
+.table-call.sent {
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 14px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}

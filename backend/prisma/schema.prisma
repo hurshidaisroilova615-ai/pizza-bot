@@ -345,3 +345,23 @@ model SpecialOffer {
   sentCount   Int          @default(0)
   createdAt   DateTime     @default(now())
 }
+
+// A guest at a table raising their hand, through the same code they
+// ordered from. Kept apart from Order on purpose: nothing is being
+// bought, and it is finished the moment somebody walks over — an order
+// that nobody paid for would otherwise sit in the day's figures.
+model TableCall {
+  id          Int           @id @default(autoincrement())
+  tableNumber String
+  kind        TableCallKind @default(WAITER)
+  createdAt   DateTime      @default(now())
+  // Cleared by whoever went to the table. Null means still waiting.
+  resolvedAt  DateTime?
+
+  @@index([resolvedAt])
+}
+
+enum TableCallKind {
+  WAITER
+  BILL
+}

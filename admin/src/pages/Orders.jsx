@@ -32,6 +32,10 @@ export default function Orders() {
   const [statusFilter, setStatusFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [selected, setSelected] = useState(null);
+  // Guests with their hand up. Nothing is owed and nothing is cooked —
+  // somebody just has to walk over, which is why it sits above the list
+  // rather than in it.
+  const [calls, setCalls] = useState([]);
 
   function load() {
     setLoading(true);
@@ -42,11 +46,28 @@ export default function Orders() {
       .finally(() => setLoading(false));
   }
 
+  function loadCalls() {
+    api.getTableCalls().then(setCalls).catch(() => {});
+  }
+
   useEffect(() => {
     load();
-    const interval = setInterval(load, 15000);
+    loadCalls();
+    const interval = setInterval(() => {
+      load();
+      loadCalls();
+    }, 15000);
     return () => clearInterval(interval);
   }, [statusFilter]);
+
+  async function resolveCall(call) {
+    setCalls((prev) => prev.filter((c) => c.id !== call.id));
+    try {
+      await api.resolveTableCall(call.id);
+    } catch {
+      loadCalls();
+    }
+  }
 
   async function handleStatusChange(order, status) {
     try {
@@ -91,6 +112,24 @@ export default function Orders() {
           {t("Yangilash")}
         </button>
       </div>
+
+      {calls.length > 0 && (
+        <div className="call-strip">
+          {calls.map((call) => (
+            <div key={call.id} className="call-card">
+              <span className="call-table">
+                {t("Stol")} {call.tableNumber}
+              </span>
+              <span className="call-what">
+                {call.kind === "BILL" ? t("Hisob so'rayapti") : t("Ofitsiantni chaqiryapti")}
+              </span>
+              <button className="btn btn-accent" onClick={() => resolveCall(call)}>
+                {t("Bordim")}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="filter-bar">
         <div className="tag-row-admin type-tabs">

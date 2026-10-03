@@ -7,6 +7,7 @@ import { useSettings } from "../context/SettingsContext";
 import { api } from "../api";
 import Icon from "../components/Icon";
 import ActiveOrderCard from "../components/ActiveOrderCard";
+import TableCallBar from "../components/TableCallBar";
 import ProductRail from "../components/ProductRail";
 import FeaturedHero from "../components/FeaturedHero";
 import CategoryTiles, { categoryTiles } from "../components/CategoryTiles";
@@ -97,6 +98,10 @@ export default function Home({
           </div>
         </div>
       </div>
+
+      {/* High up, because somebody who wants a waiter is not going to
+          scroll a menu to find the way to ask. */}
+      <TableCallBar />
 
       <StoryBar stories={stories} onSelect={setActiveStory} />
 

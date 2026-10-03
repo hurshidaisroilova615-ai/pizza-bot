@@ -122,6 +122,11 @@ export const api = {
   trackOrder: (orderId, phone) =>
     request("/orders/track", { method: "POST", body: JSON.stringify({ orderId, phone }) }),
 
+  // A guest at a table asking for somebody to come over. Not an order:
+  // nothing is bought and nothing is owed.
+  callWaiter: (tableNumber, kind) =>
+    request("/table-calls", { method: "POST", body: JSON.stringify({ tableNumber, kind }) }),
+
   validatePromoCode: (code, subtotal) =>
     request("/promo-codes/validate", { method: "POST", body: JSON.stringify({ code, subtotal }) }),
 };

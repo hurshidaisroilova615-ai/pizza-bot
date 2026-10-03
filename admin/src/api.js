@@ -91,6 +91,11 @@ export const api = {
   markOrderPaid: (id, isPaid) =>
     request(`/orders/${id}/paid`, { method: "PUT", body: JSON.stringify({ isPaid }) }),
 
+  // A guest at a table asking for somebody to come over. Not an order, so
+  // it never reaches the day's figures — it is finished by walking there.
+  getTableCalls: () => request("/table-calls"),
+  resolveTableCall: (id) => request(`/table-calls/${id}/resolve`, { method: "PUT" }),
+
   getProducts: () => request("/products?all=1"),
   createProduct: (data) => request("/products", { method: "POST", body: JSON.stringify(data) }),
   bulkCreateProducts: (items) =>

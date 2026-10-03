@@ -1501,3 +1501,51 @@ td.row-actions .btn + .btn {
 .row-waiting {
   background: #fff8f7;
 }
+
+/* ── Stoldan chaqiruv ────────────────────────────────────────────────── */
+/* Above the list, not in it: nothing is being cooked or owed — somebody
+   just has to walk over, and until they do a guest is sitting there
+   waiting. */
+.call-strip {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.call-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #f1b6ad;
+  border-radius: 14px;
+  background: #fff5f3;
+}
+
+.call-table {
+  font-size: 16px;
+  font-weight: 800;
+  color: #c0392b;
+}
+
+.call-what {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.call-card .btn {
+  padding: 7px 16px;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .call-card {
+    flex-wrap: wrap;
+  }
+
+  .call-what {
+    flex-basis: 100%;
+    order: 3;
+  }
+}

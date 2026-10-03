@@ -56,6 +56,9 @@ export default function NewOrderWatch() {
   const { t } = useT();
   const navigate = useNavigate();
   const [waiting, setWaiting] = useState(0);
+  // A guest sitting at a table with their hand up. More urgent than an
+  // order, because somebody is looking across the room right now.
+  const [calls, setCalls] = useState(0);
   const [muted, setMuted] = useState(() => readNumber(MUTE_KEY) === 1);
   const audio = useRef(null);
   const baseTitle = useRef(document.title);
@@ -81,12 +84,22 @@ export default function NewOrderWatch() {
 
     async function check() {
       let pending;
+      let tableCalls;
       try {
-        pending = await api.getOrders("PENDING");
+        [pending, tableCalls] = await Promise.all([
+          api.getOrders("PENDING"),
+          api.getTableCalls().catch(() => []),
+        ]);
       } catch {
         return; // asleep or offline; the next tick tries again
       }
       if (!active || !Array.isArray(pending)) return;
+
+      const callCount = Array.isArray(tableCalls) ? tableCalls.length : 0;
+      setCalls((before) => {
+        if (callCount > before && !muted) ring(audio.current);
+        return callCount;
+      });
 
       const seen = readNumber(SEEN_KEY);
       // First ever visit: take what is on the screen as already known,
@@ -116,8 +129,9 @@ export default function NewOrderWatch() {
   // The tab itself carries the count, for the panel left open behind
   // whatever else is on the screen.
   useEffect(() => {
-    document.title = waiting > 0 ? `(${waiting}) ${baseTitle.current}` : baseTitle.current;
-  }, [waiting]);
+    const total = waiting + calls;
+    document.title = total > 0 ? `(${total}) ${baseTitle.current}` : baseTitle.current;
+  }, [waiting, calls]);
 
   const open = useCallback(() => {
     setWaiting(0);
@@ -138,12 +152,14 @@ export default function NewOrderWatch() {
     write(MUTE_KEY, next ? 1 : 0);
   }
 
-  if (waiting === 0) return null;
+  if (waiting === 0 && calls === 0) return null;
 
   return (
     <button type="button" className="order-bell" onClick={open}>
       <span className="order-bell-dot" />
-      <span>{t("{n} ta yangi buyurtma", { n: waiting })}</span>
+      <span>
+        {calls > 0 ? t("{n} ta stol chaqiryapti", { n: calls }) : t("{n} ta yangi buyurtma", { n: waiting })}
+      </span>
       <span className="order-bell-mute" onClick={toggleMute} role="button">
         {muted ? t("Ovozni yoqish") : t("Ovozni o'chirish")}
       </span>
