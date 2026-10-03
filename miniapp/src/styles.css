@@ -1651,6 +1651,13 @@ button {
   color: var(--text-muted);
 }
 
+.map-link {
+  margin-left: 6px;
+  color: var(--accent, #2e9e5b);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
 .pickup-note {
   display: flex;
   align-items: center;

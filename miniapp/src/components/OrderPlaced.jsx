@@ -85,7 +85,14 @@ export default function OrderPlaced({ order, onBackToMenu, onSeeOrders }) {
           <p>{t("placed.callSoon")}</p>
         )}
         {order.orderType === "PICKUP" && settings.pickupAddress && (
-          <p>{t("placed.pickupWhere", { address: settings.pickupAddress })}</p>
+          <p>
+            {t("placed.pickupWhere", { address: settings.pickupAddress })}
+            {settings.shopMapUrl && (
+              <a className="map-link" href={settings.shopMapUrl} target="_blank" rel="noreferrer">
+                {t("map.open")}
+              </a>
+            )}
+          </p>
         )}
         {order.paymentMethod === "CARD" && <p>{t("placed.cardNote")}</p>}
         {order.orderType !== "DINE_IN" && (

@@ -54,6 +54,7 @@ export default function Settings({ onBusinessNameChange }) {
         deliveryEnabled: form.deliveryEnabled,
         pickupEnabled: form.pickupEnabled,
         pickupAddress: form.pickupAddress || null,
+        shopMapUrl: form.shopMapUrl || null,
         cardPaymentEnabled: form.cardPaymentEnabled,
         cardPaymentDetails: form.cardPaymentDetails || null,
         cardPaymentHolder: form.cardPaymentHolder || null,
@@ -209,16 +210,28 @@ export default function Settings({ onBusinessNameChange }) {
             />
             {t("Olib ketish (mijoz o'zi keladi — yetkazish narxi olinmaydi)")}
           </label>
-          {form.pickupEnabled && (
-            <div className="form-group">
-              <label>{t("Olib ketish manzili")}</label>
-              <input
-                value={form.pickupAddress || ""}
-                onChange={(e) => update("pickupAddress", e.target.value)}
-                placeholder={t("Mijoz qaerdan oladi")}
-              />
-            </div>
-          )}
+          {/* Not only for collection: this is the address on the website's
+              footer and on every confirmation, so a shop that delivers and
+              never lets anybody collect still has to be able to fill it. */}
+          <div className="form-group">
+            <label>{t("Kafe manzili")}</label>
+            <input
+              value={form.pickupAddress || ""}
+              onChange={(e) => update("pickupAddress", e.target.value)}
+              placeholder={t("Ko'cha va uy raqami")}
+            />
+          </div>
+          <div className="form-group">
+            <label>{t("Xaritadagi havola")}</label>
+            <input
+              value={form.shopMapUrl || ""}
+              onChange={(e) => update("shopMapUrl", e.target.value)}
+              placeholder="https://2gis.kg/..."
+            />
+            <p className="field-hint">
+              {t("2GIS, Google yoki Yandex xaritasidan o'z joyingizning havolasini nusxalab qo'ying")}
+            </p>
+          </div>
           <label className="checkbox-row">
             <input
               type="checkbox"

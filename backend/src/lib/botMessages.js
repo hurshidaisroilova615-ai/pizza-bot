@@ -18,6 +18,8 @@ const MESSAGES = {
     languageSet: "Til o'zbekchaga o'zgartirildi.",
     languageCommand: "Tilni o'zgartirish uchun /til deb yozing.",
     noOrders: "Sizda hali buyurtmalar yo'q.",
+    chatIdInfo: (chatId) => `Sizning Telegram ID raqamingiz:\n\n${chatId}\n\nYangi buyurtma xabarlarini olish uchun shu raqamni admin panel → Sozlamalar bo'limiga qo'ying.`,
+    help: "/start — Mini App'ni ochish\n/orders — Oxirgi buyurtmalaringiz\n/til — Tilni o'zgartirish\n/id — Telegram ID raqamingiz\n/help — Yordam",
     orderCreated: (id, total) =>
       `Buyurtmangiz #${id} qabul qilindi! ✅\nJami: ${total}\n\nHolatini shu botdan yoki Mini App profilingizdan kuzatib borishingiz mumkin.`,
     pickupCollect: (id) => `Kelganingizda kassada #${id} raqamini ayting.`,
@@ -45,6 +47,8 @@ const MESSAGES = {
     languageSet: "Язык переключён на русский.",
     languageCommand: "Чтобы сменить язык, отправьте /til.",
     noOrders: "У вас пока нет заказов.",
+    chatIdInfo: (chatId) => `Ваш Telegram ID:\n\n${chatId}\n\nЧтобы получать уведомления о новых заказах, впишите этот номер в админ-панели → Настройки.`,
+    help: "/start — открыть приложение\n/orders — ваши последние заказы\n/til — сменить язык\n/id — ваш Telegram ID\n/help — помощь",
     orderCreated: (id, total) =>
       `Заказ #${id} принят! ✅\nИтого: ${total}\n\nСледить за ним можно здесь или в профиле в приложении.`,
     pickupCollect: (id) => `Назовите номер #${id} на кассе, когда придёте.`,
@@ -72,6 +76,8 @@ const MESSAGES = {
     languageSet: "Тил кыргызчага которулду.",
     languageCommand: "Тилди өзгөртүү үчүн /til деп жазыңыз.",
     noOrders: "Сизде азырынча заказдар жок.",
+    chatIdInfo: (chatId) => `Сиздин Telegram ID:\n\n${chatId}\n\nЖаңы заказдар жөнүндө кабар алуу үчүн бул номерди админ панелдеги → Жөндөөлөр бөлүмүнө жазыңыз.`,
+    help: "/start — тиркемени ачуу\n/orders — акыркы заказдарыңыз\n/til — тилди өзгөртүү\n/id — Telegram ID\n/help — жардам",
     orderCreated: (id, total) =>
       `Заказыңыз #${id} кабыл алынды! ✅\nЖалпы: ${total}\n\nАбалын ушул боттон же тиркемедеги профилиңизден көзөмөлдөй аласыз.`,
     pickupCollect: (id) => `Келгениңизде кассада #${id} номерин айтыңыз.`,
@@ -99,6 +105,8 @@ const MESSAGES = {
     languageSet: "Language switched to English.",
     languageCommand: "Send /til to change the language.",
     noOrders: "You have no orders yet.",
+    chatIdInfo: (chatId) => `Your Telegram ID:\n\n${chatId}\n\nPut this number into the admin panel → Settings to get a message on every new order.`,
+    help: "/start — open the app\n/orders — your recent orders\n/til — change language\n/id — your Telegram ID\n/help — help",
     orderCreated: (id, total) =>
       `Order #${id} accepted! ✅\nTotal: ${total}\n\nYou can follow it here or in your profile in the app.`,
     pickupCollect: (id) => `Give the number #${id} at the counter when you arrive.`,

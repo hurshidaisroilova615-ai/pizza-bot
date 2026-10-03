@@ -103,6 +103,11 @@ export const RU = {
   "Telefon ko'rsatilmagan": "Телефон не указан",
   "Mijoz o'zi olib ketadi": "Клиент забирает сам",
   "Xaritada ochish": "Открыть на карте",
+  "Kafe manzili": "Адрес заведения",
+  "Ko'cha va uy raqami": "Улица и номер дома",
+  "Xaritadagi havola": "Ссылка на карте",
+  "2GIS, Google yoki Yandex xaritasidan o'z joyingizning havolasini nusxalab qo'ying":
+    "Скопируйте ссылку на своё заведение из 2GIS, Google или Яндекс Карт",
   "Mijoz o'zi olib ketadi. Kelganda #{id} raqamini aytadi.":
     "Клиент забирает сам. При получении назовёт номер #{id}.",
 

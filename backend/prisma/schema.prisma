@@ -83,6 +83,11 @@ model Settings {
   deliveryEnabled       Boolean  @default(true)
   pickupEnabled         Boolean  @default(false)
   pickupAddress         String?
+  // A link to the shop's own point on a map — whatever the owner can copy
+  // from 2GIS, Google or Yandex. A typed street name is not enough to find
+  // a cafe in a row of them, and a customer who cannot find the door does
+  // not come back to look for it.
+  shopMapUrl            String?
   // Ordering from the table, by scanning the code printed on it. Off by
   // default: a shop with no tables must not be offered it.
   // Which language the owner reads. Their customers pick their own in the

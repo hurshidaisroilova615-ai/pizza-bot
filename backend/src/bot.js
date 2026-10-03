@@ -157,6 +157,7 @@ const {
   messagesFor,
   statusLabelFor,
   effectiveLanguage,
+  pickLanguage,
   LANGUAGE_CHOICES,
   SUPPORTED,
 } = require("./lib/botMessages");
@@ -327,18 +328,30 @@ bot.on("callback_query", async (query) => {
 
 // Setting up order alerts needs a chat id, and hunting one down otherwise
 // means sending people to a third-party bot to find it.
-bot.onText(/\/id/, (msg) => {
-  bot.sendMessage(
-    msg.chat.id,
-    `Sizning Telegram ID raqamingiz:\n\n${msg.chat.id}\n\nYangi buyurtma xabarlarini olish uchun shu raqamni admin panel → Sozlamalar bo'limiga qo'ying.`
-  );
+// The language the person reading this has actually settled on, falling
+// back to whatever their phone is set to. /id is the command a shop owner
+// runs while setting their own shop up, so it is the last one that should
+// answer in a language they do not read.
+async function languageForMessage(msg) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { telegramId: String(msg.from.id) },
+    });
+    if (user) return effectiveLanguage(user);
+  } catch {
+    // the language guess is not worth failing a reply over
+  }
+  return pickLanguage(msg.from.language_code);
+}
+
+bot.onText(/\/id/, async (msg) => {
+  const m = messagesFor(await languageForMessage(msg));
+  bot.sendMessage(msg.chat.id, m.chatIdInfo(msg.chat.id));
 });
 
-bot.onText(/\/help/, (msg) => {
-  bot.sendMessage(
-    msg.chat.id,
-    "/start — Mini App'ni ochish\n/orders — Oxirgi buyurtmalaringiz\n/til — Tilni o'zgartirish\n/id — Telegram ID raqamingiz\n/help — Yordam"
-  );
+bot.onText(/\/help/, async (msg) => {
+  const m = messagesFor(await languageForMessage(msg));
+  bot.sendMessage(msg.chat.id, m.help);
 });
 
 bot.onText(/\/orders/, async (msg) => {

@@ -1364,3 +1364,10 @@ td.row-actions .btn + .btn {
   color: #1a9d5b;
   font-weight: 600;
 }
+
+/* The pin a customer dropped, opened from the order it came with. */
+.map-link {
+  color: var(--accent, #2e9e5b);
+  font-weight: 600;
+  text-decoration: underline;
+}

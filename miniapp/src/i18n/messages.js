@@ -107,10 +107,13 @@ export const messages = {
     "cart.pinFailed": "Lokatsiya olinmadi — manzilni yozib qo'ying.",
     "cart.comment": "Izoh (ixtiyoriy)",
     "cart.pickupAddress": "Olib ketish manzili: {address}",
+    "map.open": "Xaritada ochish",
     "cart.cardLabel": "Shu kartaga o'tkazing",
     "cart.cardCopied": "Karta raqami nusxalandi",
     "cart.cardHint":
       "Pulni o'tkazib, chekni shu botga yuboring — buyurtma shundan keyin tayyorlanadi.",
+    "cart.cardHintWeb":
+      "Pulni shu kartaga o'tkazing — tasdiqlash uchun siz bilan bog'lanamiz.",
     "cart.items": "Mahsulotlar",
     "cart.promoDiscount": "Promo chegirma",
     "cart.loyaltyDiscount": "Bonus ball",
@@ -276,10 +279,13 @@ export const messages = {
     "cart.pinFailed": "Не удалось определить — напишите адрес.",
     "cart.comment": "Комментарий (необязательно)",
     "cart.pickupAddress": "Адрес самовывоза: {address}",
+    "map.open": "Открыть на карте",
     "cart.cardLabel": "Переведите на эту карту",
     "cart.cardCopied": "Номер карты скопирован",
     "cart.cardHint":
       "Переведите сумму и отправьте чек в этот бот — после этого заказ пойдёт на кухню.",
+    "cart.cardHintWeb":
+      "Переведите сумму на эту карту — мы свяжемся с вами для подтверждения.",
     "cart.items": "Товары",
     "cart.promoDiscount": "Скидка по промокоду",
     "cart.loyaltyDiscount": "Бонусные баллы",
@@ -444,10 +450,12 @@ export const messages = {
     "cart.pinFailed": "Could not get your location — please type the address.",
     "cart.comment": "Note (optional)",
     "cart.pickupAddress": "Collection address: {address}",
+    "map.open": "Open on the map",
     "cart.cardLabel": "Transfer to this card",
     "cart.cardCopied": "Card number copied",
     "cart.cardHint":
       "Transfer the amount and send the receipt to this bot — the kitchen starts once it arrives.",
+    "cart.cardHintWeb": "Transfer the amount to this card — we will call you to confirm.",
     "cart.items": "Items",
     "cart.promoDiscount": "Promo discount",
     "cart.loyaltyDiscount": "Reward points",
@@ -611,10 +619,13 @@ export const messages = {
     "cart.pinFailed": "Аныктоо мүмкүн болбоду — даректи жазып коюңуз.",
     "cart.comment": "Эскертүү (милдеттүү эмес)",
     "cart.pickupAddress": "Алып кетүү дареги: {address}",
+    "map.open": "Картада көрүү",
     "cart.cardLabel": "Ушул картага которуңуз",
     "cart.cardCopied": "Карта номери көчүрүлдү",
     "cart.cardHint":
       "Акчаны которуп, чекти ушул ботко жөнөтүңүз — заказ ошондон кийин даярдалат.",
+    "cart.cardHintWeb":
+      "Акчаны ушул картага которуңуз — ырастоо үчүн сиз менен байланышабыз.",
     "cart.items": "Товарлар",
     "cart.promoDiscount": "Промо арзандатуу",
     "cart.loyaltyDiscount": "Бонус упай",

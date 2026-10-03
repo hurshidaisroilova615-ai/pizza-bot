@@ -34,12 +34,24 @@ export default function SiteFooter() {
         </a>
       )}
 
-      {address && (
-        <p className="site-footer-row">
-          <Icon name="pin" size={17} strokeWidth={2} />
-          <span>{address}</span>
-        </p>
-      )}
+      {address &&
+        (settings.shopMapUrl ? (
+          // A street name in a row of cafes is not enough to find the door.
+          <a
+            className="site-footer-row site-footer-call"
+            href={settings.shopMapUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Icon name="pin" size={17} strokeWidth={2} />
+            <span>{address}</span>
+          </a>
+        ) : (
+          <p className="site-footer-row">
+            <Icon name="pin" size={17} strokeWidth={2} />
+            <span>{address}</span>
+          </p>
+        ))}
 
       {hours && (
         <p className="site-footer-row">

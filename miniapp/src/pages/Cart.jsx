@@ -455,6 +455,11 @@ export default function Cart({ onOrderPlaced, onBrowseMenu, onSeeOrders }) {
           <p className="pickup-note">
             <Icon name="pin" size={16} strokeWidth={2} />
             {t("cart.pickupAddress", { address: settings.pickupAddress })}
+            {settings.shopMapUrl && (
+              <a className="map-link" href={settings.shopMapUrl} target="_blank" rel="noreferrer">
+                {t("map.open")}
+              </a>
+            )}
           </p>
         )}
       {cardOffered && paymentMethod === "CARD" && (
@@ -468,7 +473,7 @@ export default function Cart({ onOrderPlaced, onBrowseMenu, onSeeOrders }) {
             <p className="card-details-holder">{settings.cardPaymentHolder}</p>
           )}
           <p className="card-details-hint">
-            {cardCopied ? t("cart.cardCopied") : t("cart.cardHint")}
+            {cardCopied ? t("cart.cardCopied") : t(onWeb ? "cart.cardHintWeb" : "cart.cardHint")}
           </p>
         </div>
       )}

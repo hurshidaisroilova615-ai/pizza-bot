@@ -57,6 +57,17 @@ const settingsSchema = z.object({
   deliveryEnabled: z.boolean().optional(),
   pickupEnabled: z.boolean().optional(),
   pickupAddress: z.string().trim().max(300).nullable().optional(),
+  // Pasted from whichever map the owner uses, so nothing is assumed about
+  // the shape beyond it being a link a phone can open.
+  shopMapUrl: z
+    .string()
+    .trim()
+    .max(500)
+    .refine((v) => v === "" || /^https?:\/\//i.test(v), {
+      message: "Havola http:// yoki https:// bilan boshlanishi kerak",
+    })
+    .nullable()
+    .optional(),
   // Only the two the alerts are written in. A value the shop cannot speak
   // would leave the owner with an empty message every morning.
   ownerLanguage: z.enum(["uz", "ru"]).optional(),
