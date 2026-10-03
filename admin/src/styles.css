@@ -1330,15 +1330,24 @@ td.row-actions .btn + .btn {
 /* A dot was too quiet: on a phone it reads as a speck of dust on the
    screen, which is worse than nothing because it looks like a defect
    rather than information. */
+/* Tappable: settling the money is the thing an owner does most often, and
+   it used to mean opening the order first. */
 .pay-chip {
   display: inline-block;
   margin-left: 8px;
-  padding: 2px 8px;
+  padding: 4px 11px;
+  border: 1px solid transparent;
   border-radius: 999px;
   font-size: 11.5px;
   font-weight: 700;
   white-space: nowrap;
   vertical-align: middle;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.pay-chip:hover {
+  border-color: currentColor;
 }
 
 .pay-chip.paid {
@@ -1429,4 +1438,22 @@ td.row-actions .btn + .btn {
     left: 12px;
     justify-content: center;
   }
+}
+
+/* ── Buyurtma turlari bo'yicha bo'limlar ──────────────────────────────── */
+.type-tabs {
+  gap: 6px;
+}
+
+.tab-count {
+  margin-left: 5px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.09);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.tag-admin.active .tab-count {
+  background: rgba(255, 255, 255, 0.24);
 }

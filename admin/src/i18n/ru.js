@@ -103,6 +103,7 @@ export const RU = {
   "Telefon ko'rsatilmagan": "Телефон не указан",
   "Mijoz o'zi olib ketadi": "Клиент забирает сам",
   "Xaritada ochish": "Открыть на карте",
+  "Bosib o'zgartiring": "Нажмите, чтобы изменить",
   "{n} ta yangi buyurtma": ["{n} новый заказ", "{n} новых заказа", "{n} новых заказов"],
   "Ovozni o'chirish": "Звук выкл.",
   "Ovozni yoqish": "Звук вкл.",

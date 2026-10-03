@@ -6,6 +6,16 @@ import { useT } from "../i18n";
 
 const STATUS_FILTERS = ["", "PENDING", "PREPARING", "ON_DELIVERY", "DELIVERED", "CANCELLED"];
 
+// A room order, a collection and a delivery are three different jobs done
+// by three different people, and reading them off one mixed list is where
+// a table gets forgotten. Each gets its own tab, with how many are in it.
+const TYPE_TABS = [
+  { value: "", label: "Barchasi" },
+  { value: "DINE_IN", label: "Zalda" },
+  { value: "PICKUP", label: "Olib ketadi" },
+  { value: "DELIVERY", label: "Yetkazish" },
+];
+
 // An order walks one way through the kitchen, so the list offers the single
 // next step as a button. Advancing an order is the job the owner does
 // dozens of times a day; it shouldn't require opening a panel to find it.
@@ -20,6 +30,7 @@ export default function Orders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
   const [selected, setSelected] = useState(null);
 
   function load() {
@@ -70,6 +81,8 @@ export default function Orders() {
     }
   }
 
+  const shown = typeFilter ? orders.filter((o) => o.orderType === typeFilter) : orders;
+
   return (
     <div>
       <div className="page-header">
@@ -77,6 +90,23 @@ export default function Orders() {
         <button className="btn btn-outline" onClick={load}>
           {t("Yangilash")}
         </button>
+      </div>
+
+      <div className="filter-bar">
+        <div className="tag-row-admin type-tabs">
+          {TYPE_TABS.map((tab) => {
+            const count = orders.filter((o) => !tab.value || o.orderType === tab.value).length;
+            return (
+              <button
+                key={tab.value || "all"}
+                className={`tag-admin ${typeFilter === tab.value ? "active" : ""}`}
+                onClick={() => setTypeFilter(tab.value)}
+              >
+                {t(tab.label)} <span className="tab-count">{count}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div className="filter-bar">
@@ -95,9 +125,9 @@ export default function Orders() {
       </div>
 
       {loading && <p className="empty-note">{t("Yuklanmoqda...")}</p>}
-      {!loading && orders.length === 0 && <p className="empty-note">{t("Hozircha buyurtmalar yo'q")}</p>}
+      {!loading && shown.length === 0 && <p className="empty-note">{t("Hozircha buyurtmalar yo'q")}</p>}
 
-      {orders.length > 0 && (
+      {shown.length > 0 && (
         <div className="table-wrap">
           <table>
             <thead>
@@ -114,7 +144,7 @@ export default function Orders() {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order) => (
+              {shown.map((order) => (
                 <tr key={order.id} className="clickable-row" onClick={() => setSelected(order)}>
                   <td data-label="#">#{order.id}</td>
                   <td data-label={t("Mijoz")}>{order.user?.firstName || "—"}</td>
@@ -133,9 +163,17 @@ export default function Orders() {
                         list, which is how money goes missing. It was a dot
                         at first, which on a phone reads as a speck of dust
                         — it has to say what it means. */}
-                    <span className={`pay-chip ${order.isPaid ? "paid" : "unpaid"}`}>
+                    <button
+                      type="button"
+                      className={`pay-chip ${order.isPaid ? "paid" : "unpaid"}`}
+                      title={t("Bosib o'zgartiring")}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleTogglePaid(order, !order.isPaid);
+                      }}
+                    >
                       {order.isPaid ? t("To'landi") : t("To'lanmagan")}
-                    </span>
+                    </button>
                   </td>
                   <td data-label={t("Sana")}>{new Date(order.createdAt).toLocaleString("uz-UZ")}</td>
                   <td data-label={t("Holati")}>
